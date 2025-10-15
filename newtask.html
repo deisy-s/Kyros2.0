@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <title>Información de dispositivo - KYROS</title>
+    <link rel="icon" href="images/logo.ico" type="image/x-icon" />
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    \<!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand me-auto" href="index.html">
+                <img src="images/logo.png" height="40px" alt="KYROS logo">
+                <h3 class="logoH">KYROS</h3>
+            </a>
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="offcanvasNavbarLabel">KYROS</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <ul class="navbar-nav justify-content-center flex-grow-1 pe-3">
+                        <li class="nav-item">
+                            <a class="nav-link mx-lg-2" aria-current="page" href="index.html">Inicio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link mx-lg-2" href="rooms.html">Habitaciones</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link mx-lg-2" href="security.html">Seguridad</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link mx-lg-2 active" href="automatize.html">Automatización</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <a href="login.html" class="login-button">Iniciar sesión</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </nav>
+    <!-- End navbar -->
+
+    <!-- Content -->
+    <div class="container" id="main-container-addtask">
+        <div class="row">
+            <!-- Breadcrumb -->
+            <nav class="d-flex">
+            <h6 class="mb-0" id="breadcrumb">
+                <a href="index.html" class="text-reset">Inicio</a>
+                <span>></span>
+                <a href="automatize.html" class="text-reset">Automatización</a>
+                <span>></span>
+                <a href="#" class="text-reset">Agregar tarea</a>
+            </h6>
+            </nav>
+            <!-- Breadcrumb -->
+        </div>
+        <div class="row">
+            <h1 class="heading">Agregar tarea</h1>
+        </div>
+        <div class="row d-flex justify-content-center">
+            <div class="col-lg-5" id="leftCol-addtask">
+                <h3>Nombre de tarea</h3>
+                <input type="text" id="user-input" name="taskName">
+                <h3>Nombre de dispositivo</h3>
+                <div class="dropdown">
+                    <button
+                        class="btn btn-primary dropdown-toggle"
+                        data-bs-toggle="dropdown"
+                        type="button"
+                        id="dropdownMenuButton"
+                        data-mdb-dropdown-init
+                        data-mdb-ripple-init
+                        aria-expanded="false"
+                    >
+                    </button>
+                    <ul class="dropdown-menu w-100" id="tableMenu" aria-labelledby="dropdownMenuButton">
+                        <li><a class="dropdown-item" href="#">Foco 1</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-5" id="rightCol-addtask">
+                <div class="fan" style="display: none;">
+                    <div class="timeOn d-flex">
+                        <h3>Encender a la(s)</h3>
+                        <input
+                        type="time"
+                        id="turnOnTime"
+                        min="00:00"
+                        max="24:00"
+                        required />
+                    </div>
+                    <div class="tempOn d-flex">
+                        <h3>Encender a los</h3>
+                        <input type="number" id="turnOnTemp">
+                        <h3 class="degree">°C</h3>
+                    </div>
+                    <div class="timeOff d-flex">
+                        <h3>Apagar a la(s)</h3>
+                        <input
+                        type="time"
+                        id="turnOffTime"
+                        min="00:00"
+                        max="24:00"
+                        required />
+                    </div>
+                    <div class="tempOff d-flex">
+                        <h3>Apagar a los</h3>
+                        <input type="number" id="turnOffTemp">
+                        <h3 class="degree">°C</h3>
+                    </div>
+                </div>
+                <div class="alarm" style="display: none;">
+                    <div class="turnOn d-flex">
+                        <h3>Sonar a la(s)</h3>
+                        <input
+                        type="time"
+                        id="turnOn"
+                        min="00:00"
+                        max="24:00"
+                        required />
+                    </div>
+                </div>
+                <div class="light" style="display: block;">
+                    <div class="timeOnLight d-flex">
+                        <h3>Encender a la(s)</h3>
+                        <input
+                        type="time"
+                        id="turnOnTime"
+                        min="00:00"
+                        max="24:00"
+                        required />
+                    </div>
+                    <div class="lightOn d-flex">
+                        <h3>Encender cuando llegue a</h3>
+                        <input type="number" id="turnOffTemp">
+                        <h3 class="degree">°C</h3>
+                    </div>
+                    <div class="timeOffLight d-flex">
+                        <h3>Apagar a la(s)</h3>
+                        <input
+                        type="time"
+                        id="turnOffTime"
+                        min="00:00"
+                        max="24:00"
+                        required />
+                    </div>
+                    <div class="lightOff d-flex">
+                        <h3>Apagar cuando llegue a</h3>
+                        <input type="number" id="turnOffTemp">
+                        <h3 class="degree">°C</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End content -->
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-sm-6">
+                    <div class="single-box">
+                        <img src="images/logo.png" alt="KYROS logo" height="40px">
+                        <h3 class="logo-h3">KYROS</h3>
+                        <p>Manten el control sobre tu hogar</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div class="single-box">
+                        <h2>Soporte</h2>
+                        <ul>
+                            <li><a href="helpcenter.html">Centro de ayuda</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div class="single-box">
+                        <h2>Contáctenos</h2>
+                        <p>687-123-4567</p>
+                        <p>test@outlook.com</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <h3 class="copyright">&copy;2025 Instituto Tecnológico Superior de Guasave</h3>
+            </div>
+        </div>
+
+    </footer>
+    <!-- End footer -->
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+
+    <script>
+        const dropdownItems = document.querySelectorAll('#tableMenu .dropdown-item');
+
+        dropdownItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const dropdownButton = document.querySelector('#dropdownMenuButton');
+                dropdownButton.textContent = item.textContent;
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1082 @@
+body{
+    font-family: sans-serif;
+}
+
+/* Navbar section */
+.navbar{
+    background-color: #0651C7;
+}
+
+.logoH{
+    font-weight: bold;
+    font-size: 28px;
+    margin-left: 50px;
+    margin-top: -35px;
+}
+
+.login-button{
+    background-color: #fff;
+    color: #0651C7;
+    font-size: 16px;
+    padding: 8px 20px;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: 0.3s background-color;
+}
+
+.login-button:hover{
+    background-color: #ededed;
+}
+
+.navbar-toggler{
+    border: none;
+    font-size: 1.25rem;
+}
+
+.navbar-toggler:focus, .btn-close:focus{
+    box-shadow: none;
+    outline: none;
+}
+
+.offcanvas{
+    background-color: #1467eb;
+}
+
+.offcanvas-title{
+    color: #fff;
+    font-weight: bold;
+}
+
+.nav-link{
+    color: #b6c9e8;
+    font-weight: 500;
+    position: relative;
+}
+
+.nav-link:hover, .nav-link.active{
+    color: #fff;
+}
+
+/* Footer section */
+footer{
+    background: #0651C7;
+    color: #fff;
+    bottom: 0;
+}
+
+footer .container{
+    padding-top: 70px;
+}
+
+.single-content{
+    padding: 115px 0;
+    text-align: center;
+}
+
+.single-box{
+    line-height: 2.5;
+}
+
+.single-box h3{
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.single-box img{
+    margin-top: -20px;
+}
+
+.single-box .logo-h3{
+    margin-left: 50px;
+    margin-top: -40px;
+}
+
+.single-box ul{
+    list-style: none;
+    padding: 0;
+}
+
+.single-box ul li a{
+    text-decoration: none;
+    line-height: 2.5;
+    font-weight: 100;
+    color: #fff;
+}
+
+.single-box ul li a:hover{
+    color: #b6c9e8;
+}
+
+.single-box h2{
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.copyright{
+    text-align: center;
+    font-size: 14px;
+    padding-bottom: 30px;
+    padding-top: 30px;
+}
+
+/* Index section */
+#main-container{
+    margin-top: 50px;
+    margin-bottom: 60px;
+}
+
+#leftCol{
+    padding-left: 80px;
+}
+
+#leftCol h3{
+    padding-top: 130px;
+    font-size: 40px;
+    font-weight: 100;
+}
+
+#leftCol h2{
+    font-size: 54px;
+    color: #0651C7;
+    font-weight: bold;
+}
+
+#leftCol p{
+    font-weight: 100;
+    font-size: 20px;
+    padding-top: 20px;
+    padding-bottom: 10px;
+}
+
+#leftCol .btn{
+    width: 140px;
+    border: 0;
+    padding: 12px 10px;
+    outline: none;
+    color: #fff;
+    font-size: 16px;
+    background: #4691db;
+    background: linear-gradient(90deg,rgba(70, 145, 219, 1) 1%, rgba(6, 81, 199, 1) 100%);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: width 0.5s;
+}
+
+#leftCol .btn img{
+    width: 30px;
+    display: none;
+}
+
+#leftCol .btn:hover img{
+    display: block;
+}
+
+#leftCol .btn:hover{
+    width: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#leftCol::after{
+    content: '';
+    width: 10px;
+    height: 145px;
+    background: linear-gradient(rgba(70, 145, 219, 1) 1%, rgba(6, 81, 199, 1) 100%);
+    position: absolute;
+    margin-top: -220px;
+    margin-left: -170px;
+}
+
+#rightCol img{
+    width: 90%;
+}
+
+#sm-div{
+    background-color: #f0f0f0;
+    border-radius: 16px;
+    padding: 25px;
+    width: 240px;
+    height: auto;
+    margin-left: 8vh;
+    margin-top: 30px;
+}
+
+#sm-div svg{
+    width: 16%;
+    margin-left: -2px;
+    padding-bottom: 5%;
+    fill: #0651c7;
+}
+
+#sm-div h2{
+    font-size: 20px;
+    padding-bottom: 10px;
+    font-weight: bold;
+}
+
+#sm-div p{
+    font-size: 16px;
+    padding-top: 10px;
+}
+
+/* Security section */
+#main-container-security{
+    margin-top: 90px;
+    margin-bottom: 60px;
+}
+
+#breadcrumb{
+    color: #0651C7;
+}
+
+#breadcrumb a{
+    text-decoration: none;
+}
+
+.heading{
+    font-weight: bold;
+    font-size: 32px;
+    margin-bottom: 20px;
+    margin-top: 10px;
+}
+
+#cam-section{
+    background: #f0f0f0;
+    border-radius: 16px;
+    padding: 20px;
+    width: 45%;
+    margin-left: 20px;
+}
+
+#cam-section h3{
+    font-weight: bold;
+    font-size: 24px;
+}
+
+.cam-view{
+    background: #fff;
+    border-radius: 18px;
+    padding: 20px;
+    margin-top: 10px;
+    height: 300px;
+}
+
+/* Automatization section */
+#main-container-automatize{
+    margin-top: 90px;
+    margin-bottom: 60px;
+}
+
+#task-section{
+    background: #f0f0f0;
+    border-radius: 18px;
+    padding: 20px 20px 0px 20px;
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+#task-section img{
+    width: 35px;
+    height: 30px;
+}
+
+#task-section .text{
+    margin-left: 60px;
+    margin-top: -38px;
+}
+
+#task-section h2{
+    font-weight: bold;
+    font-size: 22px;
+}
+
+#task-section p{
+    font-size: 16px;
+    margin-top: -7px;
+    color: #3b3b3b;
+}
+
+/* el borde del switch */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+    margin-top: 5px;
+    margin-left: 80px;
+}
+
+/* ocultar la checkbox que se activa */
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* que se mueva */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+input:checked + .slider {
+    background-color: #0651C7;
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px #0651C7;
+}
+
+input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+
+/* redondeado */
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+#add{
+    background: #f0f0f0;
+    border-radius: 18px;
+    padding: 20px 20px 16px 20px;
+}
+
+#add:hover{
+    cursor: pointer;
+}
+
+#add img{
+    width: 30px;
+}
+
+#add .text{
+    margin-left: 60px;
+    margin-top: -28px;
+}
+
+#add h2{
+    font-weight: bold;
+    font-size: 22px;
+}
+
+/* Rooms section */
+#main-container-rooms{
+    margin-top: 90px;
+    margin-bottom: 60px;
+}
+
+#room-section{
+    background: #f0f0f0;
+    border-radius: 18px;
+    padding: 20px 20px 0px 20px;
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+#room-section img{
+    width: 35px;
+    height: 30px;
+    margin-top: 5px;
+}
+
+#room-section .text{
+    margin-left: 60px;
+    margin-top: -40px;
+}
+
+#room-section h2{
+    font-weight: bold;
+    font-size: 22px;
+}
+
+#room-section p{
+    font-size: 16px;
+    margin-top: -7px;
+    color: #3b3b3b;
+}
+
+/* Devices section */
+#main-container-devices{
+    margin-top: 90px;
+    margin-bottom: 60px;
+}
+
+#device-section{
+    background: #f0f0f0;
+    border-radius: 18px;
+    padding: 20px 20px 15px 20px;
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+#device-section img{
+    width: 35px;
+    height: 30px;
+}
+
+#device-section .text{
+    margin-left: 60px;
+    margin-top: -28px;
+}
+
+#device-section h2{
+    font-weight: bold;
+    font-size: 22px;
+}
+
+#device-section p{
+    font-size: 16px;
+    margin-top: -7px;
+    color: #3b3b3b;
+}
+
+/* Help center section */
+#main-container-help{
+    margin-top: 90px;
+    margin-bottom: 60px;
+}
+
+#main-container-help .head-section{
+    padding: 12px 80px 6px 10px;
+    cursor: pointer;
+}
+
+#main-container-help .head-section:hover{
+    background: #ededed;
+}
+
+#main-container-help .col-lg-8{
+    border-left: 1px solid #000;
+}
+
+#main-container-help .help-info{
+    margin-left: 10px;
+}
+
+/* Sign up section */
+#main-container-register{
+    margin-top: 90px;
+    margin-bottom: 60px;
+}
+
+#main-container-register h4{
+    font-family: Arial;
+    font-size: 24px; 
+    margin: 20px 0 10px;
+    font-weight: bold;
+}
+
+#main-container-register h5{
+    font-size: 16px;
+    font-weight: bold;
+    font-family: Arial;
+}
+
+#main-container-register p{
+    font-size: 16px;
+    color: rgb(96, 96, 96);
+    font-weight: 100;
+    font-family: sans-serif;
+    margin: 10px 0 20px;
+    text-align: left;
+}
+
+#user-input, #password{
+    width: 300px;
+    height: 35px;
+    background: transparent;
+    border: 1px solid #0651C7;
+    border-radius: 8px;
+    color: #000;
+    font-size: 16px;
+    letter-spacing: 1px;
+    font-family: sans-serif;
+    margin: 2px 0 15px;
+    padding: 10px 10px;
+}
+
+#password{
+    padding-right: 35px;
+}
+
+#user-input:focus, #password:focus{
+    outline: none;
+}
+
+#main-content-register::placeholder{
+    color: #000;
+    font-family: sans-serif;
+}
+
+#togglePassword{
+    margin-left: 270px;
+    position: relative;
+    top: -45px;
+    cursor: pointer;
+}
+
+#togglePasswordR{
+    margin-left: 270px;
+    position: relative;
+    top: -45px;
+    cursor: pointer;
+}
+
+.button-login{
+    width: 300px;
+    border: 0;
+    padding: 10px 10px;
+    outline: none;
+    font-size: 16px;
+    color: #fff;
+    background: #4691db;
+    background: linear-gradient(90deg,rgba(70, 145, 219, 1) 1%, rgba(6, 81, 199, 1) 100%);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: width 0.5s;
+    position: relative;
+    top: -30px;
+}
+
+.button-login:hover{
+    background: linear-gradient(90deg,rgba(121, 166, 212, 1) 1%, rgba(80, 145, 211, 1) 100%);
+}
+
+#sep{
+    color: #000;
+    position: relative;
+    top: -30px;
+    left: 105px;
+}
+
+.login-icon{
+    position: relative;
+    width: 150px;
+    height: 40px;
+    margin-top: -40px;
+    margin-left: 70px;
+    border: 1px #787878;
+    border-style: solid;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.login-icon a{
+    text-decoration: none;
+}
+
+.login-icon svg{
+    fill: #0651C7;
+    width: 30px;
+    transition: .3s ease;
+    margin-top: 5px;
+}
+
+.login-icon:hover, .login-icon:hover svg{
+    background: #f0f0f0;
+    fill: #5091D3;
+}
+
+#p2{
+    font-size: 10px;
+    position: relative;
+    left: 66px;
+}
+
+.link{
+    text-decoration: none;
+    font-family: sans-serif;
+    font-size: 16px;
+    color: #0651C7;
+    margin-top: -50px;
+}
+
+#main-container-register .link{
+    margin-left: 34px;
+}
+
+.link:hover{
+    color: #4691db;
+}
+
+#cont-carousel{
+    width: 400px;
+    margin-bottom: 40px;
+    margin-top: 20px;
+    height: 515px;
+    border-radius: 50px;
+    background: #4691DB;
+    background: radial-gradient(circle,rgba(70, 145, 219, 1) 3%, rgba(6, 81, 199, 1) 100%);
+    background-image: url("https://i.pinimg.com/1200x/6e/6e/d8/6e6ed8d2a634b94c65e504e4692c4bff.jpg");
+}
+
+#cont-carousel #main-img{
+    width: 350px;
+    margin-left: 30px;
+}
+
+.carousel-item{
+    color: #fff;
+    padding-left: 50px;
+    padding-right: 50px;
+    padding-bottom: 50px;
+    margin-top: 20px;
+}
+
+.carousel-item #carousel-h5{
+    font-size: 18px;
+}
+
+.carousel-item.active {
+    display:block;
+}
+
+/* Sign in section */
+#main-container-login{
+    margin-top: 90px;
+    margin-bottom: 60px;
+}
+
+#leftCol-login{
+    margin-top: 40px;
+}
+
+#main-container-login h4{
+    font-family: Arial;
+    font-size: 24px; 
+    margin: 20px 0 10px;
+    font-weight: bold;
+}
+
+#main-container-login h5{
+    font-size: 16px;
+    font-weight: bold;
+    font-family: Arial;
+}
+
+#main-container-login p{
+    font-size: 16px;
+    color: rgb(96, 96, 96);
+    font-weight: 100;
+    font-family: sans-serif;
+    margin: 10px 0 20px;
+    text-align: left;
+}
+
+#main-container-login #p2{
+    left: 63px;
+}
+
+#main-container-login .link{
+    margin-left: 42px;
+}
+
+#main-content-login::placeholder{
+    color: #000;
+    font-family: sans-serif;
+}
+
+/* Add room section */
+#main-container-addroom{
+    margin-top: 90px;
+    margin-bottom: 60px;
+}
+
+#main-container-addroom h3{
+    font-size: 20px;
+    font-weight: bold;
+    font-family: Arial;
+}
+
+#main-container-addroom .button-login{
+    margin-top: 30px;
+}
+
+.dropdown{
+    width: 300px;
+}
+
+.dropdown .btn{
+    width: 300px;
+    height: 35px;
+    background: transparent;
+    border: 1px solid #0651C7;
+    border-radius: 8px;
+    color: #000;
+    font-size: 16px;
+    letter-spacing: 1px;
+    margin: 2px 0 15px;
+    padding: 5px 10px 10px 10px;
+    text-align: left;
+}
+
+#room-img{
+    width: 400px;
+    margin-top: -40px;
+    margin-left: -10px;
+}
+
+#leftCol-addroom{
+    margin-left: 80px;
+}
+
+/* Device info section */
+#main-container-deviceinfo{
+    margin-top: 90px;
+    margin-bottom: 60px;
+}
+
+#main-container-deviceinfo .col-lg-8{
+    border-right: 1px solid #000;
+}
+
+#main-container-deviceinfo h5{
+    font-weight: bold;
+}
+
+#main-container-deviceinfo .tasks, #main-container-deviceinfo .addtask{
+    border-radius: 16px;
+    background: #f0f0f0;
+    padding: 10px 10px 10px 10px;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+#main-container-deviceinfo .addtask{
+    cursor: pointer;
+}
+
+#main-container-deviceinfo .text{
+    padding: 5px 5px 0px 5px;
+}
+
+#main-container-deviceinfo h6{
+    font-weight: bold;
+}
+
+#main-container-deviceinfo #breadcrumb{
+    font-weight: normal;
+}
+
+#main-container-deviceinfo img{
+    width: 25px;
+    margin-right: 8px;
+    margin-top: 3px;
+}
+
+#main-container-deviceinfo .switch{
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 25px;
+    margin-top: 5px;
+    margin-left: 80px;
+}
+
+#main-container-deviceinfo .slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+#main-container-deviceinfo input:checked + .slider:before {
+    -webkit-transform: translateX(16px);
+    -ms-transform: translateX(16px);
+    transform: translateX(16px);
+}
+
+#main-container-addtask{
+    margin-top: 66px;
+    margin-bottom: 60px;
+}
+
+#main-container-addtask h3{
+    font-size: 20px;
+    font-weight: bold;
+    font-family: Arial;
+}
+
+#leftCol-addtask{
+    margin-left: 80px;
+}
+
+#rightCol-addtask h3{
+    margin-right: 10px;
+}
+
+#rightCol-addtask .degree{
+    margin-left: 10px;
+}
+
+#rightCol-addtask input{
+    margin-bottom: 10px;
+}
+
+#rightCol-addtask , .timeOffLight{
+    margin-top: 20px;
+}
+
+#turnOnTime, #turnOffTime, #turnOn, #timeOnLight, #timeOffLight{
+    width: 140px;
+    height: 35px;
+    background: transparent;
+    border: 1px solid #0651C7;
+    border-radius: 8px;
+    color: #000;
+    font-size: 16px;
+    letter-spacing: 1px;
+    font-family: sans-serif;
+    padding: 10px 10px;
+}
+
+#turnOnTime:focus, #turnOffTime:focus, #turnOnTemp:focus, #turnOffTemp:focus{
+    outline: none;
+}
+
+#turnOnTemp, #turnOffTemp{
+    width: 80px;
+    height: 35px;
+    background: transparent;
+    border: 1px solid #0651C7;
+    border-radius: 8px;
+    color: #000;
+    font-size: 16px;
+    letter-spacing: 1px;
+    font-family: sans-serif;
+    padding: 10px 10px;
+}
+
+#main-container-automatize h3{
+    font-size: 20px;
+    font-weight: bold;
+    font-family: Arial;
+}
+
+#leftCol-taskinfo{
+    margin-left: 80px;
+}
+
+#rightCol-taskinfo{
+    margin-left: 80px;
+}
+
+#rightCol-taskinfo h3{
+    margin-right: 10px;
+}
+
+#rightCol-taskinfo .degree{
+    margin-left: 10px;
+}
+
+#rightCol-taskinfo input{
+    margin-bottom: 10px;
+}
+
+#rightCol-taskinfo .timeOff{
+    margin-top: 20px;
+}
+
+#rightCol-taskinfo .switch {
+    width: 40px;
+    height: 24px;
+    margin-left: 0px;
+    margin-top: -1px;
+}
+
+#rightCol-taskinfo .slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+#rightCol-taskinfo input:checked + .slider:before {
+    -webkit-transform: translateX(16px);
+    -ms-transform: translateX(16px);
+    transform: translateX(16px);
+}
+
+/* Mobile start */
+@media(min-width: 992px){
+    .nav-link::before{
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 2px;
+        background-color: #fff;
+        visibility: hidden;
+        transition: 0.3s ease-in-out;
+    }
+
+    .nav-link:hover::before, .nav-link.active::before{
+        width: 100%;
+        visibility: visible;
+    }
+}
+
+@media(max-width: 991px){
+    /* Text carousel */
+    #cont-carousel{
+        display: none;
+    }
+
+    #leftCol-register{
+        margin-right: 0;
+        padding-right: 0;
+        margin-left: 0;
+        padding-left: 0;
+    }
+
+    #leftCol-login{
+        margin-right: 0;
+        padding-right: 0;
+        margin-top: 0;
+        margin-left: 0;
+        padding-left: 0;
+    }
+
+    /* Add room section */
+    #room-img{
+        display: none;
+    }
+
+    #leftCol-addroom{
+        margin-left: 0;
+    }
+
+    #leftCol-addroom .button-login{
+        top: 0;
+    }
+
+    /* Device info section */
+    #main-container-deviceinfo .col-lg-8{
+        border-left: none;
+    }
+
+    /* Add task section */
+    #leftCol-addtask{
+        margin-left: 0;
+    }
+
+    #rightCol-addtask{
+        margin-left: 0;
+    }
+
+    /* Chart */
+    #myChart{
+        margin-bottom: 30px;
+    }
+
+    #main-container-deviceinfo .col-lg-8{
+        border-right: none;
+    }
+}
+
+@media(max-width: 991px) and (orientation: portrait){
+    #leftCol{
+        margin-top: -100px;
+        padding-bottom: 90px;
+    }
+
+    #rightCol{
+        margin-top: 40px;
+    }
+
+    #sm-div{
+        width: 260px;
+    }
+
+    #cam-section{
+        width: 90%;
+        margin-bottom: 20px;
+    }
+
+    #task-section, #add, #room-section, #device-section{
+        width: 92%;
+        margin-left: 12px;
+    }
+
+    #task-section{
+        height: 80px;
+    }
+
+    .switch {
+        position: relative;
+        left: 150px;
+        width: 60px;
+        height: 34px;
+        top: -60px;
+    }
+
+    #main-container-deviceinfo .switch {
+        position: relative;
+        left: 0;
+        top: 4px;
+        margin: 0;
+    }
+
+    #leftCol-taskinfo{
+        margin-left: 0;
+    }
+
+    #rightCol-taskinfo{
+        margin-left: 0;
+    }
+
+    #rightCol-taskinfo .switch {
+        width: 40px;
+        height: 24px;
+        position: relative;
+        left: 0;
+        top: 0;
+    }
+
+    #leftCol-addroom, #leftCol-addtask, #rightCol-addtask, #leftCol-taskinfo, #rightCol-taskinfo{
+        padding-left: 25px;
+    }
+}
+
+/* TODO: landscape */

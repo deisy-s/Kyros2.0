@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <title>Iniciar sesión - KYROS</title>
+    <link rel="icon" href="images/logo.ico" type="image/x-icon" />
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css" />
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand me-auto" href="index.html">
+                <img src="images/logo.png" height="40px" alt="KYROS logo">
+                <h3 class="logoH">KYROS</h3>
+            </a>
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="offcanvasNavbarLabel">KYROS</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <ul class="navbar-nav justify-content-center flex-grow-1 pe-3">
+                        <li class="nav-item">
+                            <a class="nav-link mx-lg-2 active" aria-current="page" href="index.html">Inicio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link mx-lg-2" href="rooms.html">Habitaciones</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link mx-lg-2" href="security.html">Seguridad</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link mx-lg-2" href="automatize.html">Automatización</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <a href="#" class="login-button">Iniciar sesión</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </nav>
+    <!-- End navbar -->
+    
+    <!-- Content -->
+    <div class="container d-flex justify-content-center" id="main-container-login">
+        <div class="row">
+            <div class="col-lg-6" id="leftCol-login">
+                <h4>¡Bienvenido de regreso!</h4>
+                <p>Comience a monitorear su hogar con KYROS</p>
+
+                <form class="mb-2">
+                    <h5>Correo electrónico</h5>
+                    <input id="user-input" type="email" name="email" placeholder="Ingrese su correo">
+                    <h5>Contraseña</h5>
+                    <input id="password" type="password" name="pass" placeholder="Cree una contraseña">
+                    <i class="bi bi-eye-slash" id="togglePassword"></i>
+                    <br>
+                </form>
+                
+                <button class="button-login">Crear Cuenta</button>
+
+                <p id="sep">o iniciar con</p>
+
+                <div class="login-icon">
+                    <a href="#"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" transform="rotate(0 0 0)">
+                            <path d="M21.5939 11.0792H12.3209V13.8256H18.9768C18.6214 17.6382 15.5196 19.286 12.5148 19.286C8.70223 19.286 5.30969 16.3135 5.30969 12.0162C5.30969 7.88057 8.54068 4.74651 12.5148 4.74651C15.5519 4.74651 17.3936 6.71741 17.3936 6.71741L19.2676 4.74651C19.2676 4.74651 16.7474 2.00016 12.3856 2.00016C6.6344 1.96785 2.24023 6.78203 2.24023 11.9839C2.24023 17.0243 6.37592 22 12.4825 22C17.8783 22 21.7554 18.349 21.7554 12.8886C21.7877 11.7578 21.5939 11.0792 21.5939 11.0792Z"/>
+                        </svg>
+                    </a>
+                </div>
+
+                <p id="p2">¿No tiene una cuenta?<br><a href="register.html" class="link">Unirse aquí</a></p>
+            </div>
+
+            <div class="col-lg-6">
+                <div id="cont-carousel">
+                    <img id="main-img" src="images/User Interface 1.png" alt="Estadísticas web">
+
+                    <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-indicators">
+                            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                        </div>
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <h5 id="carousel-h5">Su hogar hace el trabajo por usted</h5>
+                                <h6>Automatice tareas en su hogar para que se realicen de manera automática</h6>
+                            </div>
+                            <div class="carousel-item">
+                                <h5 id="carousel-h5">Manténgase actualizado sobre lo que ocurre en su hogar</h5>
+                                <h6>Acceso a cámaras de seguridad en cualquier momento</h6>
+                            </div>
+                            <div class="carousel-item">
+                                <h5 id="carousel-h5">Vigile su hogar desde cualquier lugar</h5>
+                                <h6>Monitoree su hogar por medio de cualquier dispositivo electrónico</h6>
+                            </div>
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End content -->
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-sm-6">
+                    <div class="single-box">
+                        <img src="images/logo.png" alt="KYROS logo" height="40px">
+                        <h3 class="logo-h3">KYROS</h3>
+                        <p>Manten el control sobre tu hogar</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div class="single-box">
+                        <h2>Soporte</h2>
+                        <ul>
+                            <li><a href="helpcenter.html">Centro de ayuda</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div class="single-box">
+                        <h2>Contáctenos</h2>
+                        <p>687-123-4567</p>
+                        <p>test@outlook.com</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <h3 class="copyright">&copy;2025 Instituto Tecnológico Superior de Guasave</h3>
+            </div>
+        </div>
+
+    </footer>
+    <!-- End footer -->
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+
+    <!-- Show password -->
+    <script>
+        const togglePassword = document.querySelector('#togglePassword');
+        const password = document.querySelector('#password');
+        togglePassword.addEventListener('click', () =>{
+            const type = password.getAttribute('type') === 'password'?'text':'password';
+            password.setAttribute('type', type);
+            togglePassword.classList.toggle('bi-eye');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <title>KYROS</title>
+    <link rel="icon" href="images/logo.ico" type="image/x-icon" />
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand me-auto" href="index.html">
+                <img src="images/logo.png" height="40px" alt="KYROS logo">
+                <h3 class="logoH">KYROS</h3>
+            </a>
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="offcanvasNavbarLabel">KYROS</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <ul class="navbar-nav justify-content-center flex-grow-1 pe-3">
+                        <li class="nav-item">
+                            <a class="nav-link mx-lg-2 active" aria-current="page" href="index.html">Inicio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link mx-lg-2" href="rooms.html">Habitaciones</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link mx-lg-2" href="security.html">Seguridad</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link mx-lg-2" href="automatize.html">Automatización</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <a href="login.html" class="login-button">Iniciar sesión</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </nav>
+    <!-- End navbar -->
+
+    <!-- Content -->
+    <div class="container" id="main-container">
+        <div class="row">
+            <div class="col-lg-6 order-md-2" id="rightCol">
+                <img src="images/Data Settings.png" alt="KYROS start image">
+            </div>
+
+            <div class="col-lg-6 order-md-1" id="leftCol">
+                <h3>Bienvenido a</h3>
+                <h2>KYROS</h2>
+                <p>Mejore la seguridad en su hogar</p>
+                <button class="btn" onclick="location.href='register.html'">Unirse<img src="images/arrow.png"></button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-3" id="sm-div">
+                <svg viewBox="0 0 24 25" xmlns="http://www.w3.org/2000/svg" transform="rotate(0 0 0)">
+                    <path d="M8.19114 3.90369C8.61587 3.33496 9.28408 3 9.9939 3H14.006C14.7159 3 15.3841 3.33496 15.8088 3.90369L16.4026 4.6988C16.5442 4.88838 16.7669 5.00003 17.0035 5.00003H19.75C20.9926 5.00003 22 6.00739 22 7.25003V17.5C22 18.7427 20.9926 19.75 19.75 19.75H4.25C3.00736 19.75 2 18.7427 2 17.5V7.25003C2 6.00739 3.00736 5.00003 4.25 5.00003H6.99643C7.23304 5.00003 7.45577 4.88838 7.59735 4.6988L8.19114 3.90369ZM12 16.002C14.2091 16.002 16 14.2111 16 12.002C16 9.79281 14.2091 8.00195 12 8.00195C9.79086 8.00195 8 9.79281 8 12.002C8 14.2111 9.79086 16.002 12 16.002Z"/>
+                </svg>
+
+                <h2>Monitoreo constante</h2>
+                <hr>
+                <p>Tenga el control total de su hogar en todo momento por medio de sensores inteligentes</p>
+            </div>
+
+            <div class="col-lg-3" id="sm-div">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" transform="rotate(0 0 0)">
+                    <path d="M11.6918 4.5L10.4085 5.78415C9.53052 6.6627 9.5305 8.0865 10.4085 8.96507L12.9085 11.4668C13.7868 12.3458 15.2114 12.3463 16.0904 11.4679C16.3387 11.2198 16.5169 10.9281 16.625 10.6175C16.7331 10.9281 16.9113 11.2198 17.1596 11.4679C18.0386 12.3463 19.4632 12.3458 20.3415 11.4668L22 9.80721V15.3438C22 16.5864 20.9926 17.5938 19.75 17.5938H12.75V19.25H15C15.4142 19.25 15.75 19.5858 15.75 20C15.75 20.4142 15.4142 20.75 15 20.75H9.00003C8.58582 20.75 8.25003 20.4142 8.25003 20C8.25003 19.5858 8.58582 19.25 9.00003 19.25H11.25V17.5938H4.25C3.00736 17.5938 2 16.5864 2 15.3438V6.75C2 5.50736 3.00736 4.5 4.25 4.5H11.6918Z"/>
+                    <path d="M15.0302 4.34255C15.3231 4.63535 15.3233 5.11022 15.0305 5.40321L13.0603 7.37465L15.0305 9.34624C15.3233 9.63924 15.3231 10.1141 15.0301 10.4069C14.7371 10.6997 14.2623 10.6995 13.9695 10.4065L11.4695 7.90478C11.1768 7.61192 11.1768 7.13732 11.4695 6.84448L13.9695 4.34289C14.2623 4.0499 14.7372 4.04975 15.0302 4.34255ZM18.2198 4.34255C18.5128 4.04975 18.9877 4.0499 19.2805 4.34289L21.7805 6.84448C22.0732 7.13732 22.0732 7.61192 21.7805 7.90478L19.2805 10.4065C18.9877 10.6995 18.5129 10.6997 18.2199 10.4069C17.9269 10.1141 17.9267 9.63924 18.2195 9.34624L20.1897 7.37465L18.2195 5.40321C17.9267 5.11022 17.9269 4.63535 18.2198 4.34255Z"/>
+                </svg>
+
+                <h2>Automatización inteligente</h2>
+                <hr>
+                <p>Programe reglas personalizadas para dispositivos IoT en su hogar</p>
+            </div>
+
+            <div class="col-lg-3" id="sm-div">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" transform="rotate(0 0 0)">
+                    <path d="M7.25 6C7.25 3.37665 9.37665 1.25 12 1.25C14.6234 1.25 16.75 3.37665 16.75 6V8.69562C18.4288 10.071 19.5 12.1604 19.5 14.5C19.5 18.6421 16.1421 22 12 22C7.85786 22 4.5 18.6421 4.5 14.5C4.5 12.1604 5.57125 10.071 7.25 8.69562V6ZM8.75 7.73883C9.73325 7.26533 10.8356 7 12 7C13.1644 7 14.2667 7.26533 15.25 7.73883V6C15.25 4.20507 13.7949 2.75 12 2.75C10.2051 2.75 8.75 4.20507 8.75 6V7.73883ZM12 14.75C11.5858 14.75 11.25 15.0858 11.25 15.5V17.5C11.25 17.9142 11.5858 18.25 12 18.25C12.4142 18.25 12.75 17.9142 12.75 17.5V15.5C12.75 15.0858 12.4142 14.75 12 14.75Z"/>
+                </svg>
+
+                <h2>Seguridad a la medida</h2>
+                <hr>
+                <p>Reciba alertas sobre actividades en su hogar y controle sus sistemas de alarmas para tranquilidad total</p>
+            </div>
+
+            <div class="col-lg-3" id="sm-div">
+                <svg viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg" transform="rotate(0 0 0)">
+                    <path d="M5.88705 18.036C5.88705 17.2766 6.50266 16.661 7.26205 16.661C8.02144 16.661 8.63715 17.2766 8.63715 18.036C8.63715 18.7954 8.02154 19.411 7.26215 19.411C6.50276 19.411 5.88705 18.7954 5.88705 18.036Z"/>
+                    <path d="M5.57645 6.25037C5.57645 5.62905 6.08013 5.12537 6.70145 5.12537C14.141 5.12537 20.1719 11.1563 20.1719 18.5958C20.1719 19.2171 19.6682 19.7208 19.0469 19.7208C18.4256 19.7208 17.9219 19.2171 17.9219 18.5958C17.9219 12.3989 12.8983 7.37537 6.70145 7.37537C6.08013 7.37537 5.57645 6.87169 5.57645 6.25037ZM5.42188 9.96514C5.42188 9.34382 5.92555 8.84014 6.54688 8.84014C12.0196 8.84014 16.4561 13.2767 16.4561 18.7494C16.4561 19.3707 15.9524 19.8744 15.3311 19.8744C14.7098 19.8744 14.2061 19.3707 14.2061 18.7494C14.2061 14.5193 10.777 11.0901 6.54688 11.0901C5.92555 11.0901 5.42188 10.5865 5.42188 9.96514ZM5.55778 13.6208C5.59069 13.0004 6.12034 12.5241 6.74079 12.557C9.97606 12.7286 12.5675 15.32 12.7391 18.5553C12.772 19.1758 12.2957 19.7054 11.6753 19.7383C11.0548 19.7712 10.5252 19.2949 10.4923 18.6745C10.3816 16.5881 8.708 14.9145 6.62162 14.8038C6.00118 14.7709 5.52488 14.2413 5.55778 13.6208Z"/>
+                </svg>
+
+                <h2>Manejo desde internet</h2>
+                <hr>
+                <p>Accede a su hogar desde cualquier lado con conexión a internet</p>
+            </div>
+        </div>
+    </div>
+    <!-- End content -->
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-sm-6">
+                    <div class="single-box">
+                        <img src="images/logo.png" alt="KYROS logo" height="40px">
+                        <h3 class="logo-h3">KYROS</h3>
+                        <p>Manten el control sobre tu hogar</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div class="single-box">
+                        <h2>Soporte</h2>
+                        <ul>
+                            <li><a href="helpcenter.html">Centro de ayuda</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div class="single-box">
+                        <h2>Contáctenos</h2>
+                        <p>687-123-4567</p>
+                        <p>test@outlook.com</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <h3 class="copyright">&copy;2025 Instituto Tecnológico Superior de Guasave</h3>
+            </div>
+        </div>
+
+    </footer>
+    <!-- End footer -->
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</body>
+</html>
