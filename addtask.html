@@ -203,8 +203,13 @@
 
     <!-- Bootstrap JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/navbar.js"></script>
 
     <script>
+        const API_URL = 'http://localhost:3000/api';
+        let selectedDeviceId = null;
+
         function getParameterByName(name) {
             var url = window.location.href;
             name = name.replace(/[\[\]]/g, "\\$&");
@@ -229,17 +234,80 @@
         }
 
         displayRoomName();
+
+        // Cargar dispositivos del usuario
+        async function loadDevices() {
+            try {
+                const deviceId = getParameterByName('deviceId');
+                const devicename = getParameterByName('devicename');
+
+                const response = await fetchWithAuth(`${API_URL}/devices`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const dropdown = document.getElementById('tableMenu');
+                    const dropdownButton = document.getElementById('dropdownMenuButton');
+
+                    dropdown.innerHTML = '';
+
+                    if (data.data.length === 0) {
+                        dropdown.innerHTML = '<li><a class="dropdown-item disabled" href="#">No hay dispositivos</a></li>';
+                        return;
+                    }
+
+                    // Si viene con deviceId, pre-seleccionarlo
+                    if (deviceId) {
+                        selectedDeviceId = deviceId;
+                        dropdownButton.textContent = devicename || 'Dispositivo seleccionado';
+
+                        // Agregar solo el dispositivo seleccionado (bloqueado)
+                        const li = document.createElement('li');
+                        li.innerHTML = `<a class="dropdown-item active" href="#">${devicename}</a>`;
+                        dropdown.appendChild(li);
+                    } else {
+                        // Mostrar todos los dispositivos
+                        data.data.forEach(device => {
+                            const li = document.createElement('li');
+                            const a = document.createElement('a');
+                            a.className = 'dropdown-item';
+                            a.href = '#';
+                            a.textContent = device.nombre;
+                            a.onclick = () => {
+                                selectedDeviceId = device._id;
+                                dropdownButton.textContent = device.nombre;
+                            };
+                            li.appendChild(a);
+                            dropdown.appendChild(li);
+                        });
+
+                        if (data.data.length > 0) {
+                            selectedDeviceId = data.data[0]._id;
+                            dropdownButton.textContent = data.data[0].nombre;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error al cargar dispositivos:', error);
+                alert('Error al cargar los dispositivos');
+            }
+        }
+
+        // Cargar cuando la página esté lista
+        document.addEventListener('DOMContentLoaded', loadDevices);
     </script>
 
     <script>
         function sendRoom(){
             var roomname = document.getElementById("roomRoute").textContent;
-            window.location.href = "devices.html?roomname="+roomname;
+            var roomId = getParameterByName('roomId');
+            window.location.href = "devices.html?roomId="+roomId+"&roomname="+roomname;
         }
         function sendDevice(){
             var roomname = document.getElementById("roomRoute").textContent;
             var devicename = document.getElementById("deviceRoute").textContent;
-            window.location.href = "deviceinfo.html?roomname="+roomname+"?devicename="+devicename;
+            var roomId = getParameterByName('roomId');
+            var deviceId = getParameterByName('deviceId');
+            window.location.href = "deviceinfo.html?roomId="+roomId+"&roomname="+roomname+"&deviceId="+deviceId+"&devicename="+devicename;
         }
     </script>
 </body>

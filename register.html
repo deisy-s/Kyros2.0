@@ -160,6 +160,9 @@
     <!-- Bootstrap JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 
+    <!-- Auth utility -->
+    <script src="js/auth.js"></script>
+
     <!-- Show password -->
     <script>
         const togglePassword = document.querySelector('#togglePasswordR');
@@ -168,6 +171,60 @@
             const type = password.getAttribute('type') === 'password'?'text':'password';
             password.setAttribute('type', type);
             togglePassword.classList.toggle('bi-eye');
+        });
+    </script>
+
+    <!-- Register functionality -->
+    <script>
+        // Si ya está autenticado, redirigir a rooms
+        if (isAuthenticated()) {
+            window.location.href = 'rooms.html';
+        }
+
+        const registerButton = document.querySelector('.button-login');
+        const inputs = document.querySelectorAll('#user-input');
+        const nameInput = inputs[0];
+        const emailInput = inputs[1];
+        const passwordInput = document.querySelector('#password');
+
+        registerButton.addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            const name = nameInput.value;
+            const email = emailInput.value;
+            const passwordValue = passwordInput.value;
+
+            if (!name || !email || !passwordValue) {
+                alert('Por favor complete todos los campos');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        nombre: name,
+                        email: email,
+                        password: passwordValue
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    saveToken(data.token);
+                    alert('Cuenta creada exitosamente');
+                    window.location.href = 'rooms.html';
+                } else {
+                    alert(data.message || 'Error al crear la cuenta');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al conectar con el servidor');
+            }
         });
     </script>
 </body>

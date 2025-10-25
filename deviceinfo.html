@@ -78,12 +78,12 @@
             <div class="col-lg-4">
                 <h5>Tareas</h5>
                 <div class="tasks d-flex justify-content-between">
-                    <div class="text" onclick="sendTask()">
+                    <div class="text">
                         <h6 id="taskname">Tarea 1</h6>
                     </div>
 
                     <label class="switch">
-                        <input type="checkbox">
+                        <input type="checkbox" id="device-toggle">
                         <span class="slider round"></span>
                     </label>
                 </div>
@@ -141,38 +141,14 @@
     <!-- Bootstrap JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 
-    <script>
-        const xValues = [50,60,70,80,90,100,110,120,130,140,150];
-        const yValues = [7,8,8,9,9,9,10,11,14,14,15];
-
-        const ctx = document.getElementById('myChart');
-
-        new Chart(ctx, {
-            type: "line",
-            data: {
-                labels: xValues,
-                datasets: [{
-                    fill: false,
-                    lineTension: 0,
-                    backgroundColor: "rgba(0,0,255,1.0)",
-                    borderColor: "rgba(0,0,255,0.1)",
-                    data: yValues
-                }]
-            },
-            options: {
-                plugins: {
-                    legend: {display:false},
-                    title: {
-                        display: true,
-                        text: "House Prices vs. Size",
-                        font: {size:16}
-                    }
-                }
-            }
-        });
-    </script>
+    <!-- Auth utility -->
+    <script src="js/auth.js"></script>
+    <script src="js/navbar.js"></script>
 
     <script>
+        // Proteger la página
+        requireAuth();
+
         function getParameterByName(name) {
             var url = window.location.href;
             name = name.replace(/[\[\]]/g, "\\$&");
@@ -187,9 +163,12 @@
             return name;
         }
 
+        const roomId = getParameterByName('roomId');
+        const deviceId = getParameterByName('deviceId');
+        let roomname = getParameterByName('roomname');
+        let devicename = getParameterByName('devicename');
+
         function displayRoomName() {
-            var roomname = getParameterByName('roomname');
-            var devicename = getParameterByName('devicename');
             devicename = eraseEnd(devicename);
             roomname = eraseEnd(roomname);
             document.getElementById("deviceName").innerHTML = devicename;
@@ -198,28 +177,146 @@
         }
 
         displayRoomName();
-    </script>
 
-    <script>
-        function sendName(){
-            var roomname = document.getElementById("roomRoute").textContent;
-            window.location.href = "devices.html?roomname="+roomname;
+        let myChart = null;
+        let deviceData = null;
+
+        async function loadDeviceInfo() {
+            try {
+                const response = await fetchWithAuth(`${API_URL}/devices/${deviceId}`);
+
+                if (!response.ok) {
+                    throw new Error('Error al cargar información del dispositivo');
+                }
+
+                const data = await response.json();
+                deviceData = data.data;
+
+                // Actualizar estado del toggle
+                const toggle = document.getElementById('device-toggle');
+                const taskname = document.getElementById('taskname');
+
+                toggle.checked = deviceData.estado;
+                taskname.textContent = deviceData.estado ? 'Encendido' : 'Apagado';
+
+                // Cargar datos históricos
+                await loadDeviceData();
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al cargar información del dispositivo');
+            }
         }
-    </script>
 
-    <script>
+        async function loadDeviceData() {
+            try {
+                const response = await fetchWithAuth(`${API_URL}/devices/${deviceId}/data`);
+
+                if (!response.ok) {
+                    console.log('No hay datos históricos disponibles');
+                    createDefaultChart();
+                    return;
+                }
+
+                const result = await response.json();
+                const historicalData = result.data;
+
+                if (historicalData.length === 0) {
+                    createDefaultChart();
+                    return;
+                }
+
+                // Crear gráfico con datos reales
+                const labels = historicalData.map((item, index) => `${index + 1}`);
+                const values = historicalData.map(item => item.valor || 0);
+
+                createChart(labels, values, 'Datos del dispositivo');
+
+            } catch (error) {
+                console.error('Error:', error);
+                createDefaultChart();
+            }
+        }
+
+        function createChart(labels, values, title) {
+            const ctx = document.getElementById('myChart');
+
+            if (myChart) {
+                myChart.destroy();
+            }
+
+            myChart = new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        fill: false,
+                        lineTension: 0,
+                        backgroundColor: "rgba(0,0,255,1.0)",
+                        borderColor: "rgba(0,0,255,0.1)",
+                        data: values
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {display:false},
+                        title: {
+                            display: true,
+                            text: title,
+                            font: {size:16}
+                        }
+                    }
+                }
+            });
+        }
+
+        function createDefaultChart() {
+            const xValues = [50,60,70,80,90,100,110,120,130,140,150];
+            const yValues = [7,8,8,9,9,9,10,11,14,14,15];
+            createChart(xValues, yValues, 'Datos de ejemplo');
+        }
+
+        // Toggle device state
+        const toggle = document.getElementById('device-toggle');
+        toggle.addEventListener('change', async (e) => {
+            const newState = e.target.checked;
+
+            try {
+                const response = await fetchWithAuth(`${API_URL}/devices/${deviceId}/toggle`, {
+                    method: 'PUT'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error al cambiar el estado');
+                }
+
+                const data = await response.json();
+                const taskname = document.getElementById('taskname');
+                taskname.textContent = data.data.estado ? 'Encendido' : 'Apagado';
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al cambiar el estado del dispositivo');
+                // Revertir el toggle
+                e.target.checked = !newState;
+            }
+        });
+
+        function sendName(){
+            window.location.href = `devices.html?roomId=${roomId}&roomname=${roomname}`;
+        }
+
         function sendTaskInfo(){
-            var devicename = document.getElementById("deviceRoute").textContent;
-            var roomname = document.getElementById("roomRoute").textContent;
-            window.location.href = "addtask.html?devicename="+devicename+"?roomname="+roomname;
+            window.location.href = `addtask.html?deviceId=${deviceId}&devicename=${devicename}&roomId=${roomId}&roomname=${roomname}`;
         }
 
         function sendTask(){
-            var devicename = document.getElementById("deviceRoute").textContent;
-            var roomname = document.getElementById("roomRoute").textContent;
             var taskname = document.getElementById("taskname").textContent;
-            window.location.href = "taskdata.html?devicename="+devicename+"?roomname="+roomname+"?taskname="+taskname;
+            window.location.href = `taskdata.html?deviceId=${deviceId}&devicename=${devicename}&roomId=${roomId}&roomname=${roomname}&taskname=${taskname}`;
         }
+
+        // Cargar información al iniciar
+        loadDeviceInfo();
     </script>
 </body>
 </html>

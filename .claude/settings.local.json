@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(node:*)",
+      "Bash(tree:*)",
+      "Bash(npm start)",
+      "Read(//c/Users/jluis/Downloads/**)",
+      "Bash(curl:*)",
+      "Bash(taskkill:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(dir:*)",
+      "Bash(del .\\nul)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

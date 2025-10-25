@@ -1,0 +1,177 @@
+═══════════════════════════════════════════════════════════════════
+  SOLUCIÓN PASO A PASO - PROBLEMA CON EL TOKEN
+═══════════════════════════════════════════════════════════════════
+
+🔴 PROBLEMA:
+Thunder Client sigue diciendo "Token no proporcionado"
+
+✅ SOLUCIÓN - Sigue estos pasos EXACTAMENTE:
+
+═══════════════════════════════════════════════════════════════════
+PASO 1: Verifica la configuración de Thunder Client
+═══════════════════════════════════════════════════════════════════
+
+1. Abre Thunder Client
+2. Busca tu petición "Get Profile" (o crea una nueva)
+
+3. En la parte superior debe decir:
+   ┌────────────────────────────────────┐
+   │ GET ▼                              │
+   │                                     │
+   │ http://localhost:3000/api/auth/me  │
+   └────────────────────────────────────┘
+
+4. Justo debajo de la URL, verás varias pestañas:
+   [ Query ] [ Headers ] [ Body ] [ Auth ] [ Tests ]
+
+   👉 HAZ CLICK EN "Headers" 👈
+
+
+═══════════════════════════════════════════════════════════════════
+PASO 2: Configura el Header (ESTO ES LO MÁS IMPORTANTE)
+═══════════════════════════════════════════════════════════════════
+
+Una vez en la pestaña "Headers", verás algo así:
+
+┌──────────────────┬────────────────────────────────────┬─────┐
+│ Name             │ Value                              │ [✓] │
+├──────────────────┼────────────────────────────────────┼─────┤
+│                  │                                    │ [ ] │
+└──────────────────┴────────────────────────────────────┴─────┘
+
+5. Click en el campo "Name" (primera columna)
+6. Escribe: Authorization
+
+7. Click en el campo "Value" (segunda columna)
+8. Escribe: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZmM3OTYwYmFiYTJjOGU3NTU0YWNiNiIsImlhdCI6MTc2MTM3NjYwOSwiZXhwIjoxNzYxOTgxNDA5fQ.ju5TwJWH6JwumfIzZMMr2nlNhW6uMHAPVdhOGVk6_8E
+
+9. ASEGÚRATE de que el checkbox [✓] esté MARCADO (tercera columna)
+
+Debe quedar así:
+
+┌──────────────────┬────────────────────────────────────┬─────┐
+│ Name             │ Value                              │ [✓] │
+├──────────────────┼────────────────────────────────────┼─────┤
+│ Authorization    │ Bearer eyJhbGciOiJIUzI1NiIsInR5... │ [✓] │ ← IMPORTANTE
+└──────────────────┴────────────────────────────────────┴─────┘
+
+
+═══════════════════════════════════════════════════════════════════
+PASO 3: Verifica que NO haya nada en Query
+═══════════════════════════════════════════════════════════════════
+
+10. Click en la pestaña "Query"
+11. Debe estar COMPLETAMENTE VACÍA
+12. Si hay algo, bórralo TODO
+
+
+═══════════════════════════════════════════════════════════════════
+PASO 4: Envía la petición
+═══════════════════════════════════════════════════════════════════
+
+13. Click en "Send"
+
+
+═══════════════════════════════════════════════════════════════════
+CHECKLIST FINAL - Verifica estos puntos:
+═══════════════════════════════════════════════════════════════════
+
+URL:
+  ✓ Método es GET
+  ✓ URL es: http://localhost:3000/api/auth/me
+  ✓ SIN parámetros (sin ?, sin &)
+
+Headers (pestaña):
+  ✓ Nombre: Authorization (con "A" mayúscula)
+  ✓ Valor: Bearer (espacio) TOKEN_COMPLETO
+  ✓ Checkbox [✓] está MARCADO
+  ✓ "Bearer" con "B" mayúscula
+  ✓ HAY un espacio entre "Bearer" y el token
+  ✓ NO hay espacios al inicio o al final
+
+Query (pestaña):
+  ✓ Está VACÍA
+
+Body (pestaña):
+  ✓ Puede estar vacío (no importa para GET)
+
+
+═══════════════════════════════════════════════════════════════════
+🔄 SI TODAVÍA NO FUNCIONA - HAZ ESTO:
+═══════════════════════════════════════════════════════════════════
+
+OPCIÓN A: Obtén un nuevo token haciendo LOGIN de nuevo
+
+1. Nueva petición en Thunder Client
+2. Método: POST
+3. URL: http://localhost:3000/api/auth/login
+4. Headers:
+   Name: Content-Type
+   Value: application/json
+5. Body (selecciona JSON):
+   {
+     "email": "juan@kyros.com",
+     "password": "password123"
+   }
+6. Send
+7. Copia el NUEVO token que te dé
+8. Úsalo en el header
+
+
+OPCIÓN B: Verifica tu token actual
+
+El token debe verse así (sin espacios, sin saltos de línea):
+Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZmM3OTYwYmFiYTJjOGU3NTU0YWNiNiIsImlhdCI6MTc2MTM3NjYwOSwiZXhwIjoxNzYxOTgxNDA5fQ.ju5TwJWH6JwumfIzZMMr2nlNhW6uMHAPVdhOGVk6_8E
+
+El token tiene 3 partes separadas por puntos (.)
+Parte 1: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+Parte 2: eyJpZCI6IjY4ZmM3OTYwYmFiYTJjOGU3NTU0YWNiNiIsImlhdCI6MTc2MTM3NjYwOSwiZXhwIjoxNzYxOTgxNDA5fQ
+Parte 3: ju5TwJWH6JwumfIzZMMr2nlNhW6uMHAPVdhOGVk6_8E
+
+
+═══════════════════════════════════════════════════════════════════
+📸 EJEMPLO VISUAL
+═══════════════════════════════════════════════════════════════════
+
+CONFIGURACIÓN CORRECTA:
+
+Thunder Client
+├── Método: GET
+├── URL: http://localhost:3000/api/auth/me
+├── Pestaña: Headers ← ESTÁS AQUÍ
+│   └── Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+├── Pestaña: Query
+│   └── (vacío)
+└── [Send]
+
+CONFIGURACIÓN INCORRECTA (NO HAGAS ESTO):
+
+❌ URL: http://localhost:3000/api/auth/me?Authorization=Bearer...
+❌ Headers: authorization (minúscula)
+❌ Headers: BearereyJhbGc... (sin espacio)
+❌ Headers: Bearer  eyJhbGc... (dos espacios)
+❌ Checkbox [ ] sin marcar
+
+
+═══════════════════════════════════════════════════════════════════
+✅ RESULTADO ESPERADO
+═══════════════════════════════════════════════════════════════════
+
+Si está todo correcto, deberías ver:
+
+{
+  "success": true,
+  "data": {
+    "id": "68fc7960baba2c8e7554acb6",
+    "nombre": "Juan Pérez",
+    "email": "juan@kyros.com",
+    "tipo": "estudiante",
+    "estado": "activo",
+    ...
+  }
+}
+
+
+═══════════════════════════════════════════════════════════════════
+
+¿Sigue sin funcionar? Prueba hacer LOGIN de nuevo y usar ese nuevo token.

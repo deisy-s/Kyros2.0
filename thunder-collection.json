@@ -1,0 +1,304 @@
+{
+  "client": "Thunder Client",
+  "collectionName": "KYROS API",
+  "dateExported": "2025-10-24",
+  "version": "1.0",
+  "folders": [
+    {
+      "name": "Auth",
+      "requests": [
+        {
+          "name": "1. Register",
+          "method": "POST",
+          "url": "http://localhost:3000/api/auth/register",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "type": "json",
+            "raw": "{\n  \"nombre\": \"Juan Pérez\",\n  \"email\": \"juan@kyros.com\",\n  \"password\": \"password123\"\n}"
+          }
+        },
+        {
+          "name": "2. Login",
+          "method": "POST",
+          "url": "http://localhost:3000/api/auth/login",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "type": "json",
+            "raw": "{\n  \"email\": \"juan@kyros.com\",\n  \"password\": \"password123\"\n}"
+          }
+        },
+        {
+          "name": "3. Get Profile",
+          "method": "GET",
+          "url": "http://localhost:3000/api/auth/me",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{token}}"
+            }
+          ]
+        },
+        {
+          "name": "4. Update Profile",
+          "method": "PUT",
+          "url": "http://localhost:3000/api/auth/updateprofile",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{token}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "type": "json",
+            "raw": "{\n  \"nombre\": \"Juan Carlos Pérez\",\n  \"estudiante\": {\n    \"matricula\": \"2021001\",\n    \"rutaPreferida\": \"Ruta 3\"\n  }\n}"
+          }
+        },
+        {
+          "name": "5. Change Password",
+          "method": "PUT",
+          "url": "http://localhost:3000/api/auth/updatepassword",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{token}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "type": "json",
+            "raw": "{\n  \"currentPassword\": \"password123\",\n  \"newPassword\": \"newpassword456\"\n}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Rooms",
+      "requests": [
+        {
+          "name": "1. Get All Rooms",
+          "method": "GET",
+          "url": "http://localhost:3000/api/rooms",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{token}}"
+            }
+          ]
+        },
+        {
+          "name": "2. Create Room",
+          "method": "POST",
+          "url": "http://localhost:3000/api/rooms",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{token}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "type": "json",
+            "raw": "{\n  \"nombre\": \"Sala\",\n  \"descripcion\": \"Sala principal de la casa\",\n  \"icono\": \"Sofa--Streamline-Flex.png\",\n  \"configuracion\": {\n    \"mostrarEnDashboard\": true,\n    \"orden\": 1\n  }\n}"
+          }
+        },
+        {
+          "name": "3. Get Room by ID",
+          "method": "GET",
+          "url": "http://localhost:3000/api/rooms/{{roomId}}",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{token}}"
+            }
+          ]
+        },
+        {
+          "name": "4. Update Room",
+          "method": "PUT",
+          "url": "http://localhost:3000/api/rooms/{{roomId}}",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{token}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "type": "json",
+            "raw": "{\n  \"nombre\": \"Sala Principal\",\n  \"descripcion\": \"Sala renovada\"\n}"
+          }
+        },
+        {
+          "name": "5. Delete Room",
+          "method": "DELETE",
+          "url": "http://localhost:3000/api/rooms/{{roomId}}",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{token}}"
+            }
+          ]
+        },
+        {
+          "name": "6. Get Room Devices",
+          "method": "GET",
+          "url": "http://localhost:3000/api/rooms/{{roomId}}/devices",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{token}}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Devices",
+      "requests": [
+        {
+          "name": "1. Get All Devices",
+          "method": "GET",
+          "url": "http://localhost:3000/api/devices",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{token}}"
+            }
+          ]
+        },
+        {
+          "name": "2. Create Device",
+          "method": "POST",
+          "url": "http://localhost:3000/api/devices",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{token}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "type": "json",
+            "raw": "{\n  \"nombre\": \"Luz Principal\",\n  \"tipo\": \"luz\",\n  \"marca\": \"Philips\",\n  \"modelo\": \"Hue White\",\n  \"habitacion\": \"{{roomId}}\",\n  \"configuracion\": {\n    \"brillo\": 80,\n    \"color\": \"#FFD700\"\n  },\n  \"hardware\": {\n    \"mac\": \"00:11:22:33:44:55\",\n    \"ip\": \"192.168.1.100\"\n  }\n}"
+          }
+        },
+        {
+          "name": "3. Get Device by ID",
+          "method": "GET",
+          "url": "http://localhost:3000/api/devices/{{deviceId}}",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{token}}"
+            }
+          ]
+        },
+        {
+          "name": "4. Update Device",
+          "method": "PUT",
+          "url": "http://localhost:3000/api/devices/{{deviceId}}",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{token}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "type": "json",
+            "raw": "{\n  \"nombre\": \"Luz Principal Sala\",\n  \"configuracion\": {\n    \"brillo\": 100,\n    \"color\": \"#FFFFFF\"\n  }\n}"
+          }
+        },
+        {
+          "name": "5. Toggle Device",
+          "method": "PUT",
+          "url": "http://localhost:3000/api/devices/{{deviceId}}/toggle",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{token}}"
+            }
+          ]
+        },
+        {
+          "name": "6. Get Device Data",
+          "method": "GET",
+          "url": "http://localhost:3000/api/devices/{{deviceId}}/data",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{token}}"
+            }
+          ]
+        },
+        {
+          "name": "7. Delete Device",
+          "method": "DELETE",
+          "url": "http://localhost:3000/api/devices/{{deviceId}}",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{token}}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Utilities",
+      "requests": [
+        {
+          "name": "Health Check",
+          "method": "GET",
+          "url": "http://localhost:3000/api/health"
+        }
+      ]
+    }
+  ],
+  "variables": [
+    {
+      "name": "token",
+      "value": "YOUR_TOKEN_HERE",
+      "description": "JWT token from login/register"
+    },
+    {
+      "name": "roomId",
+      "value": "ROOM_ID_HERE",
+      "description": "Room ID after creating a room"
+    },
+    {
+      "name": "deviceId",
+      "value": "DEVICE_ID_HERE",
+      "description": "Device ID after creating a device"
+    }
+  ]
+}

@@ -1,0 +1,234 @@
+╔════════════════════════════════════════════════════════════════╗
+║         KYROS - GUÍA DE PRUEBAS RÁPIDAS (COPIAR/PEGAR)        ║
+╚════════════════════════════════════════════════════════════════╝
+
+┌────────────────────────────────────────────────────────────────┐
+│ PASO 0: INICIAR SERVIDOR                                      │
+└────────────────────────────────────────────────────────────────┘
+
+Comando:
+  cd database
+  npm start
+
+Verificar que veas:
+  ✓ [KYROS] Servidor iniciado
+  ✓ [MongoDB] Conexión exitosa
+
+
+┌────────────────────────────────────────────────────────────────┐
+│ PRUEBA 1: HEALTH CHECK                                        │
+└────────────────────────────────────────────────────────────────┘
+
+Método:  GET
+URL:     http://localhost:3000/api/health
+
+Resultado: {"success": true, ...}
+
+
+┌────────────────────────────────────────────────────────────────┐
+│ PRUEBA 2: REGISTRAR USUARIO                                   │
+└────────────────────────────────────────────────────────────────┘
+
+Método:  POST
+URL:     http://localhost:3000/api/auth/register
+
+Headers:
+  Content-Type: application/json
+
+Body (JSON):
+{
+  "nombre": "Juan Pérez",
+  "email": "juan@kyros.com",
+  "password": "password123"
+}
+
+⚠️ GUARDAR EL TOKEN QUE TE DA EN LA RESPUESTA
+
+
+┌────────────────────────────────────────────────────────────────┐
+│ PRUEBA 3: LOGIN                                               │
+└────────────────────────────────────────────────────────────────┘
+
+Método:  POST
+URL:     http://localhost:3000/api/auth/login
+
+Headers:
+  Content-Type: application/json
+
+Body (JSON):
+{
+  "email": "juan@kyros.com",
+  "password": "password123"
+}
+
+
+┌────────────────────────────────────────────────────────────────┐
+│ PRUEBA 4: VER MI PERFIL (Requiere Token)                      │
+└────────────────────────────────────────────────────────────────┘
+
+Método:  GET
+URL:     http://localhost:3000/api/auth/me
+
+Headers:
+  Authorization: Bearer TU_TOKEN_AQUI
+
+⚠️ Reemplaza TU_TOKEN_AQUI con el token del Paso 2
+
+
+┌────────────────────────────────────────────────────────────────┐
+│ PRUEBA 5: CREAR HABITACIÓN (Requiere Token)                   │
+└────────────────────────────────────────────────────────────────┘
+
+Método:  POST
+URL:     http://localhost:3000/api/rooms
+
+Headers:
+  Authorization: Bearer TU_TOKEN_AQUI
+  Content-Type: application/json
+
+Body (JSON):
+{
+  "nombre": "Sala",
+  "descripcion": "Sala principal"
+}
+
+⚠️ GUARDAR EL _id DE LA HABITACIÓN
+
+
+┌────────────────────────────────────────────────────────────────┐
+│ PRUEBA 6: VER HABITACIONES (Requiere Token)                   │
+└────────────────────────────────────────────────────────────────┘
+
+Método:  GET
+URL:     http://localhost:3000/api/rooms
+
+Headers:
+  Authorization: Bearer TU_TOKEN_AQUI
+
+
+┌────────────────────────────────────────────────────────────────┐
+│ PRUEBA 7: CREAR DISPOSITIVO (Requiere Token + Room ID)        │
+└────────────────────────────────────────────────────────────────┘
+
+Método:  POST
+URL:     http://localhost:3000/api/devices
+
+Headers:
+  Authorization: Bearer TU_TOKEN_AQUI
+  Content-Type: application/json
+
+Body (JSON):
+{
+  "nombre": "Luz Principal",
+  "tipo": "luz",
+  "marca": "Philips",
+  "modelo": "Hue",
+  "habitacion": "ID_HABITACION_AQUI",
+  "configuracion": {
+    "brillo": 80,
+    "color": "#FFD700"
+  }
+}
+
+⚠️ Reemplaza ID_HABITACION_AQUI con el _id del Paso 5
+⚠️ GUARDAR EL _id DEL DISPOSITIVO
+
+
+┌────────────────────────────────────────────────────────────────┐
+│ PRUEBA 8: ENCENDER/APAGAR DISPOSITIVO (Requiere Token)        │
+└────────────────────────────────────────────────────────────────┘
+
+Método:  PUT
+URL:     http://localhost:3000/api/devices/ID_DISPOSITIVO_AQUI/toggle
+
+Headers:
+  Authorization: Bearer TU_TOKEN_AQUI
+
+⚠️ Reemplaza ID_DISPOSITIVO_AQUI con el _id del Paso 7
+
+Primera vez → Enciende (encendido: true)
+Segunda vez → Apaga (encendido: false)
+
+
+┌────────────────────────────────────────────────────────────────┐
+│ PRUEBA 9: VER DISPOSITIVOS (Requiere Token)                   │
+└────────────────────────────────────────────────────────────────┘
+
+Método:  GET
+URL:     http://localhost:3000/api/devices
+
+Headers:
+  Authorization: Bearer TU_TOKEN_AQUI
+
+
+┌────────────────────────────────────────────────────────────────┐
+│ PRUEBA 10: ACTUALIZAR DISPOSITIVO (Requiere Token)            │
+└────────────────────────────────────────────────────────────────┘
+
+Método:  PUT
+URL:     http://localhost:3000/api/devices/ID_DISPOSITIVO_AQUI
+
+Headers:
+  Authorization: Bearer TU_TOKEN_AQUI
+  Content-Type: application/json
+
+Body (JSON):
+{
+  "nombre": "Luz Principal Sala",
+  "configuracion": {
+    "brillo": 100
+  }
+}
+
+
+╔════════════════════════════════════════════════════════════════╗
+║ VALORES IMPORTANTES - GUÁRDALOS MIENTRAS HACES LAS PRUEBAS    ║
+╚════════════════════════════════════════════════════════════════╝
+
+TOKEN (del Paso 2):
+  _______________________________________________________
+
+ROOM_ID (del Paso 5):
+  _______________________________________________________
+
+DEVICE_ID (del Paso 7):
+  _______________________________________________________
+
+
+╔════════════════════════════════════════════════════════════════╗
+║ TIPOS DE DISPOSITIVOS DISPONIBLES                             ║
+╚════════════════════════════════════════════════════════════════╝
+
+  "luz"          → Luces inteligentes
+  "termostato"   → Control de temperatura
+  "cerradura"    → Cerraduras inteligentes
+  "sensor"       → Sensores (movimiento, temperatura, etc.)
+  "camara"       → Cámaras de seguridad
+  "enchufe"      → Enchufes inteligentes
+  "ventilador"   → Ventiladores
+  "otro"         → Otros dispositivos
+
+
+╔════════════════════════════════════════════════════════════════╗
+║ ERRORES COMUNES                                               ║
+╚════════════════════════════════════════════════════════════════╝
+
+❌ "Cannot connect"
+   → Verifica que el servidor esté corriendo (npm start)
+
+❌ "Token inválido"
+   → Verifica "Bearer " + espacio + token completo
+
+❌ "No autorizado"
+   → Falta el header Authorization
+
+❌ "Habitación no encontrada"
+   → Verifica que el ID sea correcto
+
+
+╔════════════════════════════════════════════════════════════════╗
+║ ¡LISTO! BACKEND 100% FUNCIONAL                               ║
+╚════════════════════════════════════════════════════════════════╝
+
+Si completaste las 10 pruebas → Todo funciona correctamente ✅
+Siguiente paso → Integrar con el frontend HTML

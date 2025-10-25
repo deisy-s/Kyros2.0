@@ -65,20 +65,8 @@
         <div class="row">
             <h1 class="heading">Seguridad</h1>
         </div>
-        <div class="row">
-            <div class="col-md-6 col-sm-12" id="cam-section">
-                <h3>Cámara Sala</h3>
-                <div class="cam-view">
-
-                </div>
-            </div>
-
-            <div class="col-md-6 col-sm-12" id="cam-section">
-                <h3>Cámara Recamara 1</h3>
-                <div class="cam-view">
-
-                </div>
-            </div>
+        <div class="row" id="cameras-container">
+            <!-- Las cámaras se cargarán dinámicamente aquí -->
         </div>
     </div>
     <!-- End content -->
@@ -121,5 +109,124 @@
 
     <!-- Bootstrap JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+
+    <!-- Auth utility -->
+    <script src="js/auth.js"></script>
+    <script src="js/navbar.js"></script>
+    <script>
+        requireAuth();
+    </script>
+
+    <!-- Security cameras functionality -->
+    <script>
+        async function loadCameras() {
+            try {
+                const response = await fetchWithAuth(`${API_URL}/cameras`);
+
+                if (!response.ok) {
+                    throw new Error('Error al cargar cámaras');
+                }
+
+                const data = await response.json();
+                const cameras = data.data;
+
+                const container = document.getElementById('cameras-container');
+                container.innerHTML = '';
+
+                if (cameras.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; margin: 20px;">No hay cámaras configuradas. Agregue una cámara desde la sección de dispositivos.</p>';
+                    return;
+                }
+
+                cameras.forEach(camera => {
+                    const cameraDiv = document.createElement('div');
+                    cameraDiv.className = 'col-md-6 col-sm-12';
+                    cameraDiv.id = 'cam-section';
+
+                    const roomName = camera.habitacion ? camera.habitacion.nombre : 'Sin habitación';
+                    const isConnected = camera.estado.conectada;
+                    const streamUrl = camera.streaming.urlPrincipal;
+
+                    cameraDiv.innerHTML = `
+                        <h3>${camera.nombre} - ${roomName}</h3>
+                        <div class="cam-view" style="background-color: #1a1a1a; min-height: 300px; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+                            ${isConnected ?
+                                `<div style="color: #888; text-align: center;">
+                                    <p style="font-size: 14px; margin-bottom: 10px;">Streaming no disponible en navegador</p>
+                                    <p style="font-size: 12px;">URL: ${streamUrl}</p>
+                                    <button class="btn btn-sm btn-primary mt-2" onclick="window.open('${streamUrl}', '_blank')">Abrir en reproductor externo</button>
+                                </div>`
+                                :
+                                `<div style="color: #ff4444; font-size: 24px; font-weight: bold;">
+                                    NO SIGNAL
+                                    <p style="font-size: 14px; margin-top: 10px; color: #888;">Cámara desconectada</p>
+                                </div>`
+                            }
+                        </div>
+                        <div style="margin-top: 10px; display: flex; gap: 10px; align-items: center;">
+                            <button class="btn btn-sm ${camera.estado.activa ? 'btn-success' : 'btn-secondary'}"
+                                    onclick="toggleCamera('${camera._id}', ${!camera.estado.activa})">
+                                ${camera.estado.activa ? 'Activa' : 'Inactiva'}
+                            </button>
+                            <button class="btn btn-sm ${camera.estado.grabando ? 'btn-danger' : 'btn-outline-danger'}"
+                                    onclick="toggleRecording('${camera._id}', ${!camera.estado.grabando})">
+                                ${camera.estado.grabando ? '⏺ Grabando' : '⏹ Detener'}
+                            </button>
+                            <span style="color: ${isConnected ? '#4CAF50' : '#888'}; font-size: 12px;">
+                                ${isConnected ? '🟢 Conectada' : '⚫ Desconectada'}
+                            </span>
+                        </div>
+                    `;
+
+                    container.appendChild(cameraDiv);
+                });
+
+            } catch (error) {
+                console.error('Error:', error);
+                const container = document.getElementById('cameras-container');
+                container.innerHTML = '<p style="text-align: center; margin: 20px; color: red;">Error al cargar las cámaras</p>';
+            }
+        }
+
+        async function toggleCamera(cameraId, newState) {
+            try {
+                const response = await fetchWithAuth(`${API_URL}/cameras/${cameraId}/toggle`, {
+                    method: 'PUT'
+                });
+
+                if (response.ok) {
+                    loadCameras(); // Recargar cámaras
+                } else {
+                    alert('Error al cambiar estado de la cámara');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al conectar con el servidor');
+            }
+        }
+
+        async function toggleRecording(cameraId, newState) {
+            try {
+                const response = await fetchWithAuth(`${API_URL}/cameras/${cameraId}/recording`, {
+                    method: 'PUT'
+                });
+
+                if (response.ok) {
+                    loadCameras(); // Recargar cámaras
+                } else {
+                    alert('Error al cambiar grabación');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al conectar con el servidor');
+            }
+        }
+
+        // Cargar cámaras al iniciar
+        loadCameras();
+
+        // Recargar cada 5 segundos para actualizar estado
+        setInterval(loadCameras, 5000);
+    </script>
 </body>
 </html>

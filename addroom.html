@@ -120,5 +120,54 @@
 
     <!-- Bootstrap JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+
+    <!-- Auth utility -->
+    <script src="js/auth.js"></script>
+    <script src="js/navbar.js"></script>
+
+    <!-- Add room functionality -->
+    <script>
+        // Proteger la página
+        requireAuth();
+
+        const saveButton = document.querySelector('.button-login');
+        const inputs = document.querySelectorAll('#user-input');
+        const roomNameInput = inputs[0];
+        const ipInput = inputs[1];
+
+        saveButton.addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            const roomName = roomNameInput.value.trim();
+            const ipESP32 = ipInput.value.trim();
+
+            if (!roomName) {
+                alert('Por favor ingrese el nombre de la habitación');
+                return;
+            }
+
+            try {
+                const response = await fetchWithAuth(`${API_URL}/rooms`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        nombre: roomName,
+                        descripcion: ipESP32 ? `IP: ${ipESP32}` : ''
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Habitación creada exitosamente');
+                    window.location.href = 'rooms.html';
+                } else {
+                    alert(data.message || 'Error al crear la habitación');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al conectar con el servidor');
+            }
+        });
+    </script>
 </body>
 </html>

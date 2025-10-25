@@ -146,7 +146,14 @@
     <!-- Bootstrap JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 
+    <!-- Auth utility -->
+    <script src="js/auth.js"></script>
+    <script src="js/navbar.js"></script>
+
     <script>
+        // Proteger la página
+        requireAuth();
+
         function getParameterByName(name) {
             var url = window.location.href;
             name = name.replace(/[\[\]]/g, "\\$&");
@@ -156,8 +163,10 @@
             return decodeURIComponent(results[2].replace(/\+/g, " "));
         }
 
+        const roomId = getParameterByName('roomId');
+        let roomname = getParameterByName('roomname');
+
         function displayRoomName() {
-            var roomname = getParameterByName('roomname');
             document.getElementById("roomRoute").innerHTML = roomname;
         }
 
@@ -166,26 +175,115 @@
 
     <script>
         function sendName(){
-            var roomname = document.getElementById("roomRoute").textContent;
-            window.location.href = "devices.html?roomname="+roomname;
+            window.location.href = `devices.html?roomId=${roomId}&roomname=${roomname}`;
         }
     </script>
 
     <script>
+        let selectedDeviceType = '';
         const dropdownItems = document.querySelectorAll('#tableMenu .dropdown-item');
 
         dropdownItems.forEach(item => {
-            item.addEventListener('click', () => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
                 const dropdownButton = document.querySelector('#dropdownMenuButton');
                 dropdownButton.textContent = item.textContent;
+                selectedDeviceType = item.textContent;
             });
         });
-    </script>
 
-    <script>
-        import { Dropdown, Ripple, initMDB } from "mdb-ui-kit";
+        // Mapeo de nombres de dispositivos a tipos del backend
+        const deviceTypeMap = {
+            'Alarma': 'sensor',
+            'Foco': 'luz',
+            'Sensor de humo y gas': 'sensor',
+            'Sensor de movimiento': 'sensor',
+            'Sensor de temperatura y humedad': 'sensor',
+            'Ventilador': 'luz'
+        };
 
-        initMDB({ Dropdown, Ripple });
+        // Add device functionality
+        const saveButton = document.querySelector('.button-login');
+        const inputs = document.querySelectorAll('#user-input');
+        const deviceNameInput = inputs[0];
+        const connectionInput = inputs[1];
+
+        saveButton.addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            const deviceName = deviceNameInput.value.trim();
+            const connection = connectionInput.value.trim();
+
+            if (!selectedDeviceType) {
+                alert('Por favor seleccione el tipo de dispositivo');
+                return;
+            }
+
+            if (!deviceName) {
+                alert('Por favor ingrese el nombre del dispositivo');
+                return;
+            }
+
+            try {
+                // Si es cámara, usar endpoint de cámaras
+                if (selectedDeviceType === 'Cámara') {
+                    const cameraData = {
+                        nombre: deviceName,
+                        descripcion: '',
+                        habitacion: roomId,
+                        streaming: {
+                            urlPrincipal: connection || 'rtsp://example.com/stream',
+                            tipo: 'rtsp'
+                        },
+                        estado: {
+                            activa: false,
+                            grabando: false,
+                            deteccionMovimiento: false,
+                            conectada: false
+                        }
+                    };
+
+                    const response = await fetchWithAuth(`${API_URL}/cameras`, {
+                        method: 'POST',
+                        body: JSON.stringify(cameraData)
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        alert('Cámara creada exitosamente');
+                        window.location.href = `devices.html?roomId=${roomId}&roomname=${roomname}`;
+                    } else {
+                        alert(data.message || 'Error al crear la cámara');
+                    }
+                } else {
+                    // Para dispositivos normales
+                    const tipo = deviceTypeMap[selectedDeviceType] || 'luz';
+
+                    const response = await fetchWithAuth(`${API_URL}/devices`, {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            nombre: deviceName,
+                            tipo: tipo,
+                            habitacion: roomId,
+                            estado: false
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        alert('Dispositivo creado exitosamente');
+                        window.location.href = `devices.html?roomId=${roomId}&roomname=${roomname}`;
+                    } else {
+                        alert(data.message || 'Error al crear el dispositivo');
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al conectar con el servidor');
+            }
+        });
     </script>
 </body>
 </html>

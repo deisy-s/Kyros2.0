@@ -67,17 +67,8 @@
         <div class="row">
             <h1 class="heading" id="roomName"></h1>
         </div>
-        <div class="row" id="device-section" onclick="getNames()">
-            <div class="col-lg-11 col-sm-9 col-xs-1">
-                <div class="device-img">
-                    <img src="images/Lightbulb--Streamline-Flex.png">
-                </div>
-
-                <div class="text">
-                    <h2 id="deviceName">Foco 1</h2>
-                    <p id="deviceInfo"></p>
-                </div>
-            </div>
+        <div id="devices-container">
+            <!-- Los dispositivos se cargarán dinámicamente aquí -->
         </div>
         <div class="row" id="add" onclick="getName()">
             <div class="add-image">
@@ -130,7 +121,14 @@
     <!-- Bootstrap JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 
+    <!-- Auth utility -->
+    <script src="js/auth.js"></script>
+    <script src="js/navbar.js"></script>
+
     <script>
+        // Proteger la página
+        requireAuth();
+
         function getParameterByName(name) {
             var url = window.location.href;
             name = name.replace(/[\[\]]/g, "\\$&");
@@ -145,29 +143,89 @@
             return name;
         }
 
+        const roomId = getParameterByName('roomId');
+        let roomname = getParameterByName('roomname');
+
         function displayRoomName() {
-            var roomname = getParameterByName('roomname');
             roomname = eraseEnd(roomname);
             document.getElementById("roomName").innerHTML = roomname;
             document.getElementById("roomRoute").innerHTML = roomname;
         }
 
         displayRoomName();
-    </script>
 
-    <script>
-        function getNames(){
-            var roomname = document.getElementById("roomName").textContent;
-            var devicename = document.getElementById("deviceName").textContent;
-            window.location.href = "deviceinfo.html?roomname="+roomname+"?devicename="+devicename;
+        // Mapeo de iconos por tipo de dispositivo
+        const deviceIcons = {
+            'luz': 'images/Lightbulb--Streamline-Flex.png',
+            'sensor': 'images/Lightbulb--Streamline-Flex.png',
+            'termostato': 'images/Lightbulb--Streamline-Flex.png',
+            'cerradura': 'images/Lightbulb--Streamline-Flex.png',
+            'default': 'images/Lightbulb--Streamline-Flex.png'
+        };
+
+        function getIconForDevice(tipo) {
+            return deviceIcons[tipo.toLowerCase()] || deviceIcons['default'];
         }
-    </script>
 
-    <script>
+        function navigateToDevice(deviceId, deviceName) {
+            window.location.href = `deviceinfo.html?roomId=${roomId}&roomname=${roomname}&deviceId=${deviceId}&devicename=${deviceName}`;
+        }
+
+        async function loadDevices() {
+            try {
+                const response = await fetchWithAuth(`${API_URL}/devices?habitacion=${roomId}`);
+
+                if (!response.ok) {
+                    throw new Error('Error al cargar dispositivos');
+                }
+
+                const data = await response.json();
+                const devices = data.data;
+
+                const container = document.getElementById('devices-container');
+                container.innerHTML = '';
+
+                if (devices.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; margin: 20px;">No hay dispositivos. Agregue un nuevo dispositivo.</p>';
+                    return;
+                }
+
+                devices.forEach(device => {
+                    const deviceDiv = document.createElement('div');
+                    deviceDiv.className = 'row';
+                    deviceDiv.id = 'device-section';
+                    deviceDiv.style.cursor = 'pointer';
+                    deviceDiv.onclick = () => navigateToDevice(device._id, device.nombre);
+
+                    const statusText = device.estado ? 'Encendido' : 'Apagado';
+
+                    deviceDiv.innerHTML = `
+                        <div class="col-lg-11 col-sm-9 col-xs-1">
+                            <div class="device-img">
+                                <img src="${getIconForDevice(device.tipo)}">
+                            </div>
+                            <div class="text">
+                                <h2 id="deviceName">${device.nombre}</h2>
+                                <p id="deviceInfo">${device.tipo} - ${statusText}</p>
+                            </div>
+                        </div>
+                    `;
+
+                    container.appendChild(deviceDiv);
+                });
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al cargar los dispositivos');
+            }
+        }
+
         function getName(){
-            var roomname = document.getElementById("roomName").textContent;
-            window.location.href = "adddevice.html?roomname="+roomname;
+            window.location.href = `adddevice.html?roomId=${roomId}&roomname=${roomname}`;
         }
+
+        // Cargar dispositivos al cargar la página
+        loadDevices();
     </script>
 </body>
 </html>
