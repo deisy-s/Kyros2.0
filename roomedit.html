@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
-    <title>Información de tarea - KYROS</title>
+    <title>Editar habitación - KYROS</title>
     <link rel="icon" href="images/logo.ico" type="image/x-icon" />
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
@@ -30,13 +30,13 @@
                             <a class="nav-link mx-lg-2" aria-current="page" href="index.html">Inicio</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link mx-lg-2" href="rooms.html">Habitaciones</a>
+                            <a class="nav-link mx-lg-2 active" href="rooms.html">Habitaciones</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link mx-lg-2" href="security.html">Seguridad</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link mx-lg-2 active" href="automatize.html">Automatización</a>
+                            <a class="nav-link mx-lg-2" href="automatize.html">Automatización</a>
                         </li>
                     </ul>
                 </div>
@@ -50,108 +50,36 @@
     <!-- End navbar -->
 
     <!-- Content -->
-    <div class="container" id="main-container-automatize">
+    <div class="container" id="main-container-addroom">
         <div class="row">
             <!-- Breadcrumb -->
             <nav class="d-flex">
             <h6 class="mb-0" id="breadcrumb">
                 <a href="index.html" class="text-reset">Inicio</a>
                 <span>></span>
-                <a href="automatize.html" class="text-reset" onclick="">Automatización</a>
+                <a href="rooms.html" class="text-reset">Habitaciones</a>
                 <span>></span>
-                <a href="#" class="text-reset" id="taskRoute"></a>
+                <a href="#" class="text-reset" id="roomRoute" onclick="sendName()"></a>
+                <span>></span>
+                <a href="#" class="text-reset">Editar habitación</a>
             </h6>
             </nav>
             <!-- Breadcrumb -->
         </div>
         <div class="row">
-            <h1 class="heading" id="taskName"></h1>
+            <h1 class="heading">Editar habitación</h1>
         </div>
-        <div class="row">
-            <div class="col-lg-5" id="leftCol-taskinfo">
-                <h3>Nombre de tarea</h3>
-                <input type="text" id="userinput" name="taskName">
-                <h3>Nombre de dispositivo</h3>
-                <input type="text" id="user-input" name="deviceName" readonly>
-                <button class="button-login mt-4">Guardar</button>
-                <button class="button-delete mt-1">Eliminar</button>
+        <div class="row d-flex justify-content-center align-items-center">
+            <div class="col-lg-5" id="leftCol-addroom">
+                <h3>Nombre de habitación</h3>
+                <input type="text" id="userinput" name="roomName">
+                <h3>IP de habitación (ESP32)</h3>
+                <input type="text" id="user-input" name="ipESP32">
+                <button class="button-login">Guardar</button>
+                <button class="button-delete">Eliminar</button>
             </div>
-            <div class="col-lg-5" id="rightCol-taskinfo">
-                <div class="fan" style="display: none;">
-                    <div class="timeOn d-flex">
-                        <h3>Encender a la(s)</h3>
-                        <input
-                        type="time"
-                        id="turnOnTime"
-                        min="00:00"
-                        max="24:00"
-                        required />
-                    </div>
-                    <div class="tempOn d-flex">
-                        <h3>Encender a los</h3>
-                        <input type="number" id="turnOnTemp">
-                        <h3 class="degree">°C</h3>
-                    </div>
-                    <div class="timeOff d-flex">
-                        <h3>Apagar a la(s)</h3>
-                        <input
-                        type="time"
-                        id="turnOffTime"
-                        min="00:00"
-                        max="24:00"
-                        required />
-                    </div>
-                    <div class="tempOff d-flex">
-                        <h3>Apagar a los</h3>
-                        <input type="number" id="turnOffTemp">
-                        <h3 class="degree">°C</h3>
-                    </div>
-                </div>
-                <div class="alarm" style="display: none;">
-                    <div class="turnOn d-flex">
-                        <h3>Sonar a la(s)</h3>
-                        <input
-                        type="time"
-                        id="turnOn"
-                        min="00:00"
-                        max="24:00"
-                        required />
-                    </div>
-                </div>
-                <div class="light" style="display: block;">
-                    <div class="timeOnLight d-flex">
-                        <h3>Encender a la(s)</h3>
-                        <input
-                        type="time"
-                        id="turnOnTime"
-                        min="00:00"
-                        max="24:00"
-                        required />
-                    </div>
-                    <div class="lightOn d-flex">
-                        <h3>Encender cuando no hay luz</h3>
-                        <label class="switch" id="lightOnSwitch">
-                            <input type="checkbox">
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-                    <div class="timeOffLight d-flex">
-                        <h3>Apagar a la(s)</h3>
-                        <input
-                        type="time"
-                        id="turnOffTime"
-                        min="00:00"
-                        max="24:00"
-                        required />
-                    </div>
-                    <div class="lightOff d-flex">
-                        <h3>Apagar cuando hay luz</h3>
-                        <label class="switch" id="lightOffSwitch">
-                            <input type="checkbox">
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-                </div>
+            <div class="col-lg-5">
+                <img id="room-img" src="images/Office Work.png" alt="Room">
             </div>
         </div>
     </div>
@@ -196,6 +124,55 @@
     <!-- Bootstrap JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 
+    <!-- Auth utility -->
+    <script src="js/auth.js"></script>
+    <script src="js/navbar.js"></script>
+
+    <!-- Add room functionality -->
+    <script>
+        // Proteger la página
+        requireAuth();
+
+        const saveButton = document.querySelector('.button-login');
+        const inputs = document.querySelectorAll('#user-input');
+        const roomNameInput = inputs[0];
+        const ipInput = inputs[1];
+
+        saveButton.addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            const roomName = roomNameInput.value.trim();
+            const ipESP32 = ipInput.value.trim();
+
+            if (!roomName) {
+                alert('Por favor ingrese el nombre de la habitación');
+                return;
+            }
+
+            try {
+                const response = await fetchWithAuth(`${API_URL}/rooms`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        nombre: roomName,
+                        descripcion: ipESP32 ? `IP: ${ipESP32}` : ''
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Habitación creada exitosamente');
+                    window.location.href = 'rooms.html';
+                } else {
+                    alert(data.message || 'Error al crear la habitación');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al conectar con el servidor');
+            }
+        });
+    </script>
+
     <script>
         function getParameterByName(name) {
             var url = window.location.href;
@@ -206,14 +183,25 @@
             return decodeURIComponent(results[2].replace(/\+/g, " "));
         }
 
+        function eraseEnd(name){
+            name = name.replace(/\?.*$/g, " ");
+            return name;
+        }
+
+        const roomId = getParameterByName('roomId');
+        let roomname = getParameterByName('roomname');
+
         function displayRoomName() {
-            var taskname = getParameterByName('taskname');
-            document.getElementById("taskName").innerHTML = taskname;
-            document.getElementById("taskRoute").innerHTML = taskname;
-            document.getElementById("userinput").setAttribute('value', taskname);
+            roomname = eraseEnd(roomname);
+            document.getElementById("roomRoute").innerHTML = roomname;
+            document.getElementById("userinput").setAttribute('value',roomname);
         }
 
         displayRoomName();
+
+        function sendName(){
+            window.location.href = `rooms.html?roomId=${roomId}&roomname=${roomname}`;
+        }
     </script>
 </body>
 </html>

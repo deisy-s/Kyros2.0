@@ -171,6 +171,10 @@
             window.location.href = `deviceinfo.html?roomId=${roomId}&roomname=${roomname}&deviceId=${deviceId}&devicename=${deviceName}`;
         }
 
+        function navigateToEdit(deviceId, deviceName) {
+            window.location.href = `deviceedit.html?roomId=${roomId}&roomname=${roomname}&deviceId=${deviceId}&devicename=${deviceName}`;
+        }
+
         async function loadDevices() {
             try {
                 const response = await fetchWithAuth(`${API_URL}/devices?habitacion=${roomId}`);
@@ -195,21 +199,33 @@
                     deviceDiv.className = 'row';
                     deviceDiv.id = 'device-section';
                     deviceDiv.style.cursor = 'pointer';
-                    deviceDiv.onclick = () => navigateToDevice(device._id, device.nombre);
-
+                    
                     const statusText = device.estado ? 'Encendido' : 'Apagado';
 
                     deviceDiv.innerHTML = `
-                        <div class="col-lg-11 col-sm-9 col-xs-1">
-                            <div class="device-img">
-                                <img src="${getIconForDevice(device.tipo)}">
+                        <div class="row align-items-center">
+                            <div class="col-lg-10" id="rdiv">
+                                <div class="device-img">
+                                    <img src="${getIconForDevice(device.tipo)}">
+                                </div>
+                                <div class="text">
+                                    <h2 id="deviceName">${device.nombre}</h2>
+                                    <p id="deviceInfo">${device.tipo} - ${statusText}</p>
+                                </div>
                             </div>
-                            <div class="text">
-                                <h2 id="deviceName">${device.nombre}</h2>
-                                <p id="deviceInfo">${device.tipo} - ${statusText}</p>
+                            <div class="col-lg-2 text-end">
+                                <img src="images/Pencil-Square--Streamline-Flex-Remix.png" id="edit">
                             </div>
                         </div>
                     `;
+
+                    deviceDiv.querySelector('#rdiv').onclick = () =>{
+                        navigateToDevice(device._id, device.nombre);
+                    }
+
+                    deviceDiv.querySelector('#edit').onclick = () =>{
+                        navigateToEdit(device._id, device.nombre);
+                    }
 
                     container.appendChild(deviceDiv);
                 });

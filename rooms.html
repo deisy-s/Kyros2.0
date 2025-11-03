@@ -146,6 +146,10 @@
             window.location.href = `devices.html?roomId=${roomId}&roomname=${roomName}`;
         }
 
+        function navigateToEdit(roomId, roomName) {
+            window.location.href = `roomedit.html?roomId=${roomId}&roomname=${roomName}`;
+        }
+
         async function loadRooms() {
             try {
                 const response = await fetchWithAuth(`${API_URL}/rooms`);
@@ -167,13 +171,12 @@
 
                 rooms.forEach(room => {
                     const roomDiv = document.createElement('div');
-                    roomDiv.className = 'row';
+                    roomDiv.className = 'row align-items-center';
                     roomDiv.id = 'room-section';
                     roomDiv.style.cursor = 'pointer';
-                    roomDiv.onclick = () => navigateToRoom(room._id, room.nombre);
 
                     roomDiv.innerHTML = `
-                        <div class="col-lg-11 col-sm-9 col-xs-1">
+                        <div class="col-lg-8" id="rdiv">
                             <div>
                                 <img src="${getIconForRoom(room.nombre)}">
                             </div>
@@ -182,7 +185,18 @@
                                 <p id="roomfunction">${room.descripcion || 'Sin descripción'}</p>
                             </div>
                         </div>
+                        <div class="col-lg-4 text-end">
+                            <img src="images/Pencil-Square--Streamline-Flex-Remix.png" id="edit">
+                        </div>
                     `;
+
+                    roomDiv.querySelector('#rdiv').onclick = () =>{
+                        navigateToRoom(room._id, room.nombre);
+                    }
+
+                    roomDiv.querySelector('#edit').onclick = () =>{
+                        navigateToEdit(room._id, room.nombre);
+                    }
 
                     container.appendChild(roomDiv);
                 });

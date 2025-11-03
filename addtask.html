@@ -63,13 +63,13 @@
                 <span>></span>
                 <a href="#" class="text-reset" id="deviceRoute" onclick="sendDevice()"></a>
                 <span>></span>
-                <a href="#" class="text-reset">Agregar dispositivo</a>
+                <a href="#" class="text-reset">Agregar tarea</a>
             </h6>
             </nav>
             <!-- Breadcrumb -->
         </div>
         <div class="row">
-            <h1 class="heading">Agregar dispositivo</h1>
+            <h1 class="heading">Agregar tarea</h1>
         </div>
         <div class="row d-flex justify-content-center">
             <div class="col-lg-5" id="leftCol-addtask">
@@ -91,8 +91,9 @@
                         <li><a class="dropdown-item" href="#">Foco 1</a></li>
                     </ul>
                 </div>
+                <button class="button-login">Guardar</button>
             </div>
-            <div class="col-lg-5" id="rightCol-addtask">
+            <div class="col-lg-5" id="rightCol-taskinfo">
                 <div class="fan" style="display: none;">
                     <div class="timeOn d-flex">
                         <h3>Encender a la(s)</h3>
@@ -146,6 +147,10 @@
                     </div>
                     <div class="lightOn d-flex">
                         <h3>Encender cuando no hay luz</h3>
+                        <label class="switch" id="lightOnSwitch">
+                            <input type="checkbox">
+                            <span class="slider round"></span>
+                        </label>
                     </div>
                     <div class="timeOffLight d-flex">
                         <h3>Apagar a la(s)</h3>
@@ -158,6 +163,10 @@
                     </div>
                     <div class="lightOff d-flex">
                         <h3>Apagar cuando hay luz</h3>
+                        <label class="switch" id="lightOffSwitch">
+                            <input type="checkbox">
+                            <span class="slider round"></span>
+                        </label>
                     </div>
                 </div>
             </div>
@@ -207,7 +216,19 @@
     <script src="js/navbar.js"></script>
 
     <script>
-        const API_URL = 'http://localhost:3000/api';
+        const dropdownItems = document.querySelectorAll('#tableMenu .dropdown-item');
+
+        dropdownItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const dropdownButton = document.querySelector('#dropdownMenuButton');
+                dropdownButton.textContent = item.textContent;
+            });
+        });
+    </script>
+
+    <script>
+        //const API_URL = 'http://localhost:3000/api';
         let selectedDeviceId = null;
 
         function getParameterByName(name) {
@@ -220,7 +241,7 @@
         }
 
         function eraseEnd(name){
-            name = name.replace(/\?.*$/g, " ");
+            name = name.replace(/\&.*$/g, " ");
             return name;
         }
 
@@ -228,7 +249,8 @@
             var roomname = getParameterByName('roomname');
             var devicename = getParameterByName('devicename');
             devicename = eraseEnd(devicename);
-            roomname = eraseEnd(roomname);
+            console.log(devicename);
+            console.log(roomname);
             document.getElementById("deviceRoute").innerHTML = devicename;
             document.getElementById("roomRoute").innerHTML = roomname;
         }

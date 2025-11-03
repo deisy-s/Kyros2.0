@@ -401,9 +401,14 @@ input:checked + .slider:before {
 }
 
 #room-section img{
-    width: 35px;
-    height: 30px;
-    margin-top: 5px;
+    width: 4%;
+    height: 4%;
+    min-width: 30px;
+    min-height: 30px;
+}
+
+#room-section #edit{
+    margin-top: -10px;
 }
 
 #room-section .text{
@@ -422,6 +427,13 @@ input:checked + .slider:before {
     color: #3b3b3b;
 }
 
+#room-section .add-image{
+    width: 6%;
+    height: 8%;
+    min-width: 40px;
+    min-height: 40px;
+}
+
 /* Devices section */
 #main-container-devices{
     margin-top: 90px;
@@ -431,19 +443,21 @@ input:checked + .slider:before {
 #device-section{
     background: #f0f0f0;
     border-radius: 18px;
-    padding: 20px 20px 15px 20px;
+    padding: 20px 20px 0px 20px;
     margin-bottom: 20px;
     cursor: pointer;
 }
 
 #device-section img{
-    width: 35px;
-    height: 30px;
+    width: 4%;
+    height: 4%;
+    min-width: 30px;
+    min-height: 30px;
 }
 
 #device-section .text{
     margin-left: 60px;
-    margin-top: -28px;
+    margin-top: -40px;
 }
 
 #device-section h2{
@@ -508,7 +522,7 @@ input:checked + .slider:before {
     text-align: left;
 }
 
-#user-input, #password{
+#user-input, #password, #userinput{
     width: 300px;
     height: 35px;
     background: transparent;
@@ -526,7 +540,7 @@ input:checked + .slider:before {
     padding-right: 35px;
 }
 
-#user-input:focus, #password:focus{
+#user-input:focus, #userinput:focus, #password:focus{
     outline: none;
 }
 
@@ -569,11 +583,32 @@ input:checked + .slider:before {
     background: linear-gradient(90deg,rgba(121, 166, 212, 1) 1%, rgba(80, 145, 211, 1) 100%);
 }
 
+.button-delete{
+    width: 300px;
+    border: 0;
+    padding: 10px 10px;
+    outline: none;
+    font-size: 16px;
+    color: #fff;
+    background: #4691db;
+    background: linear-gradient(90deg,rgba(186, 186, 186, 1) 1%, rgba(139, 139, 139, 1) 100%);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: width 0.5s;
+    position: relative;
+    top: -20px;
+}
+
+.button-delete:hover{
+    background: linear-gradient(90deg,rgba(212, 212, 212, 1) 1%, rgba(163, 163, 163, 1) 100%);
+}
+
 #sep{
     color: #000;
     position: relative;
     top: -30px;
     left: 105px;
+    width: 100px;
 }
 
 .login-icon{
@@ -610,6 +645,7 @@ input:checked + .slider:before {
     font-size: 10px;
     position: relative;
     left: 66px;
+    width: 180px;
 }
 
 .link{
@@ -664,6 +700,7 @@ input:checked + .slider:before {
 #main-container-login{
     margin-top: 90px;
     margin-bottom: 60px;
+    margin-right: 0;
 }
 
 #leftCol-login{
@@ -835,18 +872,6 @@ input:checked + .slider:before {
     margin-left: 80px;
 }
 
-#rightCol-addtask h3{
-    margin-right: 10px;
-}
-
-#rightCol-addtask .degree{
-    margin-left: 10px;
-}
-
-#rightCol-addtask input{
-    margin-bottom: 10px;
-}
-
 #rightCol-addtask , .timeOffLight{
     margin-top: 20px;
 }
@@ -958,24 +983,18 @@ input:checked + .slider:before {
 }
 
 @media(max-width: 991px){
-    /* Text carousel */
-    #cont-carousel{
-        display: none;
-    }
-
+    /* TODO: CENTER IN PHONE SCREENS */
     #leftCol-register{
-        margin-right: 0;
-        padding-right: 0;
-        margin-left: 0;
-        padding-left: 0;
+        margin-left: 10px;
     }
 
     #leftCol-login{
-        margin-right: 0;
-        padding-right: 0;
-        margin-top: 0;
-        margin-left: 0;
-        padding-left: 0;
+        margin-left: 10px;
+    }
+
+    /* Text carousel */
+    #cont-carousel{
+        display: none;
     }
 
     /* Add room section */
