@@ -128,19 +128,55 @@
     <script src="js/auth.js"></script>
     <script src="js/navbar.js"></script>
 
-    <!-- Add room functionality -->
+    <!-- Edit room functionality -->
     <script>
         // Proteger la página
         requireAuth();
 
         const saveButton = document.querySelector('.button-login');
-        const inputs = document.querySelectorAll('#user-input');
-        const roomNameInput = inputs[0];
-        const ipInput = inputs[1];
+        const deleteButton = document.querySelector('.button-delete');
+        const roomNameInput = document.querySelector('input[name="roomName"]');
+        const ipInput = document.querySelector('input[name="ipESP32"]');
 
+        // Cargar datos de la habitación
+        async function loadRoomData() {
+            try {
+                const roomId = getParameterByName('roomId');
+                if (!roomId) {
+                    alert('No se encontró el ID de la habitación');
+                    window.location.href = 'rooms.html';
+                    return;
+                }
+
+                const response = await fetchWithAuth(`${API_URL}/rooms/${roomId}`);
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    const room = data.data;
+                    roomNameInput.value = room.nombre;
+
+                    // Si la descripción contiene IP, extraerla
+                    if (room.descripcion && room.descripcion.startsWith('IP: ')) {
+                        ipInput.value = room.descripcion.substring(4);
+                    } else {
+                        ipInput.value = room.descripcion || '';
+                    }
+                } else {
+                    alert('Error al cargar los datos de la habitación');
+                    window.location.href = 'rooms.html';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al cargar los datos');
+                window.location.href = 'rooms.html';
+            }
+        }
+
+        // Guardar cambios (UPDATE)
         saveButton.addEventListener('click', async (e) => {
             e.preventDefault();
 
+            const roomId = getParameterByName('roomId');
             const roomName = roomNameInput.value.trim();
             const ipESP32 = ipInput.value.trim();
 
@@ -150,8 +186,8 @@
             }
 
             try {
-                const response = await fetchWithAuth(`${API_URL}/rooms`, {
-                    method: 'POST',
+                const response = await fetchWithAuth(`${API_URL}/rooms/${roomId}`, {
+                    method: 'PUT',
                     body: JSON.stringify({
                         nombre: roomName,
                         descripcion: ipESP32 ? `IP: ${ipESP32}` : ''
@@ -161,16 +197,48 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    alert('Habitación creada exitosamente');
+                    alert('Habitación actualizada exitosamente');
                     window.location.href = 'rooms.html';
                 } else {
-                    alert(data.message || 'Error al crear la habitación');
+                    alert(data.message || 'Error al actualizar la habitación');
                 }
             } catch (error) {
                 console.error('Error:', error);
                 alert('Error al conectar con el servidor');
             }
         });
+
+        // Eliminar habitación (DELETE)
+        deleteButton.addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            if (!confirm('¿Está seguro de que desea eliminar esta habitación? Esta acción no se puede deshacer.')) {
+                return;
+            }
+
+            const roomId = getParameterByName('roomId');
+
+            try {
+                const response = await fetchWithAuth(`${API_URL}/rooms/${roomId}`, {
+                    method: 'DELETE'
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Habitación eliminada exitosamente');
+                    window.location.href = 'rooms.html';
+                } else {
+                    alert(data.message || 'Error al eliminar la habitación');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al conectar con el servidor');
+            }
+        });
+
+        // Cargar datos al iniciar
+        loadRoomData();
     </script>
 
     <script>

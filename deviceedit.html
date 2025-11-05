@@ -205,15 +205,56 @@
             'Ventilador': 'luz'
         };
 
-        // Add device functionality
-        const saveButton = document.querySelector('.button-login');
-        const inputs = document.querySelectorAll('#user-input');
-        const deviceNameInput = inputs[0];
-        const connectionInput = inputs[1];
+        // Mapeo inverso para el dropdown
+        const reverseDeviceTypeMap = {
+            'sensor': 'Sensor de movimiento',
+            'luz': 'Foco'
+        };
 
+        // Edit device functionality
+        const saveButton = document.querySelector('.button-login');
+        const deleteButton = document.querySelector('.button-delete');
+        const deviceNameInput = document.querySelector('input[name="deviceName"]');
+        const connectionInput = document.querySelector('input[name="conection"]');
+
+        // Cargar datos del dispositivo
+        async function loadDeviceData() {
+            try {
+                const deviceId = getParameterByName('deviceId');
+                if (!deviceId) {
+                    alert('No se encontró el ID del dispositivo');
+                    window.location.href = `devices.html?roomId=${roomId}&roomname=${roomname}`;
+                    return;
+                }
+
+                const response = await fetchWithAuth(`${API_URL}/devices/${deviceId}`);
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    const device = data.data;
+                    deviceNameInput.value = device.nombre;
+                    connectionInput.value = device.conexion || '';
+
+                    // Establecer el tipo en el dropdown
+                    const displayType = reverseDeviceTypeMap[device.tipo] || device.tipo;
+                    selectedDeviceType = displayType;
+                    document.getElementById('dropdownMenuButton').textContent = displayType;
+                } else {
+                    alert('Error al cargar los datos del dispositivo');
+                    window.location.href = `devices.html?roomId=${roomId}&roomname=${roomname}`;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al cargar los datos');
+                window.location.href = `devices.html?roomId=${roomId}&roomname=${roomname}`;
+            }
+        }
+
+        // Guardar cambios (UPDATE)
         saveButton.addEventListener('click', async (e) => {
             e.preventDefault();
 
+            const deviceId = getParameterByName('deviceId');
             const deviceName = deviceNameInput.value.trim();
             const connection = connectionInput.value.trim();
 
@@ -233,53 +274,45 @@
                     const cameraData = {
                         nombre: deviceName,
                         descripcion: '',
-                        habitacion: roomId,
                         streaming: {
                             urlPrincipal: connection || 'rtsp://example.com/stream',
                             tipo: 'rtsp'
-                        },
-                        estado: {
-                            activa: false,
-                            grabando: false,
-                            deteccionMovimiento: false,
-                            conectada: false
                         }
                     };
 
-                    const response = await fetchWithAuth(`${API_URL}/cameras`, {
-                        method: 'POST',
+                    const response = await fetchWithAuth(`${API_URL}/cameras/${deviceId}`, {
+                        method: 'PUT',
                         body: JSON.stringify(cameraData)
                     });
 
                     const data = await response.json();
 
                     if (response.ok) {
-                        alert('Cámara creada exitosamente');
+                        alert('Cámara actualizada exitosamente');
                         window.location.href = `devices.html?roomId=${roomId}&roomname=${roomname}`;
                     } else {
-                        alert(data.message || 'Error al crear la cámara');
+                        alert(data.message || 'Error al actualizar la cámara');
                     }
                 } else {
                     // Para dispositivos normales
                     const tipo = deviceTypeMap[selectedDeviceType] || 'luz';
 
-                    const response = await fetchWithAuth(`${API_URL}/devices`, {
-                        method: 'POST',
+                    const response = await fetchWithAuth(`${API_URL}/devices/${deviceId}`, {
+                        method: 'PUT',
                         body: JSON.stringify({
                             nombre: deviceName,
                             tipo: tipo,
-                            habitacion: roomId,
-                            estado: false
+                            conexion: connection
                         })
                     });
 
                     const data = await response.json();
 
                     if (response.ok) {
-                        alert('Dispositivo creado exitosamente');
+                        alert('Dispositivo actualizado exitosamente');
                         window.location.href = `devices.html?roomId=${roomId}&roomname=${roomname}`;
                     } else {
-                        alert(data.message || 'Error al crear el dispositivo');
+                        alert(data.message || 'Error al actualizar el dispositivo');
                     }
                 }
             } catch (error) {
@@ -287,6 +320,38 @@
                 alert('Error al conectar con el servidor');
             }
         });
+
+        // Eliminar dispositivo (DELETE)
+        deleteButton.addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            if (!confirm('¿Está seguro de que desea eliminar este dispositivo? Esta acción no se puede deshacer.')) {
+                return;
+            }
+
+            const deviceId = getParameterByName('deviceId');
+
+            try {
+                const response = await fetchWithAuth(`${API_URL}/devices/${deviceId}`, {
+                    method: 'DELETE'
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Dispositivo eliminado exitosamente');
+                    window.location.href = `devices.html?roomId=${roomId}&roomname=${roomname}`;
+                } else {
+                    alert(data.message || 'Error al eliminar el dispositivo');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al conectar con el servidor');
+            }
+        });
+
+        // Cargar datos al iniciar
+        loadDeviceData();
     </script>
 </body>
 </html>

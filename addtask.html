@@ -91,7 +91,7 @@
                         <li><a class="dropdown-item" href="#">Foco 1</a></li>
                     </ul>
                 </div>
-                <button class="button-login">Guardar</button>
+                <button class="button-login" id="saveTaskButton">Guardar</button>
             </div>
             <div class="col-lg-5" id="rightCol-taskinfo">
                 <div class="fan" style="display: none;">
@@ -331,6 +331,134 @@
             var deviceId = getParameterByName('deviceId');
             window.location.href = "deviceinfo.html?roomId="+roomId+"&roomname="+roomname+"&deviceId="+deviceId+"&devicename="+devicename;
         }
+    </script>
+
+    <script>
+        // Conectar botón de guardar tarea
+        const saveTaskButton = document.getElementById('saveTaskButton');
+        const taskNameInput = document.querySelector('input[name="taskName"]');
+
+        saveTaskButton.addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            const taskName = taskNameInput.value.trim();
+
+            if (!taskName) {
+                alert('Por favor ingrese el nombre de la tarea');
+                return;
+            }
+
+            if (!selectedDeviceId) {
+                alert('Por favor seleccione un dispositivo');
+                return;
+            }
+
+            try {
+                // Recopilar datos del formulario
+                const taskData = {
+                    nombre: taskName,
+                    tipo: 'programada',
+                    acciones: []
+                };
+
+                // Obtener los valores de los inputs según el tipo visible
+                const lightDiv = document.querySelector('.light');
+                const fanDiv = document.querySelector('.fan');
+                const alarmDiv = document.querySelector('.alarm');
+
+                let accion = {
+                    dispositivo: selectedDeviceId,
+                    accion: 'toggle',
+                    parametros: {},
+                    orden: 0
+                };
+
+                // Si es luz
+                if (lightDiv && lightDiv.style.display !== 'none') {
+                    const turnOnTime = document.querySelector('.light #turnOnTime').value;
+                    const turnOffTime = document.querySelector('.light #turnOffTime').value;
+                    const lightOnSwitch = document.querySelector('#lightOnSwitch input[type="checkbox"]').checked;
+                    const lightOffSwitch = document.querySelector('#lightOffSwitch input[type="checkbox"]').checked;
+
+                    if (turnOnTime) {
+                        taskData.programacion = {
+                            tipo: 'diaria',
+                            hora: turnOnTime
+                        };
+                    }
+
+                    accion.accion = 'encender';
+                    accion.parametros = {
+                        encenderSinLuz: lightOnSwitch,
+                        apagarConLuz: lightOffSwitch,
+                        horaApagar: turnOffTime || null
+                    };
+                }
+                // Si es ventilador
+                else if (fanDiv && fanDiv.style.display !== 'none') {
+                    const turnOnTime = document.getElementById('turnOnTime').value;
+                    const turnOnTemp = document.getElementById('turnOnTemp').value;
+                    const turnOffTime = document.getElementById('turnOffTime').value;
+                    const turnOffTemp = document.getElementById('turnOffTemp').value;
+
+                    if (turnOnTime) {
+                        taskData.programacion = {
+                            tipo: 'diaria',
+                            hora: turnOnTime
+                        };
+                    }
+
+                    accion.accion = 'encender';
+                    accion.parametros = {
+                        temperaturaEncender: turnOnTemp ? parseFloat(turnOnTemp) : null,
+                        temperaturaApagar: turnOffTemp ? parseFloat(turnOffTemp) : null,
+                        horaApagar: turnOffTime || null
+                    };
+                }
+                // Si es alarma
+                else if (alarmDiv && alarmDiv.style.display !== 'none') {
+                    const turnOn = document.getElementById('turnOn').value;
+
+                    if (turnOn) {
+                        taskData.programacion = {
+                            tipo: 'diaria',
+                            hora: turnOn
+                        };
+                    }
+
+                    accion.accion = 'encender';
+                }
+
+                taskData.acciones.push(accion);
+
+                // Crear la tarea
+                const response = await fetchWithAuth(`${API_URL}/tasks`, {
+                    method: 'POST',
+                    body: JSON.stringify(taskData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Tarea creada exitosamente');
+                    const roomId = getParameterByName('roomId');
+                    const roomname = getParameterByName('roomname');
+                    const deviceId = getParameterByName('deviceId');
+                    const devicename = getParameterByName('devicename');
+
+                    if (deviceId) {
+                        window.location.href = `deviceinfo.html?roomId=${roomId}&roomname=${roomname}&deviceId=${deviceId}&devicename=${devicename}`;
+                    } else {
+                        window.location.href = 'automatize.html';
+                    }
+                } else {
+                    alert(data.message || 'Error al crear la tarea');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al conectar con el servidor');
+            }
+        });
     </script>
 </body>
 </html>

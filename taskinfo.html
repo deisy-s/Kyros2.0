@@ -196,7 +196,14 @@
     <!-- Bootstrap JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 
+    <!-- Auth utility -->
+    <script src="js/auth.js"></script>
+    <script src="js/navbar.js"></script>
+
     <script>
+        // Proteger la página
+        requireAuth();
+
         function getParameterByName(name) {
             var url = window.location.href;
             name = name.replace(/[\[\]]/g, "\\$&");
@@ -206,14 +213,204 @@
             return decodeURIComponent(results[2].replace(/\+/g, " "));
         }
 
+        const taskId = getParameterByName('taskId');
+        const deviceId = getParameterByName('deviceId');
+        const devicename = getParameterByName('devicename');
+
         function displayRoomName() {
             var taskname = getParameterByName('taskname');
             document.getElementById("taskName").innerHTML = taskname;
             document.getElementById("taskRoute").innerHTML = taskname;
             document.getElementById("userinput").setAttribute('value', taskname);
+            document.querySelector('input[name="deviceName"]').value = devicename || '';
         }
 
         displayRoomName();
+
+        const saveButton = document.querySelector('.button-login');
+        const deleteButton = document.querySelector('.button-delete');
+        const taskNameInput = document.querySelector('input[name="taskName"]');
+
+        // Cargar datos de la tarea
+        async function loadTaskData() {
+            if (!taskId) return;
+
+            try {
+                const response = await fetchWithAuth(`${API_URL}/tasks/${taskId}`);
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    const task = data.data;
+                    taskNameInput.value = task.nombre;
+
+                    // Cargar programación si existe
+                    if (task.programacion && task.programacion.hora) {
+                        const hora = task.programacion.hora;
+                        document.getElementById('turnOnTime').value = hora;
+                        document.getElementById('turnOffTime').value = hora;
+                    }
+
+                    // Cargar parámetros de acciones si existen
+                    if (task.acciones && task.acciones.length > 0) {
+                        const accion = task.acciones[0];
+                        if (accion.parametros) {
+                            if (accion.parametros.temperatura) {
+                                const tempInputOn = document.getElementById('turnOnTemp');
+                                const tempInputOff = document.getElementById('turnOffTemp');
+                                if (tempInputOn) tempInputOn.value = accion.parametros.temperatura;
+                                if (tempInputOff) tempInputOff.value = accion.parametros.temperatura;
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error al cargar tarea:', error);
+            }
+        }
+
+        // Guardar cambios (UPDATE)
+        saveButton.addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            const taskName = taskNameInput.value.trim();
+
+            if (!taskName) {
+                alert('Por favor ingrese el nombre de la tarea');
+                return;
+            }
+
+            try {
+                // Recopilar datos del formulario
+                const taskData = {
+                    nombre: taskName,
+                    tipo: 'programada',
+                    acciones: []
+                };
+
+                // Si hay un dispositivo seleccionado
+                if (deviceId) {
+                    // Obtener los valores de los inputs según el tipo visible
+                    const lightDiv = document.querySelector('.light');
+                    const fanDiv = document.querySelector('.fan');
+                    const alarmDiv = document.querySelector('.alarm');
+
+                    let accion = {
+                        dispositivo: deviceId,
+                        accion: 'toggle',
+                        parametros: {},
+                        orden: 0
+                    };
+
+                    // Si es luz
+                    if (lightDiv && lightDiv.style.display !== 'none') {
+                        const turnOnTime = document.querySelector('.light #turnOnTime').value;
+                        const turnOffTime = document.querySelector('.light #turnOffTime').value;
+
+                        if (turnOnTime) {
+                            taskData.programacion = {
+                                tipo: 'diaria',
+                                hora: turnOnTime
+                            };
+                        }
+
+                        accion.accion = 'encender';
+                    }
+                    // Si es ventilador
+                    else if (fanDiv && fanDiv.style.display !== 'none') {
+                        const turnOnTime = document.getElementById('turnOnTime').value;
+                        const turnOnTemp = document.getElementById('turnOnTemp').value;
+
+                        if (turnOnTime) {
+                            taskData.programacion = {
+                                tipo: 'diaria',
+                                hora: turnOnTime
+                            };
+                        }
+
+                        if (turnOnTemp) {
+                            accion.parametros.temperatura = parseFloat(turnOnTemp);
+                        }
+                    }
+                    // Si es alarma
+                    else if (alarmDiv && alarmDiv.style.display !== 'none') {
+                        const turnOn = document.getElementById('turnOn').value;
+
+                        if (turnOn) {
+                            taskData.programacion = {
+                                tipo: 'diaria',
+                                hora: turnOn
+                            };
+                        }
+
+                        accion.accion = 'encender';
+                    }
+
+                    taskData.acciones.push(accion);
+                }
+
+                let response;
+                if (taskId) {
+                    // Actualizar tarea existente
+                    response = await fetchWithAuth(`${API_URL}/tasks/${taskId}`, {
+                        method: 'PUT',
+                        body: JSON.stringify(taskData)
+                    });
+                } else {
+                    // Crear nueva tarea
+                    response = await fetchWithAuth(`${API_URL}/tasks`, {
+                        method: 'POST',
+                        body: JSON.stringify(taskData)
+                    });
+                }
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert(taskId ? 'Tarea actualizada exitosamente' : 'Tarea creada exitosamente');
+                    window.location.href = 'automatize.html';
+                } else {
+                    alert(data.message || 'Error al guardar la tarea');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al conectar con el servidor');
+            }
+        });
+
+        // Eliminar tarea (DELETE)
+        deleteButton.addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            if (!taskId) {
+                alert('No se puede eliminar una tarea que no existe');
+                return;
+            }
+
+            if (!confirm('¿Está seguro de que desea eliminar esta tarea? Esta acción no se puede deshacer.')) {
+                return;
+            }
+
+            try {
+                const response = await fetchWithAuth(`${API_URL}/tasks/${taskId}`, {
+                    method: 'DELETE'
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Tarea eliminada exitosamente');
+                    window.location.href = 'automatize.html';
+                } else {
+                    alert(data.message || 'Error al eliminar la tarea');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al conectar con el servidor');
+            }
+        });
+
+        // Cargar datos al iniciar
+        loadTaskData();
     </script>
 </body>
 </html>
