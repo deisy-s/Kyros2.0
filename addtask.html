@@ -215,6 +215,7 @@
                         <button id="task-button" onclick="startLightClick()">Continuar</button>
                     </div>
                 </div>
+<<<<<<< HEAD
                 <div class="col-lg-5 d-flex justify-content-center" id="rightCol-taskinfo">
                     <img src="images/Survey.png" alt="Image">
                 </div>
@@ -281,6 +282,28 @@
 
             <div class="col-lg-5 mt-3" id="btn-div" style="display: none;">
                 <button id="task-button">Guardar</button>
+=======
+                <div class="actuador" style="display: none;">
+                    <div class="timeOnActuador d-flex">
+                        <h3>Encender a la(s)</h3>
+                        <input
+                        type="time"
+                        id="turnOnTimeActuador"
+                        min="00:00"
+                        max="24:00"
+                        required />
+                    </div>
+                    <div class="timeOffActuador d-flex">
+                        <h3>Apagar a la(s)</h3>
+                        <input
+                        type="time"
+                        id="turnOffTimeActuador"
+                        min="00:00"
+                        max="24:00"
+                        required />
+                    </div>
+                </div>
+>>>>>>> 43cec59b192a889311fa58e74e557959f7a136a6
             </div>
         </div>
     </div>
@@ -371,6 +394,111 @@
         }
 
         displayRoomName();
+<<<<<<< HEAD
+=======
+
+        let selectedDeviceType = null;
+
+        // Función para mostrar el formulario correcto según el tipo de dispositivo
+        function showFormForDeviceType(tipo) {
+            const lightDiv = document.querySelector('.light');
+            const fanDiv = document.querySelector('.fan');
+            const alarmDiv = document.querySelector('.alarm');
+            const actuadorDiv = document.querySelector('.actuador');
+
+            // Ocultar todos
+            lightDiv.style.display = 'none';
+            fanDiv.style.display = 'none';
+            alarmDiv.style.display = 'none';
+            actuadorDiv.style.display = 'none';
+
+            // Mostrar el correcto según el tipo
+            if (tipo === 'luz') {
+                lightDiv.style.display = 'block';
+            } else if (tipo === 'temperatura') {
+                fanDiv.style.display = 'block';
+            } else if (tipo === 'actuador') {
+                actuadorDiv.style.display = 'block';
+            } else {
+                // Por defecto, mostrar luz
+                lightDiv.style.display = 'block';
+            }
+        }
+
+        // Cargar dispositivos del usuario
+        async function loadDevices() {
+            try {
+                const deviceId = getParameterByName('deviceId');
+                const devicename = getParameterByName('devicename');
+
+                const response = await fetchWithAuth(`${API_URL}/devices`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const dropdown = document.getElementById('tableMenu');
+                    const dropdownButton = document.getElementById('dropdownMenuButton');
+
+                    dropdown.innerHTML = '';
+
+                    if (data.data.length === 0) {
+                        dropdown.innerHTML = '<li><a class="dropdown-item disabled" href="#">No hay dispositivos</a></li>';
+                        return;
+                    }
+
+                    // Si viene con deviceId, pre-seleccionarlo
+                    if (deviceId) {
+                        // Buscar el dispositivo para obtener su tipo
+                        const deviceResponse = await fetchWithAuth(`${API_URL}/devices/${deviceId}`);
+                        const deviceData = await deviceResponse.json();
+
+                        if (deviceData.success) {
+                            selectedDeviceId = deviceId;
+                            selectedDeviceType = deviceData.data.tipo;
+                            dropdownButton.textContent = devicename || 'Dispositivo seleccionado';
+
+                            // Mostrar el formulario correcto
+                            showFormForDeviceType(selectedDeviceType);
+
+                            // Agregar solo el dispositivo seleccionado (bloqueado)
+                            const li = document.createElement('li');
+                            li.innerHTML = `<a class="dropdown-item active" href="#">${devicename}</a>`;
+                            dropdown.appendChild(li);
+                        }
+                    } else {
+                        // Mostrar todos los dispositivos
+                        data.data.forEach(device => {
+                            const li = document.createElement('li');
+                            const a = document.createElement('a');
+                            a.className = 'dropdown-item';
+                            a.href = '#';
+                            a.textContent = device.nombre;
+                            a.onclick = () => {
+                                selectedDeviceId = device._id;
+                                selectedDeviceType = device.tipo;
+                                dropdownButton.textContent = device.nombre;
+                                showFormForDeviceType(device.tipo);
+                            };
+                            li.appendChild(a);
+                            dropdown.appendChild(li);
+                        });
+
+                        if (data.data.length > 0) {
+                            selectedDeviceId = data.data[0]._id;
+                            selectedDeviceType = data.data[0].tipo;
+                            dropdownButton.textContent = data.data[0].nombre;
+                            showFormForDeviceType(data.data[0].tipo);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error al cargar dispositivos:', error);
+                alert('Error al cargar los dispositivos');
+            }
+        }
+
+        // Cargar cuando la página esté lista
+        document.addEventListener('DOMContentLoaded', loadDevices);
+>>>>>>> 43cec59b192a889311fa58e74e557959f7a136a6
     </script>
 
     <script>
@@ -567,10 +695,14 @@
             }
 
             try {
-                // Recopilar datos del formulario
+                // Recopilar datos del formulario para automatización
                 const taskData = {
                     nombre: taskName,
-                    tipo: 'programada',
+                    descripcion: '',
+                    activa: true,
+                    trigger: {
+                        tipo: 'horario'
+                    },
                     acciones: []
                 };
 
@@ -586,16 +718,34 @@
                     orden: 0
                 };
 
+                // Si es actuador (simplificado - solo horario)
+                const actuadorDiv = document.querySelector('.actuador');
+                if (actuadorDiv && actuadorDiv.style.display !== 'none') {
+                    const turnOnTime = document.getElementById('turnOnTimeActuador').value;
+                    const turnOffTime = document.getElementById('turnOffTimeActuador').value;
+
+                    if (turnOnTime) {
+                        taskData.trigger.horario = {
+                            dias: [0, 1, 2, 3, 4, 5, 6],
+                            hora: turnOnTime
+                        };
+                    }
+
+                    accion.accion = 'encender';
+                    accion.parametros = {
+                        horaApagar: turnOffTime || null
+                    };
+                }
                 // Si es luz
-                if (lightDiv && lightDiv.style.display !== 'none') {
+                else if (lightDiv && lightDiv.style.display !== 'none') {
                     const turnOnTime = document.querySelector('.light #turnOnTime').value;
                     const turnOffTime = document.querySelector('.light #turnOffTime').value;
                     const lightOnSwitch = document.querySelector('#lightOnSwitch input[type="checkbox"]').checked;
                     const lightOffSwitch = document.querySelector('#lightOffSwitch input[type="checkbox"]').checked;
 
                     if (turnOnTime) {
-                        taskData.programacion = {
-                            tipo: 'diaria',
+                        taskData.trigger.horario = {
+                            dias: [0, 1, 2, 3, 4, 5, 6],
                             hora: turnOnTime
                         };
                     }
@@ -607,7 +757,7 @@
                         horaApagar: turnOffTime || null
                     };
                 }
-                // Si es ventilador
+                // Si es ventilador (sensor de temperatura)
                 else if (fanDiv && fanDiv.style.display !== 'none') {
                     const turnOnTime = document.getElementById('turnOnTime').value;
                     const turnOnTemp = document.getElementById('turnOnTemp').value;
@@ -615,8 +765,8 @@
                     const turnOffTemp = document.getElementById('turnOffTemp').value;
 
                     if (turnOnTime) {
-                        taskData.programacion = {
-                            tipo: 'diaria',
+                        taskData.trigger.horario = {
+                            dias: [0, 1, 2, 3, 4, 5, 6],
                             hora: turnOnTime
                         };
                     }
@@ -633,8 +783,8 @@
                     const turnOn = document.getElementById('turnOn').value;
 
                     if (turnOn) {
-                        taskData.programacion = {
-                            tipo: 'diaria',
+                        taskData.trigger.horario = {
+                            dias: [0, 1, 2, 3, 4, 5, 6],
                             hora: turnOn
                         };
                     }
@@ -644,8 +794,8 @@
 
                 taskData.acciones.push(accion);
 
-                // Crear la tarea
-                const response = await fetchWithAuth(`${API_URL}/tasks`, {
+                // Crear la automatización
+                const response = await fetchWithAuth(`${API_URL}/automatize`, {
                     method: 'POST',
                     body: JSON.stringify(taskData)
                 });
@@ -653,7 +803,11 @@
                 const data = await response.json();
 
                 if (response.ok) {
+<<<<<<< HEAD
                     swal({title:"Tarea creada exitosamente", icon:"success",});
+=======
+                    alert('Automatización creada exitosamente');
+>>>>>>> 43cec59b192a889311fa58e74e557959f7a136a6
                     const roomId = getParameterByName('roomId');
                     const roomname = getParameterByName('roomname');
                     const deviceId = getParameterByName('deviceId');
