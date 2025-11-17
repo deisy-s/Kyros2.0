@@ -460,13 +460,8 @@
                     console.log('✅ Automatización cargada exitosamente');
                 }
             } catch (error) {
-<<<<<<< HEAD
-                console.error('Error al cargar tarea:', error);
-                swal("Error", "Error al cargar la tarea", "error");
-=======
                 console.error('Error al cargar automatización:', error);
-                alert('Error al cargar la automatización');
->>>>>>> 43cec59b192a889311fa58e74e557959f7a136a6
+                swal("Error", "Error al cargar la automatización", "error");
             }
         }
 
@@ -477,17 +472,12 @@
             const taskName = taskNameInput.value.trim();
 
             if (!taskName) {
-<<<<<<< HEAD
-                alert('Por favor ingrese el nombre de la tarea');
                 swal("Campo vacío", "Favor de ingresar el nombre de la tarea", "warning");
-=======
-                alert('Por favor ingrese el nombre de la automatización');
                 return;
             }
 
             if (!selectedDeviceId) {
-                alert('Por favor seleccione un dispositivo');
->>>>>>> 43cec59b192a889311fa58e74e557959f7a136a6
+                swal("Campo vacío", "Favor de seleccionar un dispositivo", "warning");
                 return;
             }
 
@@ -573,21 +563,10 @@
                 const data = await response.json();
 
                 if (response.ok) {
-<<<<<<< HEAD
-                    if(taskId){
-                        swal({title:"Tarea actualizada exitosamente", icon:"success",});
-                    } else {
-                        swal({title:"Tarea creada exitosamente", icon:"success",});
-                    }
+                    swal({title:"Automatización actualizada exitosamente", icon:"success",});
                     window.location.href = 'automatize.html';
                 } else {
-                    swal("Error", "Error al guardar la tarea", "error");
-=======
-                    alert('Automatización actualizada exitosamente');
-                    window.location.href = 'automatize.html';
-                } else {
-                    alert(data.message || 'Error al actualizar la automatización');
->>>>>>> 43cec59b192a889311fa58e74e557959f7a136a6
+                    swal("Error", "Error al actualizar la automatización", "error");
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -600,27 +579,19 @@
             e.preventDefault();
 
             if (!taskId) {
-<<<<<<< HEAD
-                swal("Error", "No se puede eliminar una tarea que no existe", "error");
+                swal("Error", "No se puede eliminar una automatización que no existe", "error");
                 return;
             }
 
             const willDelete = await swal({
                 title: "¿Está seguro?",
-                text: "Se eliminará esta tarea",
+                text: "Se eliminará esta automatización",
                 icon: "warning",
                 buttons: true,
                 dangerMode: true,
             });
 
             if(!willDelete){
-=======
-                alert('No se puede eliminar una automatización que no existe');
-                return;
-            }
-
-            if (!confirm('¿Está seguro de que desea eliminar esta automatización? Esta acción no se puede deshacer.')) {
->>>>>>> 43cec59b192a889311fa58e74e557959f7a136a6
                 return;
             }
 
@@ -632,17 +603,10 @@
                 const data = await response.json();
 
                 if (response.ok) {
-<<<<<<< HEAD
-                    swal({title:"Tarea eliminada exitosamente", icon:"success",});
+                    swal({title:"Automatización eliminada exitosamente", icon:"success",});
                     window.location.href = 'automatize.html';
                 } else {
-                    swal("Error", "Error al eliminar la tarea", "error");
-=======
-                    alert('Automatización eliminada exitosamente');
-                    window.location.href = 'automatize.html';
-                } else {
-                    alert(data.message || 'Error al eliminar la automatización');
->>>>>>> 43cec59b192a889311fa58e74e557959f7a136a6
+                    swal("Error", "Error al eliminar la automatización", "error");
                 }
             } catch (error) {
                 console.error('Error:', error);

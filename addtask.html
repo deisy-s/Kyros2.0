@@ -215,7 +215,6 @@
                         <button id="task-button" onclick="startLightClick()">Continuar</button>
                     </div>
                 </div>
-<<<<<<< HEAD
                 <div class="col-lg-5 d-flex justify-content-center" id="rightCol-taskinfo">
                     <img src="images/Survey.png" alt="Image">
                 </div>
@@ -282,28 +281,6 @@
 
             <div class="col-lg-5 mt-3" id="btn-div" style="display: none;">
                 <button id="task-button">Guardar</button>
-=======
-                <div class="actuador" style="display: none;">
-                    <div class="timeOnActuador d-flex">
-                        <h3>Encender a la(s)</h3>
-                        <input
-                        type="time"
-                        id="turnOnTimeActuador"
-                        min="00:00"
-                        max="24:00"
-                        required />
-                    </div>
-                    <div class="timeOffActuador d-flex">
-                        <h3>Apagar a la(s)</h3>
-                        <input
-                        type="time"
-                        id="turnOffTimeActuador"
-                        min="00:00"
-                        max="24:00"
-                        required />
-                    </div>
-                </div>
->>>>>>> 43cec59b192a889311fa58e74e557959f7a136a6
             </div>
         </div>
     </div>
@@ -394,8 +371,6 @@
         }
 
         displayRoomName();
-<<<<<<< HEAD
-=======
 
         let selectedDeviceType = null;
 
@@ -498,7 +473,6 @@
 
         // Cargar cuando la página esté lista
         document.addEventListener('DOMContentLoaded', loadDevices);
->>>>>>> 43cec59b192a889311fa58e74e557959f7a136a6
     </script>
 
     <script>
@@ -803,11 +777,7 @@
                 const data = await response.json();
 
                 if (response.ok) {
-<<<<<<< HEAD
                     swal({title:"Tarea creada exitosamente", icon:"success",});
-=======
-                    alert('Automatización creada exitosamente');
->>>>>>> 43cec59b192a889311fa58e74e557959f7a136a6
                     const roomId = getParameterByName('roomId');
                     const roomname = getParameterByName('roomname');
                     const deviceId = getParameterByName('deviceId');

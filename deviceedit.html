@@ -69,7 +69,6 @@
         <div class="row">
             <h1 class="heading">Editar dispositivo</h1>
         </div>
-<<<<<<< HEAD
         <div class="row d-flex justify-content-center align-items-center" id="room-content">
             <div class="col-lg-5 d-flex justify-content-center" id="leftCol-addroom">
                 <div>
@@ -84,56 +83,23 @@
                             data-mdb-ripple-init
                             aria-expanded="false"
                         >
+                        Seleccionar tipo
                         </button>
                         <ul class="dropdown-menu w-100" id="tableMenu" aria-labelledby="dropdownMenuButton">
-                            <li><a class="dropdown-item" href="#">Alarma</a></li>
-                            <li><a class="dropdown-item" href="#">Cámara</a></li>
-                            <li><a class="dropdown-item" href="#">Foco</a></li>
-                            <li><a class="dropdown-item" href="#">Sensor de humo y gas</a></li>
-                            <li><a class="dropdown-item" href="#">Sensor de movimiento</a></li>
-                            <li><a class="dropdown-item" href="#">Sensor de temperatura y humedad</a></li>
-                            <li><a class="dropdown-item" href="#">Ventilador</a></li>
+                            <li><a class="dropdown-item" href="#" data-type="luz">Luz</a></li>
+                            <li><a class="dropdown-item" href="#" data-type="temperatura">Temperatura</a></li>
+                            <li><a class="dropdown-item" href="#" data-type="actuador">Actuador</a></li>
                         </ul>
                     </div>
                     <h3>Nombre de dispositivo</h3>
-                    <input type="text" id="userinput" name="deviceName">
-                    <h3>Conexión</h3>
-                    <input type="text" id="user-input" name="conection">
+                    <input type="text" id="deviceNameInput" name="deviceName">
+                    <h3>Pin del dispositivo</h3>
+                    <input type="number" id="pinInput" name="pin" placeholder="Ej: 17">
                     <br>
                     <button class="button-save">Guardar</button>
                     <br>
                     <button class="button-delete mt-2">Eliminar</button>
                 </div>
-=======
-        <div class="row d-flex justify-content-center align-items-center">
-            <div class="col-lg-5" id="leftCol-addroom">
-                <h3>Tipo de dispositivo</h3>
-                <div class="dropdown">
-                    <button
-                        class="btn btn-primary dropdown-toggle"
-                        data-bs-toggle="dropdown"
-                        type="button"
-                        id="dropdownMenuButton"
-                        data-mdb-dropdown-init
-                        data-mdb-ripple-init
-                        aria-expanded="false"
-                    >
-                        Seleccionar tipo
-                    </button>
-                    <ul class="dropdown-menu w-100" id="tableMenu" aria-labelledby="dropdownMenuButton">
-                        <li><a class="dropdown-item" href="#" data-type="luz">Luz</a></li>
-                        <li><a class="dropdown-item" href="#" data-type="temperatura">Temperatura</a></li>
-                        <li><a class="dropdown-item" href="#" data-type="actuador">Actuador</a></li>
-                    </ul>
-                </div>
-                <h3>Nombre de dispositivo</h3>
-                <input type="text" id="deviceNameInput" name="deviceName">
-                <h3>Pin del dispositivo</h3>
-                <input type="number" id="pinInput" name="pin" placeholder="Ej: 17">
-
-                <button class="button-login">Guardar</button>
-                <button class="button-delete mt-1">Eliminar</button>
->>>>>>> 43cec59b192a889311fa58e74e557959f7a136a6
             </div>
             <div class="col-lg-5 d-flex justify-content-center">
                 <img id="room-img" src="images/Motivation 5.png" alt="Device">
@@ -272,11 +238,7 @@
                 }
             } catch (error) {
                 console.error('Error:', error);
-<<<<<<< HEAD
                 await swal("Error", "Error al cargar los datos", "error");
-=======
-                alert('Error al cargar los datos del dispositivo');
->>>>>>> 43cec59b192a889311fa58e74e557959f7a136a6
                 window.location.href = `devices.html?roomId=${roomId}&roomname=${roomname}`;
             }
         }
@@ -327,41 +289,11 @@
 
                 const data = await response.json();
 
-<<<<<<< HEAD
-                    if (response.ok) {
-                        swal({title:"Cámara actualizada exitosamente", icon:"success",});
-                        window.location.href = `devices.html?roomId=${roomId}&roomname=${roomname}`;
-                    } else {
-                        swal("Error", "Error al actualizar la cámara", "error");
-                    }
-                } else {
-                    // Para dispositivos normales
-                    const tipo = deviceTypeMap[selectedDeviceType] || 'luz';
-
-                    const response = await fetchWithAuth(`${API_URL}/devices/${deviceId}`, {
-                        method: 'PUT',
-                        body: JSON.stringify({
-                            nombre: deviceName,
-                            tipo: tipo,
-                            conexion: connection
-                        })
-                    });
-
-                    const data = await response.json();
-
-                    if (response.ok) {
-                        swal({title:"Dispositivo actualizado exitosamente", icon:"success",});
-                        window.location.href = `devices.html?roomId=${roomId}&roomname=${roomname}`;
-                    } else {
-                        swal("Error", "Error al actualizar el dispositivo", "error");
-                    }
-=======
                 if (response.ok) {
-                    alert('Dispositivo actualizado exitosamente');
+                    swal({title:"Dispositivo actualizado exitosamente", icon:"success",});
                     window.location.href = `devices.html?roomId=${roomId}&roomname=${roomname}`;
                 } else {
-                    alert(data.message || 'Error al actualizar el dispositivo');
->>>>>>> 43cec59b192a889311fa58e74e557959f7a136a6
+                    swal("Error", "Error al actualizar el dispositivo", "error");
                 }
             } catch (error) {
                 console.error('Error:', error);
