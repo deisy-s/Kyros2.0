@@ -558,21 +558,21 @@ Pueden consultar directamente el código fuente en:
 Usen este checklist para trackear el progreso:
 
 ### Correcciones Urgentes
-- [ ] Cambiar texto del botón en `login.html` (línea ~160)
-- [ ] Revisar y corregir navegación con `?` doble
+- [x] Cambiar texto del botón en `login.html` (línea ~160)
+- [x] Revisar y corregir navegación con `?` doble
 
 ### Habitaciones
 - [x] Listar habitaciones - ✅ Ya integrado
 - [x] Crear habitación - ✅ Ya integrado
-- [ ] Editar habitación
-- [ ] Eliminar habitación (con confirmación)
+- [x] Editar habitación
+- [x] Eliminar habitación (con confirmación)
 
 ### Dispositivos
 - [x] Listar dispositivos - ✅ Ya integrado
 - [x] Crear dispositivo - ✅ Ya integrado
 - [x] Control de encendido/apagado - ✅ Ya integrado
-- [ ] Editar dispositivo
-- [ ] Eliminar dispositivo (con confirmación)
+- [x] Editar dispositivo
+- [x] Eliminar dispositivo (con confirmación)
 
 ### Cámaras
 - [x] Listar cámaras - ✅ Ya integrado
@@ -583,8 +583,8 @@ Usen este checklist para trackear el progreso:
 
 ### Tareas
 - [x] Cargar dispositivos en dropdown - ✅ Ya integrado (addtask.html, newtask.html)
-- [ ] Implementar creación de tarea
-- [ ] Listar tareas del usuario
+- [x] Implementar creación de tarea
+- [x] Listar tareas del usuario
 - [ ] Editar tarea
 - [ ] Eliminar tarea
 - [ ] Ejecutar tarea manualmente
@@ -601,8 +601,8 @@ Usen este checklist para trackear el progreso:
 
 ### UX General
 - [ ] Agregar loading states
-- [ ] Mejorar mensajes de error/éxito
-- [ ] Confirmaciones antes de eliminar
+- [x] Mejorar mensajes de error/éxito
+- [x] Confirmaciones antes de eliminar
 - [ ] Validaciones de formularios
 - [ ] Manejo de errores de red
 

@@ -103,7 +103,6 @@
                 <h3 class="copyright">&copy;2025 Instituto Tecnológico Superior de Guasave</h3>
             </div>
         </div>
-
     </footer>
     <!-- End footer -->
 
@@ -151,7 +150,13 @@
                     const streamUrl = camera.streaming.urlPrincipal;
 
                     cameraDiv.innerHTML = `
-                        <h3>${camera.nombre} - ${roomName}</h3>
+                        <div class="row">
+                            <h3 class="col-8">${camera.nombre} - ${roomName}</h3>
+                            <div class="col-4 d-flex justify-content-end">
+                                <img class="col-2" src="images/Edit.png" alt="" onclick="editCam()">
+                                <img class="col-2" src="images/Close.png" alt="" onclick="deleteCam()">    
+                            </div>
+                        </div>
                         <div class="cam-view" style="background-color: #1a1a1a; min-height: 300px; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
                             ${isConnected ?
                                 `<div style="color: #888; text-align: center;">

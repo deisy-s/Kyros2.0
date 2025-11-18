@@ -258,6 +258,14 @@ footer .container{
     font-size: 24px;
 }
 
+#cam-section img{
+    width: 4%;
+    height: 4%;
+    min-height: 30px;
+    min-width: 30px;
+    cursor: pointer;
+}
+
 .cam-view{
     background: #fff;
     border-radius: 18px;
@@ -275,19 +283,22 @@ footer .container{
 #task-section{
     background: #f0f0f0;
     border-radius: 18px;
-    padding: 20px 20px 0px 20px;
+    padding: 20px 20px 2px 20px;
     margin-bottom: 20px;
     cursor: pointer;
+    height: auto;
 }
 
 #task-section img{
-    width: 35px;
-    height: 30px;
+    width: 4%;
+    height: 4%;
+    min-height: 32px;
+    min-width: 32px;
 }
 
 #task-section .text{
     margin-left: 60px;
-    margin-top: -38px;
+    margin-top: -36px;
 }
 
 #task-section h2{
@@ -307,8 +318,6 @@ footer .container{
     display: inline-block;
     width: 60px;
     height: 34px;
-    margin-top: 5px;
-    margin-left: 80px;
 }
 
 /* ocultar la checkbox que se activa */
@@ -366,6 +375,11 @@ input:checked + .slider:before {
     border-radius: 50%;
 }
 
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
 #add{
     background: #f0f0f0;
     border-radius: 18px;
@@ -415,8 +429,8 @@ input:checked + .slider:before {
 #room-section #edit{
     width: 4%;
     height: 4%;
-    min-width: 30px;
-    min-height: 30px;
+    min-width: 36px;
+    min-height: 36px;
 }
 
 #room-section .text{
@@ -466,8 +480,8 @@ input:checked + .slider:before {
 #device-section #edit{
     width: 4%;
     height: 4%;
-    min-width: 30px;
-    min-height: 30px;
+    min-width: 36px;
+    min-height: 36px;
 }
 
 #device-section .text{
@@ -543,7 +557,7 @@ input:checked + .slider:before {
     text-align: left;
 }
 
-#user-input, #password, #deviceNameInput, #pinInput{
+#user-input, #password, #deviceNameInput, #pinInput, #connectionInput{
     width: 300px;
     height: 35px;
     background: transparent;
@@ -906,47 +920,6 @@ input:checked + .slider:before {
     margin-left: 80px;
 }
 
-/* Animation from Animista 
-   Licensed under FreeBSD License
-   http://animista.net */
-.swing-in-bottom-bck {
-	-webkit-animation: swing-in-bottom-bck 0.6s cubic-bezier(0.175, 0.885, 0.320, 1.275) both;
-	        animation: swing-in-bottom-bck 0.6s cubic-bezier(0.175, 0.885, 0.320, 1.275) both;
-}
-
-@-webkit-keyframes swing-in-bottom-bck {
-  0% {
-    -webkit-transform: rotateX(-70deg);
-            transform: rotateX(-70deg);
-    -webkit-transform-origin: bottom;
-            transform-origin: bottom;
-    opacity: 0;
-  }
-  100% {
-    -webkit-transform: rotateX(0);
-            transform: rotateX(0);
-    -webkit-transform-origin: bottom;
-            transform-origin: bottom;
-    opacity: 1;
-  }
-}
-@keyframes swing-in-bottom-bck {
-  0% {
-    -webkit-transform: rotateX(-70deg);
-            transform: rotateX(-70deg);
-    -webkit-transform-origin: bottom;
-            transform-origin: bottom;
-    opacity: 0;
-  }
-  100% {
-    -webkit-transform: rotateX(0);
-            transform: rotateX(0);
-    -webkit-transform-origin: bottom;
-            transform-origin: bottom;
-    opacity: 1;
-  }
-}
-
 #task-button{
     border: none;
     background: linear-gradient(90deg,rgba(70, 145, 219, 1) 1%, rgba(6, 81, 199, 1) 100%);
@@ -1009,6 +982,47 @@ input:checked + .slider:before {
     letter-spacing: 1px;
     font-family: sans-serif;
     padding: 10px 10px;
+}
+
+/* Animation from Animista 
+   Licensed under FreeBSD License
+   http://animista.net */
+.swing-in-bottom-bck {
+	-webkit-animation: swing-in-bottom-bck 0.6s cubic-bezier(0.175, 0.885, 0.320, 1.275) both;
+	        animation: swing-in-bottom-bck 0.6s cubic-bezier(0.175, 0.885, 0.320, 1.275) both;
+}
+
+@-webkit-keyframes swing-in-bottom-bck {
+  0% {
+    -webkit-transform: rotateX(-70deg);
+            transform: rotateX(-70deg);
+    -webkit-transform-origin: bottom;
+            transform-origin: bottom;
+    opacity: 0;
+  }
+  100% {
+    -webkit-transform: rotateX(0);
+            transform: rotateX(0);
+    -webkit-transform-origin: bottom;
+            transform-origin: bottom;
+    opacity: 1;
+  }
+}
+@keyframes swing-in-bottom-bck {
+  0% {
+    -webkit-transform: rotateX(-70deg);
+            transform: rotateX(-70deg);
+    -webkit-transform-origin: bottom;
+            transform-origin: bottom;
+    opacity: 0;
+  }
+  100% {
+    -webkit-transform: rotateX(0);
+            transform: rotateX(0);
+    -webkit-transform-origin: bottom;
+            transform-origin: bottom;
+    opacity: 1;
+  }
 }
 
 #main-container-automatize h3{
@@ -1099,7 +1113,6 @@ input:checked + .slider:before {
         margin-left: 0;
     }
 
-    /* TODO: CENTER IN PHONE SCREENS */
     #leftCol-register{
         margin-left: 0px;
         padding-left: 40px;
@@ -1175,15 +1188,27 @@ input:checked + .slider:before {
     }
 
     #task-section{
-        height: 80px;
+        padding-bottom: 0px;
     }
 
-    .switch {
-        position: relative;
-        left: 150px;
-        width: 60px;
-        height: 34px;
-        top: -60px;
+    #task-section .text{
+        width: 260px;
+    }
+
+    #task-section .switch {
+        width: 50px;
+        height: 27px;
+    }
+
+    #task-section .slider:before {
+        height: 20px;
+        width: 20px;
+    }
+
+    #task-section input:checked + .slider:before {
+        -webkit-transform: translateX(13px);
+        -ms-transform: translateX(13px);
+        transform: translateX(13px);
     }
 
     #main-container-deviceinfo .switch {

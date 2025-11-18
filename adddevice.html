@@ -86,10 +86,13 @@
                         Seleccionar tipo
                         </button>
                         <ul class="dropdown-menu w-100" id="tableMenu" aria-labelledby="dropdownMenuButton">
-                            <li><a class="dropdown-item" href="#" data-type="luz">Luz</a></li>
-                            <li><a class="dropdown-item" href="#" data-type="temperatura">Temperatura</a></li>
                             <li><a class="dropdown-item" href="#" data-type="actuador">Actuador</a></li>
                             <li><a class="dropdown-item" href="#" data-type="camara">Cámara</a></li>
+                            <li><a class="dropdown-item" href="#" data-type="gas">Gas</a></li>
+                            <li><a class="dropdown-item" href="#" data-type="humedad">Humedad</a></li>
+                            <li><a class="dropdown-item" href="#" data-type="luz">Luz</a></li>
+                            <li><a class="dropdown-item" href="#" data-type="movimiento">Movimiento</a></li>
+                            <li><a class="dropdown-item" href="#" data-type="temperatura">Temperatura</a></li>
                         </ul>
                     </div>
                     <h3>Nombre de dispositivo</h3>
@@ -216,27 +219,31 @@
         });
 
         // Add device functionality
-        const saveButton = document.querySelector('.button-login');
+        const saveButton = document.querySelector('.button-save');
         const deviceNameInput = document.getElementById('deviceNameInput');
 
         saveButton.addEventListener('click', async (e) => {
             e.preventDefault();
+            saveButton.disabled=true;
 
             const deviceName = deviceNameInput.value.trim();
 
             if (!selectedDeviceType) {
                 alert('Por favor seleccione el tipo de dispositivo');
                 swal("Campo vacío", "Favor de seleccionar el tipo de dispositivo", "warning");
+                saveButton.disabled=false;
                 return;
             }
 
             if (!deviceName) {
                 swal("Campo vacío", "Favor de ingresar el nombre del dispositivo", "warning");
+                saveButton.disabled=false;
                 return;
             }
 
             if(!connection){
                 swal("Campo vacío", "Favor de ingresar la conexión del dispositivo", "warning");
+                saveButton.disabled=false;
                 return;
             }
 
@@ -270,6 +277,7 @@
 
                     if (response.ok) {
                         swal({title: "Cámara creada exitosamente", icon:"success",});
+                        saveButton.disabled=false;
                         window.location.href = `devices.html?roomId=${roomId}&roomname=${roomname}`;
                     } else {
                         swal("Error", "Error al crear la cámara", "error");
@@ -280,6 +288,7 @@
 
                     if (!pin || pin < 0) {
                         alert('Por favor ingrese un número de pin válido');
+                        saveButton.disabled=false;
                         return;
                     }
 
@@ -303,6 +312,7 @@
 
                     if (response.ok) {
                         swal({title:"Dispositivo creado exitosamente", icon:"success"});
+                        saveButton.disabled=false;
                         window.location.href = `devices.html?roomId=${roomId}&roomname=${roomname}`;
                     } else {
                         swal("Error", "Error al crear el dispositivo", "error");
@@ -310,6 +320,7 @@
                 }
             } catch (error) {
                 console.error('Error:', error);
+                saveButton.disabled=false;
                 swal("Error", "Error al conectar con el servidor", "error");
             }
         });

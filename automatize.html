@@ -162,16 +162,18 @@
                         taskSection.style.cursor = 'pointer';
 
                         taskSection.innerHTML = `
-                            <div class="col-lg-10 col-sm-10" onclick="window.location.href='taskinfo.html?taskId=${auto._id}&taskname=${encodeURIComponent(auto.nombre)}'">
-                                <div>
-                                    <img src="images/Task.png">
-                                </div>
-                                <div class="text">
-                                    <h2>${auto.nombre}</h2>
-                                    <p>${descripcion}</p>
+                            <div class="col-10" onclick="window.location.href='taskinfo.html?taskId=${auto._id}&taskname=${encodeURIComponent(auto.nombre)}'">
+                                <div class="row">
+                                    <div class="col-2">
+                                        <img src="images/Task.png">
+                                    </div>
+                                    <div class="text col-10">
+                                        <h2>${auto.nombre}</h2>
+                                        <p>${descripcion}</p>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-lg-2 col-sm-2">
+                            <div class="col-2 d-flex justify-content-end">
                                 <label class="switch">
                                     <input type="checkbox" ${auto.activa ? 'checked' : ''}
                                            onchange="toggleAutomation('${auto._id}', this.checked)">
