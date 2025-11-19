@@ -7,7 +7,7 @@ const fetch = require('node-fetch');
 // @desc    Obtener configuración completa para ESP32
 // @route   GET /api/esp-config/:habitacionId
 // @access  Public (el ESP32 no tiene autenticación JWT)
-exports.getESPConfig = async (req, res, next) => {
+const getESPConfig = async (req, res, next) => {
     try {
         const { habitacionId } = req.params;
 
