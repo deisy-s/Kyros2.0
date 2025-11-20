@@ -153,8 +153,8 @@
                         <div class="row">
                             <h3 class="col-8">${camera.nombre} - ${roomName}</h3>
                             <div class="col-4 d-flex justify-content-end">
-                                <img class="col-2" src="images/Edit.png" alt="" onclick="editCam()">
-                                <img class="col-2" src="images/Close.png" alt="" onclick="deleteCam()">    
+                                <img class="col-2" src="images/Edit.png" alt="" onclick="editCam('${camera._id}', '${camera.nombre}', '${camera.habitacion._id}', '${roomName}')">
+                                <img class="col-2" src="images/Close.png" alt="" onclick="deleteCam('${camera._id}', '${camera.nombre}')">
                             </div>
                         </div>
                         <div class="cam-view" style="background-color: #1a1a1a; min-height: 300px; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
@@ -223,6 +223,43 @@
                     loadCameras(); // Recargar cámaras
                 } else {
                     swal("Error", "Error al cambiar la grabación", "error");
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                swal("Error", "Error al conectar con el servidor", "error");
+            }
+        }
+
+        async function editCam(cameraId, cameraName, roomId, roomName) {
+            // Redirigir a la página de edición de cámara
+            window.location.href = `cameraedit.html?cameraId=${cameraId}`;
+        }
+
+        async function deleteCam(cameraId, cameraName) {
+            const willDelete = await swal({
+                title: "¿Está seguro?",
+                text: `Se eliminará la cámara "${cameraName}"`,
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            });
+
+            if (!willDelete) {
+                return;
+            }
+
+            try {
+                const response = await fetchWithAuth(`${API_URL}/cameras/${cameraId}`, {
+                    method: 'DELETE'
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    swal({title:"Cámara eliminada exitosamente", icon:"success"});
+                    loadCameras(); // Recargar cámaras
+                } else {
+                    swal("Error", data.error || "Error al eliminar la cámara", "error");
                 }
             } catch (error) {
                 console.error('Error:', error);

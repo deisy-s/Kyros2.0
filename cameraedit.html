@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
-    <title>Editar habitación - KYROS</title>
+    <title>Editar cámara - KYROS</title>
     <link rel="icon" href="images/logo.ico" type="image/x-icon" />
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
@@ -30,10 +30,10 @@
                             <a class="nav-link mx-lg-2" aria-current="page" href="index.html">Inicio</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link mx-lg-2 active" href="rooms.html">Habitaciones</a>
+                            <a class="nav-link mx-lg-2" href="rooms.html">Habitaciones</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link mx-lg-2" href="security.html">Seguridad</a>
+                            <a class="nav-link mx-lg-2 active" href="security.html">Seguridad</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link mx-lg-2" href="automatize.html">Automatización</a>
@@ -57,25 +57,35 @@
             <h6 class="mb-0" id="breadcrumb">
                 <a href="index.html" class="text-reset">Inicio</a>
                 <span>></span>
-                <a href="rooms.html" class="text-reset">Habitaciones</a>
+                <a href="security.html" class="text-reset">Seguridad</a>
                 <span>></span>
-                <a href="#" class="text-reset" id="roomRoute" onclick="sendName()"></a>
-                <span>></span>
-                <a href="#" class="text-reset">Editar habitación</a>
+                <a href="#" class="text-reset">Editar cámara</a>
             </h6>
             </nav>
             <!-- Breadcrumb -->
         </div>
         <div class="row">
-            <h1 class="heading">Editar habitación</h1>
+            <h1 class="heading">Editar cámara</h1>
         </div>
         <div class="row d-flex justify-content-center align-items-center" id="room-content">
             <div class="col-lg-5 d-flex justify-content-center" id="leftCol-addroom">
                 <div>
-                    <h3>Nombre de habitación</h3>
-                    <input type="text" id="user-input" name="roomName">
-                    <h3>IP de habitación (ESP32)</h3>
-                    <input type="text" id="user-input" name="ipESP32">
+                    <h3>Tipo de dispositivo</h3>
+                    <div class="dropdown">
+                        <button
+                            class="btn btn-primary dropdown-toggle"
+                            type="button"
+                            id="dropdownMenuButton"
+                            disabled
+                        >
+                        Cámara
+                        </button>
+                    </div>
+                    <h3>Nombre de cámara</h3>
+                    <input type="text" id="cameraNameInput" name="cameraName" placeholder="Ej: Cámara Entrada">
+                    <br>
+                    <h3>URL de conexión (Streaming)</h3>
+                    <input type="text" id="connectionInput" name="connection" placeholder="Ej: rtsp://192.168.1.100/stream">
                     <br>
                     <button class="button-save">Guardar</button>
                     <br>
@@ -83,7 +93,7 @@
                 </div>
             </div>
             <div class="col-lg-5 d-flex justify-content-center">
-                <img id="room-img" src="images/Office Work.png" alt="Room">
+                <img id="room-img" src="images/Motivation 5.png" alt="Camera">
             </div>
         </div>
     </div>
@@ -135,12 +145,11 @@
     <script src="js/auth.js"></script>
     <script src="js/navbar.js"></script>
 
-    <!-- Edit room functionality -->
     <script>
         // Proteger la página
         requireAuth();
 
-        // Función auxiliar para obtener parámetros de URL
+        // Obtener parámetros de URL
         function getParameterByName(name) {
             var url = window.location.href;
             name = name.replace(/[\[\]]/g, "\\$&");
@@ -150,107 +159,94 @@
             return decodeURIComponent(results[2].replace(/\+/g, " "));
         }
 
-        function eraseEnd(name){
-            name = name.replace(/\?.*$/g, " ");
-            return name;
-        }
-
-        // Obtener parámetros de la URL
-        const roomId = getParameterByName('roomId');
-        let roomname = getParameterByName('roomname');
-
-        // Mostrar nombre en breadcrumb
-        function displayRoomName() {
-            roomname = eraseEnd(roomname);
-            document.getElementById("roomRoute").innerHTML = roomname;
-        }
-
-        function sendName(){
-            window.location.href = `rooms.html?roomId=${roomId}&roomname=${roomname}`;
-        }
-
-        displayRoomName();
-
+        const cameraId = getParameterByName('cameraId');
+        const cameraNameInput = document.getElementById('cameraNameInput');
+        const connectionInput = document.getElementById('connectionInput');
         const saveButton = document.querySelector('.button-save');
         const deleteButton = document.querySelector('.button-delete');
-        const roomNameInput = document.querySelector('input[name="roomName"]');
-        const ipInput = document.querySelector('input[name="ipESP32"]');
 
-        // Cargar datos de la habitación
-        async function loadRoomData() {
+        // Cargar datos de la cámara
+        async function loadCameraData() {
             try {
-                if (!roomId) {
-                    swal("Error", "No se encontró el ID de la habitación", "error");
-                    window.location.href = 'rooms.html';
+                if (!cameraId) {
+                    swal("Error", "No se encontró el ID de la cámara", "error");
+                    window.location.href = 'security.html';
                     return;
                 }
 
-                const response = await fetchWithAuth(`${API_URL}/rooms/${roomId}`);
+                const response = await fetchWithAuth(`${API_URL}/cameras/${cameraId}`);
                 const data = await response.json();
 
                 if (response.ok && data.success) {
-                    const room = data.data;
-                    roomNameInput.value = room.nombre;
-
-                    // Si la descripción contiene IP, extraerla
-                    if (room.descripcion && room.descripcion.startsWith('IP: ')) {
-                        ipInput.value = room.descripcion.substring(4);
-                    } else {
-                        ipInput.value = room.descripcion || '';
-                    }
+                    const camera = data.data;
+                    cameraNameInput.value = camera.nombre;
+                    connectionInput.value = camera.streaming.urlPrincipal || '';
                 } else {
-                    await swal("Error", "Error al cargar los datos de la habitación", "error");
-                    window.location.href = 'rooms.html';
+                    await swal("Error", "Error al cargar los datos de la cámara", "error");
+                    window.location.href = 'security.html';
                 }
             } catch (error) {
                 console.error('Error:', error);
                 await swal("Error", "Error al cargar los datos", "error");
-                window.location.href = 'rooms.html';
+                window.location.href = 'security.html';
             }
         }
 
         // Guardar cambios (UPDATE)
         saveButton.addEventListener('click', async (e) => {
             e.preventDefault();
+            saveButton.disabled = true;
 
-            const roomName = roomNameInput.value.trim();
-            const ipESP32 = ipInput.value.trim();
+            const cameraName = cameraNameInput.value.trim();
+            const connection = connectionInput.value.trim();
 
-            if (!roomName) {
-                swal("Error", "Favor de ingresar el nombre de la habitación", "warning");
+            if (!cameraName) {
+                swal("Error", "Favor de ingresar el nombre de la cámara", "warning");
+                saveButton.disabled = false;
+                return;
+            }
+
+            if (!connection) {
+                swal("Error", "Favor de ingresar la URL de conexión", "warning");
+                saveButton.disabled = false;
                 return;
             }
 
             try {
-                const response = await fetchWithAuth(`${API_URL}/rooms/${roomId}`, {
+                const response = await fetchWithAuth(`${API_URL}/cameras/${cameraId}`, {
                     method: 'PUT',
                     body: JSON.stringify({
-                        nombre: roomName,
-                        descripcion: ipESP32 ? `IP: ${ipESP32}` : ''
+                        nombre: cameraName,
+                        streaming: {
+                            urlPrincipal: connection,
+                            tipo: 'rtsp'
+                        }
                     })
                 });
 
                 const data = await response.json();
 
                 if (response.ok) {
-                    swal({title:"Habitación actualizada exitosamente", icon:"success",});
-                    window.location.href = 'rooms.html';
+                    swal({title:"Cámara actualizada exitosamente", icon:"success",});
+                    window.location.href = 'security.html';
                 } else {
-                    swal("Error", "Error al actualizar la habitación", "error");
+                    swal("Error", data.error || "Error al actualizar la cámara", "error");
+                    saveButton.disabled = false;
                 }
             } catch (error) {
                 console.error('Error:', error);
                 swal("Error", "Error al conectar con el servidor", "error");
+                saveButton.disabled = false;
             }
         });
 
-        // Eliminar habitación (DELETE)
+        // Eliminar cámara (DELETE)
         deleteButton.addEventListener('click', async (e) => {
             e.preventDefault();
 
             const willDelete = await swal({
                 title: "¿Está seguro?",
-                text: "Se eliminará esta habitación",
+                text: "Se eliminará esta cámara",
                 icon: "warning",
                 buttons: true,
                 dangerMode: true,
@@ -261,17 +257,17 @@
             }
 
             try {
-                const response = await fetchWithAuth(`${API_URL}/rooms/${roomId}`, {
+                const response = await fetchWithAuth(`${API_URL}/cameras/${cameraId}`, {
                     method: 'DELETE'
                 });
 
                 const data = await response.json();
 
                 if (response.ok) {
-                    swal({title:"Habitación eliminada exitosamente", icon:"success",});
-                    window.location.href = 'rooms.html';
+                    swal({title:"Cámara eliminada exitosamente", icon:"success",});
+                    window.location.href = 'security.html';
                 } else {
-                    swal("Error", "Error al eliminar la habitación", "error");
+                    swal("Error", data.error || "Error al eliminar la cámara", "error");
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -280,7 +276,7 @@
         });
 
         // Cargar datos al iniciar
-        loadRoomData();
+        loadCameraData();
     </script>
 </body>
 </html>

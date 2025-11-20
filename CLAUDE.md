@@ -4,243 +4,234 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-KYROS is a smart home IoT management web application that allows users to monitor, control, and automate IoT devices in their homes. The system includes room management, device control, security monitoring, and task automation features.
+KYROS is a smart home IoT management web application built with a Node.js/Express backend and vanilla JavaScript frontend. The system manages rooms, IoT devices (lights, sensors, thermostats), security cameras, and task automation.
 
 ## Technology Stack
 
-- **Frontend**: Static HTML pages with Bootstrap 5.3.8 for responsive design
+- **Frontend**: Static HTML + Bootstrap 5.3.8 + vanilla JavaScript
 - **Backend**: Node.js with Express 5.1.0 + RESTful API
-- **Database**: MongoDB Atlas with Mongoose 8.19.0 ODM
-- **Authentication**: JWT (JSON Web Tokens) + bcryptjs for password hashing
-- **Security**: CORS, dotenv for environment variables, protected routes middleware
+- **Database**: MongoDB Atlas with Mongoose 8.19.0 (database: `kyros`)
+- **Authentication**: JWT + bcryptjs password hashing
+- **IoT Integration**: ESP32 device support via `/api/esp` endpoints
+
+## Development Commands
+
+### Starting the Server
+
+```bash
+# Navigate to backend directory
+cd database
+
+# Install dependencies (first time only)
+npm install
+
+# Development mode (with auto-reload)
+npm run dev
+
+# Production mode
+npm start
+```
+
+Server runs at `http://localhost:3000` and serves both the API (`/api/*`) and frontend static files.
+
+### Environment Setup
+
+Copy `database/.env.example` to `database/.env` and configure:
+- `MONGODB_URI` - MongoDB Atlas connection string
+- `JWT_SECRET` - Secret key for JWT signing (change in production)
+- `PORT` - Server port (default: 3000)
+- `NODE_ENV` - Environment mode (development/production)
 
 ## Project Structure
 
 ```
 .
-├── database/                    # Backend API (Node.js + Express + MongoDB)
-│   ├── config/
-│   │   └── database.js         # Configuración de MongoDB
-│   ├── controllers/            # Lógica de negocio
-│   │   ├── authController.js   # Autenticación (login, register, profile)
-│   │   ├── roomController.js   # Gestión de habitaciones
-│   │   └── deviceController.js # Gestión de dispositivos IoT
+├── database/                    # Backend (Node.js + Express + MongoDB)
+│   ├── config/database.js       # MongoDB connection setup
+│   ├── controllers/             # Business logic (MVC pattern)
+│   │   ├── authController.js    # Authentication (login, register, profile)
+│   │   ├── roomController.js    # Room management
+│   │   ├── deviceController.js  # IoT device control
+│   │   ├── cameraController.js  # Security cameras
+│   │   ├── taskController.js    # Scheduled tasks
+│   │   ├── automatizeController.js # Automation rules
+│   │   └── espController.js     # ESP32 integration
 │   ├── middleware/
-│   │   ├── auth.js             # Protección JWT de rutas
-│   │   └── errorHandler.js     # Manejo centralizado de errores
-│   ├── models/                 # Esquemas de Mongoose
-│   │   ├── User.js             # Usuarios con bcrypt
-│   │   ├── Room.js             # Habitaciones
-│   │   ├── Device.js           # Dispositivos IoT
-│   │   ├── DeviceData.js       # Telemetría/datos históricos
-│   │   ├── Camera.js           # Cámaras de seguridad
-│   │   ├── Task.js             # Tareas programadas
-│   │   └── Automatize.js       # Reglas de automatización
-│   ├── routes/                 # Endpoints del API
-│   │   ├── auth.js             # /api/auth/*
-│   │   ├── rooms.js            # /api/rooms/*
-│   │   └── devices.js          # /api/devices/*
-│   ├── .env                    # Variables de entorno (NO COMMITEAR)
-│   ├── .env.example            # Plantilla de configuración
-│   ├── server.js               # Servidor principal (NUEVO)
-│   ├── connect.js              # Servidor legacy (obsoleto)
-│   ├── README.md               # Documentación completa del API
-│   └── package.json            # Dependencias backend
-├── images/                     # Assets estáticos e iconos
-├── *.html                      # Páginas frontend (login, rooms, devices, etc.)
-├── style.css                   # Estilos globales
-└── package.json                # Config root (Chart.js/Parcel)
+│   │   ├── auth.js              # JWT protection (protect, authorize)
+│   │   └── errorHandler.js      # Centralized error handling
+│   ├── models/                  # Mongoose schemas (7 collections)
+│   │   ├── User.js              # Users with bcrypt hashing
+│   │   ├── Room.js              # Rooms
+│   │   ├── Device.js            # IoT devices
+│   │   ├── DeviceData.js        # Telemetry/historical data
+│   │   ├── Camera.js            # Security cameras
+│   │   ├── Task.js              # Scheduled tasks
+│   │   └── Automatize.js        # Automation rules
+│   ├── routes/                  # API endpoints
+│   │   ├── auth.js              # /api/auth/*
+│   │   ├── rooms.js             # /api/rooms/*
+│   │   ├── devices.js           # /api/devices/*
+│   │   ├── cameras.js           # /api/cameras/*
+│   │   ├── tasks.js             # /api/tasks/*
+│   │   ├── automatize.js        # /api/automatize/*
+│   │   └── esp.js               # /api/esp/* (public routes for ESP32)
+│   ├── server.js                # Main server entry point
+│   ├── connect.js               # Legacy server (obsolete)
+│   └── package.json             # Backend dependencies
+├── *.html                       # Frontend pages (served by Express)
+├── style.css                    # Global styles
+└── images/                      # Static assets
 ```
-
-## Development Commands
-
-### Backend Server (NUEVO - Versión 2.0)
-
-```bash
-# Navigate to database directory
-cd database
-
-# Install dependencies
-npm install
-
-# Desarrollo con auto-reload
-npm run dev
-
-# Producción
-npm start
-
-# Legacy (obsoleto, usar solo para referencia)
-npm run legacy
-```
-
-El servidor corre en `http://localhost:3000` y proporciona:
-- Conexión a MongoDB Atlas (base de datos: Kyros)
-- API REST completa con autenticación JWT
-- Servicio de archivos estáticos del frontend
-- 7 colecciones: users, rooms, devices, devices_data, cameras, tasks, automatize
-
-### Frontend Development
-
-The frontend uses static HTML files. To develop:
-
-1. Start the backend server first (see above)
-2. Open `http://localhost:3000` in a browser
-3. The server serves static HTML files from the root directory
-
-Note: The root `package.json` references Parcel bundler for potential Chart.js integration, but the current implementation uses static HTML files.
 
 ## Architecture
 
-### Backend (database/server.js)
+### Backend (MVC Pattern)
 
-**MVC Pattern**:
-- `models/` - Mongoose schemas for MongoDB collections
-- `controllers/` - Business logic for each resource
-- `routes/` - Express route definitions
-- `middleware/` - Auth protection and error handling
-- `config/` - Database connection setup
-
-**MongoDB Connection**:
-- Uses MongoDB Atlas cluster via `config/database.js`
-- Database: `kyros` with 7 collections
-- Connection string managed via `.env` file (MONGODB_URI)
+**Key Components**:
+- **Models**: Mongoose schemas defining MongoDB collections
+- **Controllers**: Business logic that processes requests
+- **Routes**: Express route definitions that map URLs to controllers
+- **Middleware**:
+  - `protect` - Validates JWT tokens, adds `req.user` to requests
+  - `authorize(...roles)` - Restricts access by user role (estudiante/admin)
+  - `errorHandler` - Centralized error responses
 
 **Static File Serving**:
-- Serves all HTML, CSS, and image files from parent directory (`..`)
+- Express serves all HTML/CSS/images from parent directory (`..`)
+- Frontend routes explicitly mapped in `server.js` (lines 70-91)
 - Default route `/` serves `index.html`
-- All frontend pages explicitly mapped in server.js (lines 68-89)
 
-### Frontend Pages
+**MongoDB Collections** (7 total):
+1. `users` - User accounts with authentication
+2. `rooms` - Smart home rooms
+3. `devices` - IoT devices (8 types: luz, termostato, cerradura, sensor, camara, enchufe, ventilador, otro)
+4. `devices_data` - Time-series telemetry data
+5. `cameras` - Security camera configurations
+6. `tasks` - Scheduled automation tasks
+7. `automatize` - Automation rules/conditions
 
-**Public Pages**:
-- `index.html` - Landing page with features overview
-- `login.html` - User login with password visibility toggle
-- `register.html` - User registration
+### Frontend Architecture
 
-**Authenticated Pages**:
-- `rooms.html` - Room management interface
-- `roomedit.html` - Edit room details
-- `addroom.html` - Create new rooms
-- `devices.html` - Device listing and control
-- `deviceinfo.html` - Detailed device information
-- `deviceedit.html` - Edit device details
-- `adddevice.html` - Add new IoT devices
-- `security.html` - Security monitoring and alerts
-- `automatize.html` - Task automation rules
-- `addtask.html`, `newtask.html`, `taskdata.html`, `taskinfo.html` - Task management
-- `helpcenter.html` - Support documentation
+**Page Types**:
+- **Public**: `index.html`, `login.html`, `register.html`
+- **Authenticated**: `rooms.html`, `devices.html`, `security.html`, `automatize.html`, etc.
 
-**Common UI Elements**:
-- Bootstrap navbar with offcanvas mobile menu
-- Footer with logo, support links, and contact info
-- Copyright: Instituto Tecnológico Superior de Guasave
+**Current State**:
+- Uses vanilla JavaScript (no framework)
+- Bootstrap 5.3.8 for UI components
+- **Frontend NOT fully integrated with backend API** - most pages use mock/hardcoded data
+- JWT token handling needs to be implemented on client-side
+
+### API Authentication
+
+All protected endpoints require JWT token in header:
+```http
+Authorization: Bearer <token>
+```
+
+Tokens are issued on `/api/auth/login` and `/api/auth/register` with 7-day expiration (configurable via `JWT_EXPIRE`).
+
+### ESP32 Integration
+
+Public endpoints for IoT hardware (no JWT required):
+- `GET /api/esp/esp-config/:habitacionId` - Get device configuration
+- `POST /api/esp/report-data/:habitacionId` - Submit sensor data
+
+These routes are defined in `database/routes/esp.js` and use `espController.js`.
 
 ## Important Notes
 
-**Security Considerations** (✅ RESUELTO EN VERSIÓN 2.0):
-- ✅ Passwords ahora se hashean con bcrypt (ver `models/User.js`)
-- ✅ MongoDB connection string se maneja con variables de entorno (`.env`)
-- ✅ JWT implementado para autenticación (token expira en 7 días)
-- ⚠️ CORS habilitado globalmente en desarrollo (configurar en producción)
+### Security
+- Passwords hashed with bcrypt (10 salt rounds) in `User.js` pre-save hook
+- MongoDB URI stored in `.env` (never commit `.env` file)
+- JWT secret must be changed in production
+- CORS enabled globally in development (`CORS_ORIGIN=*`) - restrict in production
+- IP whitelisting required in MongoDB Atlas settings
 
-**Database Connection**:
-- The server expects IP whitelisting in MongoDB Atlas
-- Connection errors will log: "Asegúrate de que la IP de tu red esté permitida en MongoDB Atlas"
+### Code Conventions
+- Spanish used throughout (comments, variable names, UI text)
+- Schema fields mix Spanish (`nombre`, `habitacion`) and English (`email`, `password`)
+- Error responses follow format: `{ success: false, message: "...", errors: [...] }`
 
-**Client-Side JavaScript**:
-- Forms use inline JavaScript or Bootstrap components
-- No frontend framework (React, Vue, etc.) - uses vanilla JS
-- Authentication currently NOT integrated with JWT backend (needs migration)
-- Most data is currently hardcoded or mock data (needs API integration)
+### Known Integration Gaps
+1. Frontend pages currently use mock data instead of API calls
+2. JWT token storage/management not implemented on client-side
+3. Frontend forms need to be wired to POST/PUT endpoints
+4. Authentication flow not connected between login.html and backend
 
-**Naming Conventions**:
-- Spanish is used throughout (comments, variable names, UI text)
-- Schema fields mix Spanish (nombre, estudiante) and English (email, password, searchHistory)
+## API Endpoints Summary
 
-## Backend API v2.0 - Características Implementadas
+### Authentication (`/api/auth`)
+- `POST /register` - User registration
+- `POST /login` - User login (returns JWT)
+- `GET /me` - Get current user profile (protected)
+- `PUT /updateprofile` - Update user profile (protected)
+- `PUT /updatepassword` - Change password (protected)
 
-### Arquitectura RESTful
-- **Patrón MVC**: Models, Controllers, Routes separados
-- **Middleware centralizado**: Autenticación, manejo de errores
-- **Configuración modular**: Database config, environment variables
+### Rooms (`/api/rooms`) - All protected
+- `GET /` - List user's rooms
+- `POST /` - Create room
+- `GET /:id` - Get room details
+- `PUT /:id` - Update room
+- `DELETE /:id` - Delete room
+- `GET /:id/devices` - Get room's devices
 
-### Autenticación y Seguridad
-- JWT (JSON Web Tokens) para sesiones stateless
-- Bcrypt para hash de contraseñas (10 salt rounds)
-- Middleware `protect` para rutas privadas
-- Middleware `authorize` para control de roles
+### Devices (`/api/devices`) - All protected
+- `GET /` - List devices (supports `?tipo=luz&habitacion=<id>` filters)
+- `POST /` - Create device
+- `GET /:id` - Get device details
+- `PUT /:id` - Update device
+- `DELETE /:id` - Delete device
+- `PUT /:id/toggle` - Toggle device on/off
+- `GET /:id/data` - Get historical telemetry (supports date/type filters)
 
-### Endpoints Disponibles
+### Cameras, Tasks, Automatize
+- See `database/routes/` for full endpoint definitions
+- All follow similar RESTful patterns with JWT protection
 
-**Autenticación** (`/api/auth`):
-- `POST /register` - Registro de usuarios
-- `POST /login` - Iniciar sesión
-- `GET /me` - Perfil del usuario autenticado
-- `PUT /updateprofile` - Actualizar datos de perfil
-- `PUT /updatepassword` - Cambiar contraseña
+### Utility
+- `GET /api/health` - Server health check
 
-**Habitaciones** (`/api/rooms`):
-- `GET /` - Listar habitaciones del usuario
-- `POST /` - Crear habitación
-- `GET /:id` - Obtener habitación específica
-- `PUT /:id` - Actualizar habitación
-- `DELETE /:id` - Eliminar habitación
-- `GET /:id/devices` - Dispositivos de la habitación
+For detailed API documentation with request/response examples, see `database/README.md`.
 
-**Dispositivos** (`/api/devices`):
-- `GET /` - Listar dispositivos (filtros: tipo, habitación)
-- `POST /` - Crear dispositivo
-- `GET /:id` - Obtener dispositivo
-- `PUT /:id` - Actualizar dispositivo
-- `DELETE /:id` - Eliminar dispositivo
-- `PUT /:id/toggle` - Encender/apagar dispositivo
-- `GET /:id/data` - Obtener datos históricos/telemetría
+## Development Workflow
 
-**Cámaras** (`/api/cameras`):
-- Ver `database/routes/cameras.js` para endpoints disponibles
+### Adding New Features
 
-**Tareas** (`/api/tasks`):
-- Ver `database/routes/tasks.js` para endpoints disponibles
+1. **Define Model** in `database/models/` (Mongoose schema)
+2. **Create Controller** in `database/controllers/` (business logic)
+3. **Add Routes** in `database/routes/` (map endpoints to controller methods)
+4. **Mount Routes** in `database/server.js` (e.g., `app.use('/api/feature', featureRoutes)`)
+5. **Update Frontend** - Create/modify HTML pages and wire to API
 
-**Automatización** (`/api/automatize`):
-- Ver `database/routes/automatize.js` para endpoints disponibles
+### Working with Existing Code
 
-### Modelos de Datos Completos
+- All database queries use Mongoose ODM
+- Controllers use async/await pattern
+- User authorization via `req.user` (populated by `protect` middleware)
+- Resources scoped to user: `{ usuario: req.user._id }`
 
-**7 Colecciones MongoDB**:
-1. `users` - Usuarios con autenticación
-2. `rooms` - Habitaciones del hogar
-3. `devices` - Dispositivos IoT (luces, sensores, etc.)
-4. `devices_data` - Telemetría e históricos
-5. `cameras` - Cámaras de seguridad
-6. `tasks` - Tareas programadas
-7. `automatize` - Reglas de automatización
+### Common Patterns
 
-### Documentación
-- `database/README.md` - Documentación completa del API
-- `.env.example` - Plantilla de configuración
-- Todos los endpoints documentados con ejemplos
+**Protected Route**:
+```javascript
+router.get('/resource', protect, controllerMethod);
+```
 
-## Estado Actual del Proyecto
+**Role-Based Route**:
+```javascript
+router.delete('/admin-only', protect, authorize('admin'), controllerMethod);
+```
 
-### Backend Completado
-- ✅ Controladores para `Auth`, `Room`, `Device`, `Camera`, `Task`, `Automatize`
-- ✅ Rutas para todos los módulos principales
-- ✅ Autenticación JWT implementada
-- ✅ Manejo de errores centralizado
+**Controller Response**:
+```javascript
+res.status(200).json({
+    success: true,
+    data: result
+});
+```
 
-### Próximos Pasos
-
-**Integración Frontend**:
-- Actualizar páginas HTML para usar el nuevo API REST
-- Implementar manejo de tokens JWT en el cliente (almacenamiento, envío en headers)
-- Migrar de hardcoded data a llamadas fetch() a los endpoints
-
-**Mejoras Adicionales**:
-- Websockets para actualizaciones en tiempo real de dispositivos
-- Paginación en endpoints GET de listados
-- Rate limiting para seguridad (express-rate-limit)
-- Logging estructurado con Winston o Morgan
-- Tests unitarios e integración (Jest/Mocha)
-- Documentación interactiva con Swagger/OpenAPI
-- Configurar CORS específico para producción
+**Error Handling**:
+```javascript
+next(error); // Caught by errorHandler middleware
+```

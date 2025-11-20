@@ -9,7 +9,7 @@ const DeviceSchema = new mongoose.Schema({
     tipo: {
         type: String,
         required: [true, 'Por favor especifique el tipo de dispositivo'],
-        enum: ['luz', 'temperatura', 'actuador']
+        enum: ['actuador', 'camara', 'gas', 'humedad', 'luz', 'movimiento', 'temperatura']
     },
     habitacion: {
         type: mongoose.Schema.Types.ObjectId,

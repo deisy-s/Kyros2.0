@@ -241,10 +241,14 @@
                 return;
             }
 
-            if(!connection){
-                swal("Campo vacío", "Favor de ingresar la conexión del dispositivo", "warning");
-                saveButton.disabled=false;
-                return;
+            // Validar conexión solo si es cámara
+            if(selectedDeviceType === 'camara'){
+                const connection = connectionInput.value.trim();
+                if(!connection){
+                    swal("Campo vacío", "Favor de ingresar la conexión del dispositivo", "warning");
+                    saveButton.disabled=false;
+                    return;
+                }
             }
 
             try {
@@ -284,10 +288,11 @@
                     }
                 } else {
                     // Para dispositivos normales (luz, temperatura, actuador)
-                    const pin = parseInt(pinInput.value);
+                    const pinValue = pinInput.value.trim();
+                    const pin = parseInt(pinValue);
 
-                    if (!pin || pin < 0) {
-                        alert('Por favor ingrese un número de pin válido');
+                    if (!pinValue || isNaN(pin) || pin < 0) {
+                        swal("Campo vacío", "Favor de ingresar un número de pin válido (GPIO del ESP32)", "warning");
                         saveButton.disabled=false;
                         return;
                     }

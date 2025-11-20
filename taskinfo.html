@@ -124,7 +124,7 @@
                 </div>
                 <div class="alarm" style="display: none;">
                     <div class="turnOn d-flex">
-                        <h3>Sonar a la(s)</h3>
+                        <h3 id="alarmLabelInfo">Activar a la(s)</h3>
                         <input
                         type="time"
                         id="turnOn"
@@ -268,23 +268,39 @@
             const fanDiv = document.querySelector('.fan');
             const alarmDiv = document.querySelector('.alarm');
             const actuadorDiv = document.querySelector('.actuador');
+            const alarmLabel = document.getElementById('alarmLabelInfo');
 
             // Ocultar todos
-            lightDiv.style.display = 'none';
-            fanDiv.style.display = 'none';
-            alarmDiv.style.display = 'none';
-            actuadorDiv.style.display = 'none';
+            if (lightDiv) lightDiv.style.display = 'none';
+            if (fanDiv) fanDiv.style.display = 'none';
+            if (alarmDiv) alarmDiv.style.display = 'none';
+            if (actuadorDiv) actuadorDiv.style.display = 'none';
+
+            console.log(`Mostrando formulario para tipo: ${tipo}`);
 
             // Mostrar el correcto según el tipo
             if (tipo === 'luz') {
-                lightDiv.style.display = 'block';
-            } else if (tipo === 'temperatura') {
-                fanDiv.style.display = 'block';
+                if (lightDiv) lightDiv.style.display = 'block';
+            } else if (tipo === 'ventilador' || tipo === 'termostato' || tipo === 'sensor' || tipo === 'temperatura' || tipo === 'humedad') {
+                // Todos estos tipos usan el formulario de temperatura/fan
+                if (fanDiv) fanDiv.style.display = 'block';
+            } else if (tipo === 'alarma' || tipo === 'movimiento' || tipo === 'gas') {
+                if (alarmDiv) {
+                    alarmDiv.style.display = 'block';
+                    // Cambiar el texto según el tipo de dispositivo
+                    if (alarmLabel) {
+                        if (tipo === 'movimiento' || tipo === 'gas') {
+                            alarmLabel.textContent = 'Activar a la(s)';
+                        } else {
+                            alarmLabel.textContent = 'Sonar a la(s)';
+                        }
+                    }
+                }
             } else if (tipo === 'actuador') {
-                actuadorDiv.style.display = 'block';
+                if (actuadorDiv) actuadorDiv.style.display = 'block';
             } else {
-                // Por defecto, mostrar luz
-                lightDiv.style.display = 'block';
+                // Por defecto, mostrar ventilador para otros tipos (enchufe, cerradura, etc.)
+                if (fanDiv) fanDiv.style.display = 'block';
             }
         }
 
@@ -381,10 +397,20 @@
                         console.log(`Formulario para tipo "${dispositivo.tipo}" mostrado`);
                     }
 
-                    // Cargar horario si existe
-                    if (auto.trigger && auto.trigger.horario && auto.trigger.horario.hora) {
-                        const hora = auto.trigger.horario.hora;
-                        console.log(`Cargando horario: ${hora} para tipo ${selectedDeviceType}`);
+                    // Cargar horario y/o parámetros
+                    const hora = auto.trigger && auto.trigger.horario && auto.trigger.horario.hora ? auto.trigger.horario.hora : null;
+                    const parametros = (auto.acciones && auto.acciones.length > 0 && auto.acciones[0].parametros) ? auto.acciones[0].parametros : {};
+
+                    console.log('📊 Datos extraídos de la automatización:');
+                    console.log('  - Hora:', hora);
+                    console.log('  - Parámetros:', parametros);
+                    console.log('  - Keys de parámetros:', Object.keys(parametros));
+                    console.log('  - Trigger completo:', auto.trigger);
+                    console.log('  - Acciones completas:', auto.acciones);
+
+                    // Solo procesar si hay hora O parámetros
+                    if (hora || (parametros && Object.keys(parametros).length > 0)) {
+                        console.log(`Cargando datos para tipo ${selectedDeviceType}:`, { hora, parametros });
 
                         // Llenar campos según el tipo
                         if (selectedDeviceType === 'actuador') {
@@ -402,57 +428,216 @@
                                     }
                                 }
                             }
+                        } else if (selectedDeviceType === 'movimiento' || selectedDeviceType === 'gas') {
+                            // Cargar hora para dispositivos de alarma (movimiento, gas)
+                            const turnOnInput = document.getElementById('turnOn');
+                            if (turnOnInput && hora) {
+                                turnOnInput.value = hora;
+                                console.log(`Horario asignado al campo de alarma: ${hora}`);
+                            }
                         } else if (selectedDeviceType === 'luz') {
-                            const turnOnTimeLight = document.querySelector('.light #turnOnTime');
-                            if (turnOnTimeLight) {
-                                turnOnTimeLight.value = hora;
-                                console.log('Horario asignado al campo de luz (encender)');
+                            console.log('Cargando datos para luz');
+                            console.log('Hora del trigger:', hora);
+                            console.log('Parámetros:', parametros);
+
+                            // Referencias a los divs de luz
+                            const timeOnLightDiv = document.querySelector('.light .timeOnLight');
+                            const lightOnDiv = document.querySelector('.light .lightOn');
+                            const timeOffLightDiv = document.querySelector('.light .timeOffLight');
+                            const lightOffDiv = document.querySelector('.light .lightOff');
+
+                            console.log('Divs de luz encontrados:', {
+                                timeOnLightDiv: timeOnLightDiv ? 'SÍ' : 'NO',
+                                lightOnDiv: lightOnDiv ? 'SÍ' : 'NO',
+                                timeOffLightDiv: timeOffLightDiv ? 'SÍ' : 'NO',
+                                lightOffDiv: lightOffDiv ? 'SÍ' : 'NO'
+                            });
+
+                            // ========== ENCENDIDO ==========
+                            // Primero ocultar todo
+                            if (timeOnLightDiv) {
+                                timeOnLightDiv.style.setProperty('display', 'none', 'important');
+                                console.log('✓ timeOnLightDiv ocultado');
+                            }
+                            if (lightOnDiv) {
+                                lightOnDiv.style.setProperty('display', 'none', 'important');
+                                console.log('✓ lightOnDiv ocultado');
                             }
 
-                            // Cargar hora de apagado desde parametros
-                            if (auto.acciones && auto.acciones.length > 0) {
-                                const parametros = auto.acciones[0].parametros;
-                                if (parametros && parametros.horaApagar) {
-                                    const turnOffTimeLight = document.querySelector('.light #turnOffTime');
-                                    if (turnOffTimeLight) {
-                                        turnOffTimeLight.value = parametros.horaApagar;
-                                        console.log(`Horario asignado al campo de luz (apagar): ${parametros.horaApagar}`);
-                                    }
+                            // Si hay hora en el trigger, usar hora para encendido
+                            if (hora) {
+                                const turnOnTimeLight = document.querySelector('.light #turnOnTime');
+                                if (turnOnTimeLight) {
+                                    turnOnTimeLight.value = hora;
+                                    console.log(`✅ Hora de encendido: ${hora}`);
+                                }
+                                if (timeOnLightDiv) {
+                                    timeOnLightDiv.style.setProperty('display', 'flex', 'important');
+                                    console.log('Mostrando campo: Hora de encendido luz');
                                 }
                             }
-                        } else if (selectedDeviceType === 'temperatura') {
-                            document.getElementById('turnOnTime').value = hora;
-                            console.log('Horario asignado al campo de temperatura (encender)');
-
-                            // Cargar parámetros adicionales desde parametros
-                            if (auto.acciones && auto.acciones.length > 0) {
-                                const parametros = auto.acciones[0].parametros;
-                                if (parametros) {
-                                    // Hora de apagado
-                                    if (parametros.horaApagar) {
-                                        const turnOffTime = document.getElementById('turnOffTime');
-                                        if (turnOffTime) {
-                                            turnOffTime.value = parametros.horaApagar;
-                                            console.log(`Hora de apagado: ${parametros.horaApagar}`);
-                                        }
-                                    }
-                                    // Temperatura de encendido
-                                    if (parametros.temperaturaEncender) {
-                                        const turnOnTemp = document.getElementById('turnOnTemp');
-                                        if (turnOnTemp) {
-                                            turnOnTemp.value = parametros.temperaturaEncender;
-                                            console.log(`Temperatura encender: ${parametros.temperaturaEncender}°C`);
-                                        }
-                                    }
-                                    // Temperatura de apagado
-                                    if (parametros.temperaturaApagar) {
-                                        const turnOffTemp = document.getElementById('turnOffTemp');
-                                        if (turnOffTemp) {
-                                            turnOffTemp.value = parametros.temperaturaApagar;
-                                            console.log(`Temperatura apagar: ${parametros.temperaturaApagar}°C`);
-                                        }
-                                    }
+                            // Si hay opción "encender cuando no hay luz"
+                            else if (parametros && parametros.encenderSinLuz) {
+                                const lightOnSwitch = document.querySelector('#lightOnSwitch input[type="checkbox"]');
+                                if (lightOnSwitch) {
+                                    lightOnSwitch.checked = true;
+                                    console.log('✅ Switch "Encender cuando no hay luz" activado');
                                 }
+                                if (lightOnDiv) {
+                                    lightOnDiv.style.setProperty('display', 'flex', 'important');
+                                    console.log('Mostrando campo: Switch encender sin luz');
+                                }
+                            }
+                            // Si no hay ninguno, mostrar ambos
+                            else {
+                                if (timeOnLightDiv) timeOnLightDiv.style.setProperty('display', 'flex', 'important');
+                                if (lightOnDiv) lightOnDiv.style.setProperty('display', 'flex', 'important');
+                                console.log('Sin datos de encendido luz, mostrando ambos');
+                            }
+
+                            // ========== APAGADO ==========
+                            // Primero ocultar todo
+                            if (timeOffLightDiv) {
+                                timeOffLightDiv.style.setProperty('display', 'none', 'important');
+                                console.log('✓ timeOffLightDiv ocultado');
+                            }
+                            if (lightOffDiv) {
+                                lightOffDiv.style.setProperty('display', 'none', 'important');
+                                console.log('✓ lightOffDiv ocultado');
+                            }
+
+                            let hasOffValueLight = false;
+
+                            // Si hay hora de apagado en parámetros
+                            if (parametros && parametros.horaApagar) {
+                                const turnOffTimeLight = document.querySelector('.light #turnOffTime');
+                                if (turnOffTimeLight) {
+                                    turnOffTimeLight.value = parametros.horaApagar;
+                                    console.log(`✅ Hora de apagado: ${parametros.horaApagar}`);
+                                }
+                                if (timeOffLightDiv) {
+                                    timeOffLightDiv.style.setProperty('display', 'flex', 'important');
+                                    console.log('Mostrando campo: Hora de apagado luz');
+                                }
+                                hasOffValueLight = true;
+                            }
+
+                            // Si hay opción "apagar cuando hay luz"
+                            if (parametros && parametros.apagarConLuz) {
+                                const lightOffSwitch = document.querySelector('#lightOffSwitch input[type="checkbox"]');
+                                if (lightOffSwitch) {
+                                    lightOffSwitch.checked = true;
+                                    console.log('✅ Switch "Apagar cuando hay luz" activado');
+                                }
+                                if (lightOffDiv) {
+                                    lightOffDiv.style.setProperty('display', 'flex', 'important');
+                                    console.log('Mostrando campo: Switch apagar con luz');
+                                }
+                                hasOffValueLight = true;
+                            }
+
+                            // Si no hay ningún valor de apagado, mostrar ambos
+                            if (!hasOffValueLight) {
+                                if (timeOffLightDiv) timeOffLightDiv.style.setProperty('display', 'flex', 'important');
+                                if (lightOffDiv) lightOffDiv.style.setProperty('display', 'flex', 'important');
+                                console.log('Sin datos de apagado luz, mostrando ambos');
+                            }
+                        } else if (selectedDeviceType === 'ventilador' || selectedDeviceType === 'termostato' || selectedDeviceType === 'sensor' || selectedDeviceType === 'temperatura' || selectedDeviceType === 'humedad') {
+                            // Todos estos tipos usan el mismo formulario de temperatura/fan
+                            console.log('Cargando datos para sensor/ventilador/termostato/humedad');
+                            console.log('Hora del trigger:', hora);
+                            console.log('Parámetros:', parametros);
+
+                            // Referencias a los divs de encendido y apagado
+                            const timeOnDiv = document.querySelector('.fan .timeOn');
+                            const tempOnDiv = document.querySelector('.fan .tempOn');
+                            const timeOffDiv = document.querySelector('.fan .timeOff');
+                            const tempOffDiv = document.querySelector('.fan .tempOff');
+
+                            console.log('Divs encontrados:', {
+                                timeOnDiv: timeOnDiv ? 'SÍ' : 'NO',
+                                tempOnDiv: tempOnDiv ? 'SÍ' : 'NO',
+                                timeOffDiv: timeOffDiv ? 'SÍ' : 'NO',
+                                tempOffDiv: tempOffDiv ? 'SÍ' : 'NO'
+                            });
+
+                            // ========== ENCENDIDO ==========
+                            // Primero ocultar todo usando !important para sobrescribir CSS
+                            if (timeOnDiv) {
+                                timeOnDiv.style.setProperty('display', 'none', 'important');
+                                console.log('✓ timeOnDiv ocultado (display: none !important)');
+                            }
+                            if (tempOnDiv) {
+                                tempOnDiv.style.setProperty('display', 'none', 'important');
+                                console.log('✓ tempOnDiv ocultado (display: none !important)');
+                            }
+
+                            // Si hay hora en el trigger, usar hora para encendido
+                            if (hora) {
+                                const turnOnTimeElem = document.getElementById('turnOnTime');
+                                if (turnOnTimeElem) {
+                                    turnOnTimeElem.value = hora;
+                                    console.log(`✅ Hora de encendido: ${hora}`);
+                                }
+                                // Mostrar SOLO campo de hora
+                                if (timeOnDiv) {
+                                    timeOnDiv.style.setProperty('display', 'flex', 'important');
+                                    console.log('Mostrando campo: Hora de encendido');
+                                }
+                            }
+                            // Si hay temperatura de encendido en parámetros, usar temperatura
+                            else if (parametros && parametros.temperaturaEncender) {
+                                const turnOnTemp = document.getElementById('turnOnTemp');
+                                if (turnOnTemp) {
+                                    turnOnTemp.value = parametros.temperaturaEncender;
+                                    console.log(`✅ Temperatura de encendido: ${parametros.temperaturaEncender}°C`);
+                                }
+                                // Mostrar SOLO campo de temperatura
+                                if (tempOnDiv) {
+                                    tempOnDiv.style.setProperty('display', 'flex', 'important');
+                                    console.log('Mostrando campo: Temperatura de encendido');
+                                }
+                            }
+
+                            // ========== APAGADO ==========
+                            // Primero ocultar todo usando !important para sobrescribir CSS
+                            if (timeOffDiv) {
+                                timeOffDiv.style.setProperty('display', 'none', 'important');
+                                console.log('✓ timeOffDiv ocultado (display: none !important)');
+                            }
+                            if (tempOffDiv) {
+                                tempOffDiv.style.setProperty('display', 'none', 'important');
+                                console.log('✓ tempOffDiv ocultado (display: none !important)');
+                            }
+
+                            let hasOffValue = false;
+
+                            // Si hay hora de apagado en parámetros
+                            if (parametros && parametros.horaApagar) {
+                                const turnOffTime = document.getElementById('turnOffTime');
+                                if (turnOffTime) {
+                                    turnOffTime.value = parametros.horaApagar;
+                                    console.log(`✅ Hora de apagado: ${parametros.horaApagar}`);
+                                }
+                                if (timeOffDiv) {
+                                    timeOffDiv.style.setProperty('display', 'flex', 'important');
+                                    console.log('Mostrando campo: Hora de apagado');
+                                }
+                                hasOffValue = true;
+                            }
+
+                            // Si hay temperatura de apagado en parámetros
+                            if (parametros && parametros.temperaturaApagar) {
+                                const turnOffTemp = document.getElementById('turnOffTemp');
+                                if (turnOffTemp) {
+                                    turnOffTemp.value = parametros.temperaturaApagar;
+                                    console.log(`✅ Temperatura de apagado: ${parametros.temperaturaApagar}°C`);
+                                }
+                                if (tempOffDiv) {
+                                    tempOffDiv.style.setProperty('display', 'flex', 'important');
+                                    console.log('Mostrando campo: Temperatura de apagado');
+                                }
+                                hasOffValue = true;
                             }
                         }
                     }
@@ -500,12 +685,8 @@
                     }]
                 };
 
-                // Obtener horario según el tipo
-                const lightDiv = document.querySelector('.light');
-                const fanDiv = document.querySelector('.fan');
-                const actuadorDiv = document.querySelector('.actuador');
-
-                if (actuadorDiv && actuadorDiv.style.display !== 'none') {
+                // Obtener horario según el tipo de dispositivo seleccionado
+                if (selectedDeviceType === 'actuador') {
                     const turnOnTime = document.getElementById('turnOnTimeActuador').value;
                     const turnOffTime = document.getElementById('turnOffTimeActuador').value;
 
@@ -519,7 +700,7 @@
                             horaApagar: turnOffTime
                         };
                     }
-                } else if (lightDiv && lightDiv.style.display !== 'none') {
+                } else if (selectedDeviceType === 'luz') {
                     const turnOnTime = document.querySelector('.light #turnOnTime').value;
                     const turnOffTime = document.querySelector('.light #turnOffTime').value;
 
@@ -533,7 +714,7 @@
                             horaApagar: turnOffTime
                         };
                     }
-                } else if (fanDiv && fanDiv.style.display !== 'none') {
+                } else if (selectedDeviceType === 'ventilador' || selectedDeviceType === 'termostato' || selectedDeviceType === 'sensor' || selectedDeviceType === 'temperatura' || selectedDeviceType === 'humedad') {
                     const turnOnTime = document.getElementById('turnOnTime').value;
                     const turnOffTime = document.getElementById('turnOffTime').value;
                     const turnOnTemp = document.getElementById('turnOnTemp').value;
@@ -551,6 +732,11 @@
 
                     if (Object.keys(parametros).length > 0) {
                         taskData.acciones[0].parametros = parametros;
+                    }
+                } else if (selectedDeviceType === 'alarma') {
+                    const turnOnTime = document.getElementById('turnOn').value;
+                    if (turnOnTime) {
+                        taskData.trigger.horario.hora = turnOnTime;
                     }
                 }
 

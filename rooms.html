@@ -154,7 +154,12 @@
         }
 
         async function loadRooms() {
+            const container = document.getElementById('rooms-container');
+
             try {
+                // Mostrar indicador de carga
+                container.innerHTML = '<p style="text-align: center; margin: 20px;">Cargando habitaciones...</p>';
+
                 const response = await fetchWithAuth(`${API_URL}/rooms`);
 
                 if (!response.ok) {
@@ -162,9 +167,14 @@
                 }
 
                 const data = await response.json();
+
+                // Validar que data y data.data existen
+                if (!data || !data.data) {
+                    throw new Error('Respuesta del servidor inválida');
+                }
+
                 const rooms = data.data;
 
-                const container = document.getElementById('rooms-container');
                 container.innerHTML = '';
 
                 if (rooms.length === 0) {
@@ -208,6 +218,7 @@
 
             } catch (error) {
                 console.error('Error:', error);
+                container.innerHTML = '<p style="text-align: center; margin: 20px; color: red;">Error al cargar las habitaciones. Por favor, intente de nuevo.</p>';
                 swal("Error", "Error al cargar las habitaciones", "error");
             }
         }
