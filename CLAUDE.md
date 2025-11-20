@@ -235,3 +235,114 @@ res.status(200).json({
 ```javascript
 next(error); // Caught by errorHandler middleware
 ```
+
+## Recent Updates (Noviembre 2025)
+
+### Task Automation - Formularios Completados
+
+Se completó la implementación de formularios de tareas para todos los tipos de dispositivos soportados:
+
+#### Backend Changes
+- **`database/models/Device.js`**: Actualizado enum de tipos para incluir: `actuador`, `camara`, `gas`, `humedad`, `luz`, `movimiento`, `temperatura`
+
+#### Frontend Pages Modified
+
+**1. addtask.html** - Crear tarea desde dispositivo específico
+- Agregado formulario completo para `actuador` con campos de encendido y apagado
+- Implementada función `actuadorClick()` para validar y continuar
+- Mejorada lógica de guardado usando `selectedDeviceType` en lugar de visibilidad de formularios
+- Labels dinámicos: "Activar a la(s)" para movimiento/gas, "Sonar a la(s)" para alarmas reales
+- Soporte completo para: luz, temperatura, humedad, movimiento, gas, actuador
+
+**2. newtask.html** - Crear tarea desde sección de automatización
+- Agregado formulario de `actuador` (líneas 308-338)
+- Agregados botones "Continuar" faltantes para alarm y actuador
+- Implementadas funciones `alarmClick()` y `actuadorClick()`
+- Labels dinámicos para movimiento/gas vs alarmas
+- Actualizada lógica de guardado para todos los tipos de dispositivos
+
+**3. taskinfo.html** - Editar tarea existente
+- Formulario de actuador ya existía
+- Carga correcta de datos para todos los tipos
+- Labels dinámicos implementados
+
+**4. cameraedit.html** - NUEVA PÁGINA
+- Página para editar cámaras de seguridad
+- Campos: nombre de cámara, URL de streaming
+- Botones: Guardar cambios, Eliminar cámara
+- Ruta: `cameraedit.html?cameraId=<id>`
+
+**5. security.html**
+- Agregadas funciones `editCam()` y `deleteCam()`
+- Botones de editar/eliminar en cada cámara (líneas 156-158)
+- Redirección a cameraedit.html con parámetros
+
+**6. style.css**
+- Agregado `#cameraNameInput` al selector de inputs (línea 560)
+
+#### Tipos de Dispositivos Soportados
+
+| Tipo | Formulario | Campos | Validación |
+|------|-----------|--------|------------|
+| **Luz** | start-light/stop-light | Hora encender/apagar, sensores de luz | Al menos hora O sensor |
+| **Temperatura** | start-fan/stop-fan | Hora/temp encender, hora/temp apagar | Al menos hora O temp |
+| **Humedad** | start-fan/stop-fan | Hora/temp encender, hora/temp apagar | Al menos hora O temp |
+| **Movimiento** | alarm | Hora de activación | Requerida |
+| **Gas** | alarm | Hora de activación | Requerida |
+| **Actuador** | actuador | Hora encender (req), hora apagar (opt) | Hora encender requerida |
+
+#### Testing Locations
+
+Para verificar la funcionalidad completa:
+
+1. **Crear tarea desde dispositivo**:
+   - Navegar a: Habitaciones → [Habitación] → [Dispositivo] → Botón "Agregar tarea"
+   - Archivo: `addtask.html?roomId=<id>&roomname=<name>&deviceId=<id>&devicename=<name>`
+
+2. **Crear tarea desde automatización**:
+   - Navegar a: Automatización → Botón "Agregar tarea"
+   - Archivo: `newtask.html`
+
+3. **Editar tarea existente**:
+   - Navegar a: Automatización → [Tarea existente]
+   - Archivo: `taskinfo.html?taskId=<id>`
+
+4. **Editar cámara**:
+   - Navegar a: Seguridad → Ícono de editar en cámara
+   - Archivo: `cameraedit.html?cameraId=<id>`
+
+#### Key Implementation Details
+
+**Form Display Logic**:
+```javascript
+// Se usa selectedDeviceType en lugar de comprobar visibilidad de divs
+if (selectedDeviceType === 'actuador') {
+    // Mostrar formulario de actuador
+}
+```
+
+**Dynamic Labels**:
+```javascript
+if (selectedDeviceType === 'movimiento' || selectedDeviceType === 'gas') {
+    alarmLabel.textContent = 'Activar a la(s)';
+} else {
+    alarmLabel.textContent = 'Sonar a la(s)';
+}
+```
+
+**Save Data Structure**:
+```javascript
+const taskData = {
+    nombre: taskName,
+    activa: true,
+    trigger: {
+        tipo: 'horario',
+        horario: { dias: [0,1,2,3,4,5,6], hora: turnOnTime }
+    },
+    acciones: [{
+        dispositivo: deviceId,
+        accion: 'encender',
+        parametros: { /* específicos del tipo */ }
+    }]
+};
+```

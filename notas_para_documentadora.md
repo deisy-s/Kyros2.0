@@ -797,6 +797,418 @@ Usuario (User)
 
 ---
 
+## 15. ACTUALIZACIÓN: FORMULARIOS DE TAREAS COMPLETADOS (Noviembre 2025)
+
+### 15.1 Resumen de Cambios
+
+Se completó la implementación de formularios de automatización de tareas para **TODOS** los tipos de dispositivos IoT soportados. Anteriormente algunos tipos no tenían formularios completos o tenían errores de validación.
+
+### 15.2 Tipos de Dispositivos Soportados
+
+El sistema ahora soporta completamente **7 tipos de dispositivos**:
+
+| Tipo de Dispositivo | Código en Sistema | Descripción | Nuevo/Actualizado |
+|---------------------|------------------|-------------|-------------------|
+| **Luz** | `luz` | Bombillas inteligentes, focos LED | ✅ Actualizado |
+| **Temperatura** | `temperatura` | Sensores de temperatura | ✅ Actualizado |
+| **Humedad** | `humedad` | Sensores de humedad | ✅ Nuevo tipo |
+| **Movimiento** | `movimiento` | Sensores de movimiento PIR | ✅ Nuevo tipo |
+| **Gas** | `gas` | Detectores de gas/humo | ✅ Nuevo tipo |
+| **Actuador** | `actuador` | Relés, switches, enchufes inteligentes | ✅ Actualizado |
+| **Cámara** | `camara` | Cámaras de seguridad IP | ✅ Existente |
+
+### 15.3 Cambios en el Backend
+
+#### **database/models/Device.js** (Línea 9-13)
+
+**Cambio realizado:**
+```javascript
+tipo: {
+    type: String,
+    required: [true, 'Por favor especifique el tipo de dispositivo'],
+    enum: ['actuador', 'camara', 'gas', 'humedad', 'luz', 'movimiento', 'temperatura']
+},
+```
+
+**Antes:** Solo tenía 4 tipos (actuador, camara, luz, temperatura)
+**Ahora:** 7 tipos completos incluyendo gas, humedad y movimiento
+
+**Impacto:** Permite crear dispositivos de todos los tipos sin errores de validación.
+
+### 15.4 Páginas Modificadas en el Frontend
+
+#### **1. addtask.html** - Crear Tarea desde Dispositivo
+
+**Ubicación en navegador:**
+- Habitaciones → [Seleccionar habitación] → [Seleccionar dispositivo] → Botón "Agregar tarea"
+
+**Cambios realizados:**
+
+1. **Nuevo formulario para actuadores** (Líneas 284-314)
+   - Antes: Solo permitía agregar hora de encendido
+   - Ahora: Permite agregar hora de encendido Y hora de apagado
+
+2. **Nueva función `actuadorClick()`** (Líneas 683-695)
+   - Valida los campos y muestra el botón de guardar
+
+3. **Labels dinámicos** (Líneas 400-406)
+   - Movimiento/Gas: Muestra "Activar a la(s)"
+   - Alarmas: Muestra "Sonar a la(s)"
+
+4. **Lógica de guardado mejorada** (Líneas 744-785)
+   - Ahora usa `selectedDeviceType` en lugar de verificar visibilidad de formularios
+   - Más robusto y menos propenso a errores
+
+**Para documentación:**
+- Captura de formulario de actuador con ambos campos (encender/apagar)
+- Captura de formulario de movimiento mostrando "Activar a la(s)"
+
+#### **2. newtask.html** - Crear Tarea desde Automatización
+
+**Ubicación en navegador:**
+- Automatización → Botón "Agregar tarea"
+
+**Cambios realizados:**
+
+1. **Nuevo formulario de actuador** (Líneas 308-338)
+   - Campos: Hora encender (requerido) + Hora apagar (opcional)
+
+2. **Botones "Continuar" agregados**
+   - Alarma: Línea 300 con función `alarmClick()`
+   - Actuador: Línea 332 con función `actuadorClick()`
+
+3. **Funciones de validación** (Líneas 649-675)
+   - `alarmClick()`: Valida hora para movimiento/gas
+   - `actuadorClick()`: Valida hora de encendido para actuadores
+
+4. **Labels dinámicos** (Líneas 585-590)
+   - Se ajustan según el tipo de dispositivo seleccionado
+
+**Para documentación:**
+- Captura del dropdown de dispositivos
+- Captura de cada tipo de formulario (luz, temperatura, movimiento, actuador)
+
+#### **3. taskinfo.html** - Editar Tarea Existente
+
+**Ubicación en navegador:**
+- Automatización → Click en una tarea existente
+
+**Cambios realizados:**
+
+1. **Carga de datos para actuador** (Líneas 416-430)
+   - Carga hora de encendido desde trigger
+   - Carga hora de apagado desde parámetros
+
+2. **Carga para movimiento/gas** (Líneas 431-437)
+   - Carga hora de activación correctamente
+
+3. **Labels dinámicos** (Líneas 291-297)
+   - Ajusta texto según tipo de dispositivo
+
+**Para documentación:**
+- Captura de tarea de actuador mostrando ambos horarios
+- Captura de tarea de movimiento con label "Activar"
+
+#### **4. cameraedit.html** - NUEVA PÁGINA
+
+**Ubicación en navegador:**
+- Seguridad → Click en ícono de lápiz (editar) junto a una cámara
+
+**Archivo nuevo completo** (184 líneas)
+
+**Funcionalidad:**
+- Editar nombre de cámara
+- Editar URL de streaming (RTSP/HTTP)
+- Botón "Guardar" para actualizar cambios
+- Botón "Eliminar" para borrar la cámara
+
+**Campos del formulario:**
+```html
+- Tipo de dispositivo: "Cámara" (deshabilitado/solo lectura)
+- Nombre de cámara: Input de texto
+- URL de conexión (Streaming): Input de texto para URL RTSP
+```
+
+**Para documentación:**
+- Captura de la página completa
+- Captura del proceso de edición
+- Captura de la confirmación de eliminación
+
+#### **5. security.html** - Página de Seguridad
+
+**Cambios realizados:**
+
+1. **Botones de editar/eliminar** (Líneas 156-158)
+   ```html
+   <img src="images/Edit.png" onclick="editCam(...)">
+   <img src="images/Close.png" onclick="deleteCam(...)">
+   ```
+
+2. **Función `editCam()`** (Líneas 233-236)
+   - Redirige a cameraedit.html con el ID de la cámara
+
+3. **Función `deleteCam()`** (Líneas 238-268)
+   - Muestra diálogo de confirmación
+   - Llama al API para eliminar
+   - Recarga la lista de cámaras
+
+**Para documentación:**
+- Captura de los iconos de editar/eliminar
+- Captura del diálogo de confirmación de eliminación
+
+#### **6. style.css** - Estilos Globales
+
+**Cambio realizado:** (Línea 560)
+```css
+#user-input, #password, #deviceNameInput, #pinInput, #connectionInput, #cameraNameInput {
+    /* Estilos de inputs */
+}
+```
+
+**Motivo:** Asegurar que el input de nombre de cámara tenga el mismo estilo que otros inputs del sistema.
+
+### 15.5 Tabla Completa de Formularios por Tipo de Dispositivo
+
+| Tipo | Formulario Visual | Campos Disponibles | Validación | Capturas Necesarias |
+|------|------------------|-------------------|------------|---------------------|
+| **Luz** | start-light + stop-light | • Hora encender<br>• Hora apagar<br>• Sensor "cuando no hay luz"<br>• Sensor "cuando hay luz" | Al menos 1 campo requerido | ✓ Vista del formulario<br>✓ Opciones de sensores |
+| **Temperatura** | start-fan + stop-fan | • Hora encender<br>• Temperatura encender<br>• Hora apagar<br>• Temperatura apagar | Al menos hora O temp | ✓ Formulario con temperatura<br>✓ Dropdown de opciones |
+| **Humedad** | start-fan + stop-fan | • Hora encender<br>• Temperatura encender<br>• Hora apagar<br>• Temperatura apagar | Al menos hora O temp | (Igual que temperatura) |
+| **Movimiento** | alarm | • Hora de activación<br>• Label: "Activar a la(s)" | Hora requerida | ✓ Label "Activar"<br>✓ Formulario simple |
+| **Gas** | alarm | • Hora de activación<br>• Label: "Activar a la(s)" | Hora requerida | (Igual que movimiento) |
+| **Actuador** | actuador | • Hora encender (requerido)<br>• Hora apagar (opcional) | Hora encender requerida | ✓ Ambos campos visibles<br>✓ Creación y edición |
+
+### 15.6 Flujos de Usuario Actualizados
+
+#### **Crear Tarea para Actuador**
+
+**Opción A: Desde Dispositivo**
+1. Ir a "Habitaciones"
+2. Seleccionar una habitación
+3. Click en dispositivo tipo "Actuador"
+4. Click en botón "Agregar tarea"
+5. Ingresar nombre de la tarea
+6. Click "Continuar"
+7. **NUEVO:** Ingresar hora de encendido (requerido)
+8. **NUEVO:** Ingresar hora de apagado (opcional)
+9. Click "Continuar"
+10. Click "Guardar"
+
+**Opción B: Desde Automatización**
+1. Ir a "Automatización"
+2. Click en "Agregar tarea"
+3. Ingresar nombre
+4. Click "Continuar"
+5. Seleccionar dispositivo tipo "Actuador"
+6. Click "Continuar"
+7. **NUEVO:** Ingresar hora de encendido
+8. **NUEVO:** Ingresar hora de apagado
+9. Click "Continuar"
+10. Click "Guardar"
+
+#### **Crear Tarea para Sensor de Movimiento**
+
+1. Seguir pasos iniciales (igual que actuador)
+2. Seleccionar dispositivo tipo "Movimiento"
+3. **NUEVO:** Ver label "Activar a la(s)" (no "Sonar")
+4. Ingresar hora de activación
+5. Guardar
+
+#### **Editar Cámara de Seguridad**
+
+1. Ir a "Seguridad"
+2. **NUEVO:** Click en ícono de lápiz junto a la cámara
+3. **NUEVO:** Se abre página cameraedit.html
+4. Modificar nombre de cámara
+5. Modificar URL de streaming (RTSP)
+6. Click "Guardar" → Vuelve a página de seguridad
+7. **Opcional:** Click "Eliminar" → Confirmar → Cámara eliminada
+
+### 15.7 Estructura de Datos en MongoDB
+
+#### **Colección: devices**
+
+**Actualización del campo `tipo`:**
+```javascript
+{
+  _id: ObjectId,
+  nombre: "Sensor Puerta Principal",
+  tipo: "movimiento",  // ← Ahora acepta: actuador, camara, gas, humedad, luz, movimiento, temperatura
+  habitacion: ObjectId,
+  usuario: ObjectId,
+  estado: true/false,
+  // ... otros campos
+}
+```
+
+#### **Colección: automatize (Tareas)**
+
+**Estructura de tarea para Actuador:**
+```javascript
+{
+  nombre: "Encender riego automático",
+  activa: true,
+  trigger: {
+    tipo: "horario",
+    horario: {
+      dias: [0,1,2,3,4,5,6],
+      hora: "06:00"  // Hora de encendido
+    }
+  },
+  acciones: [{
+    dispositivo: ObjectId("..."),
+    accion: "encender",
+    parametros: {
+      horaApagar: "06:30"  // ← NUEVO: Hora de apagado
+    }
+  }]
+}
+```
+
+**Estructura de tarea para Movimiento/Gas:**
+```javascript
+{
+  nombre: "Activar sensor de movimiento",
+  trigger: {
+    tipo: "horario",
+    horario: {
+      dias: [0,1,2,3,4,5,6],
+      hora: "20:00"  // Hora de activación
+    }
+  },
+  acciones: [{
+    dispositivo: ObjectId("..."),
+    accion: "encender",
+    parametros: {}  // Sin parámetros adicionales
+  }]
+}
+```
+
+### 15.8 Errores Corregidos
+
+| Error Original | Causa | Solución | Archivo Afectado |
+|---------------|-------|----------|------------------|
+| Error 400 al crear sensor de movimiento | Tipo "movimiento" no estaba en enum | Agregado al enum de Device.js | `database/models/Device.js` |
+| Actuador solo permitía hora de encendido | Faltaba campo de hora de apagado | Agregado formulario completo | `addtask.html`, `newtask.html` |
+| Labels decían "Sonar" en movimiento/gas | No había lógica dinámica de labels | Implementado cambio dinámico | `addtask.html`, `newtask.html`, `taskinfo.html` |
+| No se podía editar cámara | No existía página de edición | Creada cameraedit.html | `cameraedit.html` (nuevo) |
+| Botón Guardar no aparecía en newtask.html | Faltaban funciones de Continuar | Agregadas funciones alarmClick y actuadorClick | `newtask.html` |
+| Datos de tarea no se guardaban correctamente | Se verificaba visibilidad de divs | Cambiado a usar selectedDeviceType | `addtask.html` |
+
+### 15.9 Para el Manual de Usuario
+
+#### **Sección: Tipos de Dispositivos**
+
+Agregar al manual:
+
+**Dispositivos de Control:**
+- **Actuador/Relé:** Dispositivo que activa/desactiva otros equipos (ej: riego automático, enchufes inteligentes)
+  - Se programa con hora de encendido y hora de apagado
+  - Útil para horarios fijos (ej: regar jardín de 6:00 AM a 6:30 AM)
+
+**Sensores:**
+- **Sensor de Movimiento:** Detecta movimiento en un área
+  - Se programa con hora de activación
+  - Útil para seguridad (ej: activar a las 8:00 PM cuando todos duermen)
+
+- **Sensor de Gas/Humo:** Detecta fugas de gas o humo
+  - Se programa con hora de activación
+  - Importante: Usar label "Activar" no "Sonar"
+
+- **Sensor de Temperatura:** Mide temperatura ambiente
+  - Puede activar dispositivos por hora O por temperatura
+  - Ej: "Encender ventilador si temperatura > 25°C"
+
+- **Sensor de Humedad:** Mide humedad relativa
+  - Funciona igual que sensor de temperatura
+  - Ej: "Encender humidificador si humedad < 40%"
+
+#### **Sección: Cámaras de Seguridad**
+
+**Agregar subsección: Editar Cámara**
+
+1. En la página de "Seguridad", ubique la cámara que desea modificar
+2. Haga clic en el ícono de lápiz (✏️) junto al nombre de la cámara
+3. Se abrirá la página de edición con los siguientes campos:
+   - **Nombre de cámara:** Puede cambiar el nombre descriptivo
+   - **URL de conexión (Streaming):** URL RTSP de la cámara (ej: rtsp://192.168.1.100/stream)
+4. Realice los cambios necesarios
+5. Haga clic en "Guardar" para aplicar los cambios
+6. **Para eliminar la cámara:** Haga clic en el botón rojo "Eliminar" y confirme la acción
+
+⚠️ **Nota:** Al eliminar una cámara, también se eliminan sus grabaciones y tareas asociadas.
+
+### 15.10 Capturas de Pantalla Adicionales Necesarias
+
+Para complementar el manual, se necesitan capturas de:
+
+**Formularios de Tareas:**
+- [ ] addtask.html - Formulario de actuador (ambos horarios visibles)
+- [ ] addtask.html - Formulario de movimiento (label "Activar")
+- [ ] newtask.html - Selección de dispositivo actuador
+- [ ] newtask.html - Formulario completo de actuador
+- [ ] taskinfo.html - Edición de tarea de actuador (cargando datos)
+
+**Cámaras:**
+- [ ] security.html - Iconos de editar y eliminar
+- [ ] cameraedit.html - Página completa de edición
+- [ ] cameraedit.html - Diálogo de confirmación de eliminación
+
+**Errores corregidos:**
+- [ ] Antes: Actuador solo con hora de encendido
+- [ ] Después: Actuador con ambos horarios
+- [ ] Antes: Movimiento con "Sonar a la(s)"
+- [ ] Después: Movimiento con "Activar a la(s)"
+
+### 15.11 Código de Referencia para Ejemplos
+
+#### **Ejemplo: Crear tarea de riego automático (Actuador)**
+
+**JavaScript del formulario:**
+```javascript
+const taskData = {
+    nombre: "Riego automático jardín",
+    activa: true,
+    trigger: {
+        tipo: 'horario',
+        horario: {
+            dias: [0,1,2,3,4,5,6],  // Todos los días
+            hora: "06:00"            // Encender a las 6 AM
+        }
+    },
+    acciones: [{
+        dispositivo: "673abc123...",  // ID del actuador
+        accion: 'encender',
+        parametros: {
+            horaApagar: "06:30"      // Apagar a las 6:30 AM
+        }
+    }]
+};
+```
+
+#### **Ejemplo: Crear tarea de sensor de movimiento**
+
+```javascript
+const taskData = {
+    nombre: "Activar sensor entrada",
+    activa: true,
+    trigger: {
+        tipo: 'horario',
+        horario: {
+            dias: [0,1,2,3,4,5,6],
+            hora: "20:00"  // Activar a las 8 PM
+        }
+    },
+    acciones: [{
+        dispositivo: "673def456...",
+        accion: 'encender',
+        parametros: {}  // Sin parámetros adicionales
+    }]
+};
+```
+
+---
+
 ## NOTAS FINALES
 
 - Este documento está actualizado a la fecha del último commit
@@ -808,4 +1220,4 @@ Usuario (User)
 
 **Fecha de creación:** Noviembre 2025
 **Versión del sistema:** 2.0
-**Última actualización:** Commit de conexión de botones frontend-backend
+**Última actualización:** Implementación completa de formularios de tareas para todos los dispositivos
