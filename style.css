@@ -292,13 +292,14 @@ footer .container{
 #task-section img{
     width: 4%;
     height: 4%;
-    min-height: 32px;
-    min-width: 32px;
+    min-height: 30px;
+    min-width: 30px;
+    margin-top: 8px;
 }
 
 #task-section .text{
     margin-left: 60px;
-    margin-top: -36px;
+    margin-top: -40px;
 }
 
 #task-section h2{
@@ -557,8 +558,8 @@ input::-webkit-inner-spin-button {
     text-align: left;
 }
 
-#user-input, #password, #deviceNameInput, #pinInput, #connectionInput, #cameraNameInput{
-    width: 300px;
+#user-input, #deviceNameInput, #pinInput, #connectionInput, #cameraNameInput, #name-input{
+    width: 100%;
     height: 35px;
     background: transparent;
     border: 1px solid #0651C7;
@@ -571,8 +572,25 @@ input::-webkit-inner-spin-button {
     padding: 10px 10px;
 }
 
-#password{
-    padding-right: 35px;
+#password-div{
+    background: transparent;
+    border: 1px solid #0651C7;
+    border-radius: 8px;
+    width: 100%;
+    height: 35px;
+    padding: 0;
+}
+
+#password-div input{
+    height: 33px;
+    width: 88%;
+    border: none;
+    outline: none;
+    margin-left:7px;
+    color: #000;
+    font-size: 16px;
+    letter-spacing: 1px;
+    font-family: sans-serif;
 }
 
 #user-input:focus, #userinput:focus, #password:focus{
@@ -585,21 +603,11 @@ input::-webkit-inner-spin-button {
 }
 
 #togglePassword{
-    margin-left: 270px;
-    position: relative;
-    top: -45px;
-    cursor: pointer;
-}
-
-#togglePasswordR{
-    margin-left: 270px;
-    position: relative;
-    top: -45px;
     cursor: pointer;
 }
 
 .button-login{
-    width: 300px;
+    width: 100%;
     border: 0;
     padding: 10px 10px;
     outline: none;
@@ -657,16 +665,17 @@ input::-webkit-inner-spin-button {
     color: #000;
     position: relative;
     top: -30px;
-    left: 105px;
     width: 100px;
 }
 
+#btn-google{
+    margin-top: -30px;
+}
+
 .login-icon{
-    position: relative;
     width: 150px;
     height: 40px;
-    margin-top: -40px;
-    margin-left: 70px;
+    margin-left: -10px;
     border: 1px #787878;
     border-style: solid;
     border-radius: 8px;
@@ -693,8 +702,6 @@ input::-webkit-inner-spin-button {
 
 #p2{
     font-size: 10px;
-    position: relative;
-    left: 66px;
     width: 180px;
 }
 
@@ -704,10 +711,6 @@ input::-webkit-inner-spin-button {
     font-size: 16px;
     color: #0651C7;
     margin-top: -50px;
-}
-
-#main-container-register .link{
-    margin-left: 34px;
 }
 
 .link:hover{
@@ -811,7 +814,7 @@ input::-webkit-inner-spin-button {
     margin-top: -30px;
 }
 
-.dropdown{
+.dropdown, #name-input{
     width: 300px;
 }
 
@@ -938,7 +941,7 @@ input::-webkit-inner-spin-button {
     margin-top: 20px;
 }
 
-#turnOnTime, #turnOffTime, #turnOn, #turnOnTimeLight, #turnOffTimeLight{
+#turnOnTime, #turnOffTime, #turnOn, #turnOnTimeLight, #turnOffTimeLight, #turnOnTimeActuador, #turnOffTimeActuador{
     width: 140px;
     height: 35px;
     background: transparent;
@@ -951,12 +954,16 @@ input::-webkit-inner-spin-button {
     padding: 10px 10px;
 }
 
-#timeOn h3, #tempOn h3, #timeOff h3, #tempOff h3, #timeOnLight h3, #timeOffLight h3, #turnOnAlarm h3{
+#timeOn h3, #tempOn h3, #timeOff h3, #tempOff h3, #timeOnLight h3, #timeOffLight h3, #turnOnAlarm h3, #turnOnActuador h3, #turnOffActuador h3{
     margin-right: 20px;
 }
 
-#tempOn .degree, #tempOff .degree{
-    margin-left: 20px;
+#h3-r, .h3-r{
+    margin-right: 10px;
+}
+
+.degree{
+    margin-left: 10px;
 }
 
 #option-fan .dropdown, #option-fan-off .dropdown{
@@ -1206,9 +1213,9 @@ input::-webkit-inner-spin-button {
     }
 
     #task-section input:checked + .slider:before {
-        -webkit-transform: translateX(13px);
-        -ms-transform: translateX(13px);
-        transform: translateX(13px);
+        -webkit-transform: translateX(20px);
+        -ms-transform: translateX(20px);
+        transform: translateX(20px);
     }
 
     #main-container-deviceinfo .switch {

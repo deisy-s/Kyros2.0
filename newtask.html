@@ -72,7 +72,7 @@
                 <div class="col-lg-5 d-flex justify-content-center align-items-center" id="leftCol-addtask">
                     <div>
                         <h3>Nombre de tarea</h3>
-                        <input type="text" id="user-input" name="taskName">
+                        <input type="text" id="name-input" name="taskName">
                         <br>
                         <button class="mt-2" id="task-button" onclick="nameClick()">Continuar</button>
                     </div>
@@ -296,8 +296,6 @@
                                 required
                             />
                         </div>
-                        <br>
-                        <button id="task-button" onclick="alarmClick()">Continuar</button>
                     </div>
                 </div>
                 <div class="col-lg-5 d-flex justify-content-center" id="rightCol-taskinfo">
@@ -328,8 +326,6 @@
                                 max="24:00"
                             />
                         </div>
-                        <br>
-                        <button id="task-button" onclick="actuadorClick()">Continuar</button>
                     </div>
                 </div>
                 <div class="col-lg-5 d-flex justify-content-center" id="rightCol-taskinfo">
@@ -554,7 +550,7 @@
         });
 
         function nameClick(){
-            let n = document.getElementById("user-input").value;
+            let n = document.getElementById("name-input").value;
             if(n.trim()!==""){
                 let ndiv = document.getElementById("name");
                 let ddiv = document.getElementById("dev");
@@ -585,6 +581,7 @@
                 } else if (selectedDeviceType === 'movimiento' || selectedDeviceType === 'gas') {
                     let alarmDiv = document.getElementById("alarm");
                     let alarmLabel = document.getElementById("alarmLabel");
+                    let save = document.getElementById("btn-div");
 
                     // Cambiar el texto según el tipo de dispositivo
                     if (selectedDeviceType === 'movimiento' || selectedDeviceType === 'gas') {
@@ -594,11 +591,16 @@
                     }
 
                     alarmDiv.style.display = "flex";
+                    save.style.display="flex"
                     alarmDiv.classList.add('swing-in-bottom-bck');
+                    save.classList.add('swing-in-bottom-bck');
                 } else if (selectedDeviceType === 'actuador') {
                     let actuadorDiv = document.getElementById("actuador");
+                    let save = document.getElementById("btn-div");
                     actuadorDiv.style.display = "flex";
+                    save.style.display="flex"
                     actuadorDiv.classList.add('swing-in-bottom-bck');
+                    save.classList.add('swing-in-bottom-bck');
                 } else {
                     // Por defecto, mostrar ventilador para otros tipos (enchufe, cerradura, etc.)
                     let fanDiv = document.getElementById("start-fan");
@@ -646,34 +648,6 @@
             }
         }
 
-        function alarmClick(){
-            let time = document.getElementById("turnOn").value;
-            if(time.trim()!==""){
-                let alarmdiv = document.getElementById("alarm");
-                let save = document.getElementById("btn-div");
-
-                alarmdiv.style.display = "none";
-                save.style.display = "flex"
-                save.classList.add('swing-in-bottom-bck');
-            } else{
-                swal("Campo vacío", "Favor de ingresar la hora", "warning");
-            }
-        }
-
-        function actuadorClick(){
-            let turnOnTime = document.getElementById("turnOnTimeActuador").value;
-            if(turnOnTime.trim()!==""){
-                let actuadordiv = document.getElementById("actuador");
-                let save = document.getElementById("btn-div");
-
-                actuadordiv.style.display = "none";
-                save.style.display = "flex"
-                save.classList.add('swing-in-bottom-bck');
-            } else{
-                swal("Campo vacío", "Favor de ingresar al menos la hora de encendido", "warning");
-            }
-        }
-
         // ============ FUNCIONALIDAD DEL BOTÓN GUARDAR ============
         document.addEventListener('DOMContentLoaded', function() {
             const saveButton = document.querySelector('#btn-div #task-button');
@@ -683,7 +657,7 @@
                     e.preventDefault();
 
                     // Obtener el nombre de la tarea
-                    const taskName = document.getElementById("user-input").value.trim();
+                    const taskName = document.getElementById("name-input").value.trim();
 
                     if (!taskName) {
                         swal("Campo vacío", "Favor de ingresar el nombre de la tarea", "warning");

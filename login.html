@@ -51,33 +51,42 @@
     <!-- End navbar -->
     
     <!-- Content -->
-    <div class="container d-flex justify-content-center" id="main-container-login">
+    <div class="container" id="main-container-login">
         <div class="row">
-            <div class="col-lg-6 col-sm-12" id="leftCol-login">
-                <h4>¡Bienvenido de regreso!</h4>
-                <p>Comience a monitorear su hogar con KYROS</p>
+            <div class="col-lg-6 col-sm-12 d-flex justify-content-center" id="leftCol-login">
+                <div>
+                    <h4>¡Bienvenido de regreso!</h4>
+                    <p>Comience a monitorear su hogar con KYROS</p>
 
-                <form>
-                    <h5>Correo electrónico</h5>
-                    <input id="user-input" type="email" name="email" placeholder="Ingrese su correo">
-                    <h5>Contraseña</h5>
-                    <input id="password" type="password" name="pass" placeholder="Cree una contraseña">
-                    <i class="bi bi-eye-slash" id="togglePassword"></i>
-                    <br>
-                </form>
-                
-                <button class="button-login">Iniciar sesión</button>
+                    <form>
+                        <h5>Correo electrónico</h5>
+                        <input id="user-input" type="email" name="email" placeholder="Ingrese su correo">
+                        <h5>Contraseña</h5>
+                        <div id="password-div">
+                            <input type="password" id="password" placeholder="Cree una contraseña">
+                            <i class="bi bi-eye-slash" id="togglePassword"></i>
+                        </div>
+                        <br>
+                    </form>
+                    
+                    <button class="button-login">Iniciar sesión</button>
+                    <div class="d-flex justify-content-center">
+                        <p id="sep" class="mt-5">o iniciar con</p>
+                    </div>
 
-                <p id="sep" class="mt-5">o iniciar con</p>
+                    <div class="d-flex justify-content-center" id="btn-google">
+                        <div class="login-icon">
+                            <a href="#"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" transform="rotate(0 0 0)">
+                                    <path d="M21.5939 11.0792H12.3209V13.8256H18.9768C18.6214 17.6382 15.5196 19.286 12.5148 19.286C8.70223 19.286 5.30969 16.3135 5.30969 12.0162C5.30969 7.88057 8.54068 4.74651 12.5148 4.74651C15.5519 4.74651 17.3936 6.71741 17.3936 6.71741L19.2676 4.74651C19.2676 4.74651 16.7474 2.00016 12.3856 2.00016C6.6344 1.96785 2.24023 6.78203 2.24023 11.9839C2.24023 17.0243 6.37592 22 12.4825 22C17.8783 22 21.7554 18.349 21.7554 12.8886C21.7877 11.7578 21.5939 11.0792 21.5939 11.0792Z"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
 
-                <div class="login-icon">
-                    <a href="#"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" transform="rotate(0 0 0)">
-                            <path d="M21.5939 11.0792H12.3209V13.8256H18.9768C18.6214 17.6382 15.5196 19.286 12.5148 19.286C8.70223 19.286 5.30969 16.3135 5.30969 12.0162C5.30969 7.88057 8.54068 4.74651 12.5148 4.74651C15.5519 4.74651 17.3936 6.71741 17.3936 6.71741L19.2676 4.74651C19.2676 4.74651 16.7474 2.00016 12.3856 2.00016C6.6344 1.96785 2.24023 6.78203 2.24023 11.9839C2.24023 17.0243 6.37592 22 12.4825 22C17.8783 22 21.7554 18.349 21.7554 12.8886C21.7877 11.7578 21.5939 11.0792 21.5939 11.0792Z"/>
-                        </svg>
-                    </a>
+                    <div class="d-flex justify-content-center">
+                        <p id="p2">¿No tiene una cuenta?<br><a href="register.html" class="link">Unirse aquí</a></p>
+                    </div>
                 </div>
-
-                <p id="p2">¿No tiene una cuenta?<br><a href="register.html" class="link">Unirse aquí</a></p>
             </div>
 
             <div class="col-lg-6" id="car">

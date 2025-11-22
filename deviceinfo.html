@@ -95,7 +95,7 @@
             <div class="col-lg-4">
                 <h5>Tareas</h5>
                 <div class="tasks d-flex justify-content-between">
-                    <div class="text" onclick="sendTask()">
+                    <div class="text">
                         <h6 id="taskname">Tarea 1</h6>
                     </div>
 
@@ -327,7 +327,7 @@
                 const isOn = (valStr === 'ON' || valStr === 'ENCENDIDO' || valStr === '1' || valStr === 'TRUE' || valStr === 'ACTIVADA');
 
                 if (['movimiento', 'pir'].includes(tipo)) {
-                    message = isOn ? '🚶 Movimiento Detectado' : 'Fin de movimiento';
+                    message = isOn ? '‼️ Movimiento Detectado' : 'Fin de movimiento';
                     cssClass = isOn ? 'event-alert' : 'event-info';
                 } else if (tipo === 'alarma') {
                     message = isOn ? '🚨 Alarma Disparada' : 'Alarma Silenciada';

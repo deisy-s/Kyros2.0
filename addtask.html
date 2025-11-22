@@ -76,7 +76,7 @@
                 <div class="col-lg-5 d-flex justify-content-center align-items-center" id="leftCol-addtask">
                     <div>
                         <h3>Nombre de tarea</h3>
-                        <input type="text" id="user-input" name="taskName">
+                        <input type="text" id="name-input" name="taskName">
                         <br>
                         <button class="mt-2" id="task-button" onclick="nameClick()">Continuar</button>
                     </div>
@@ -86,7 +86,7 @@
                 </div>
             </div>
 
-            <div class="row start-fan" id="start-fan" style="display: none;">
+            <div class="row start-fan" id="start-fan" style="display: none !important;">
                 <div class="col-lg-5 d-flex justify-content-center align-items-center" id="leftCol-addtask">
                     <div>
                         <div id="option-fan">
@@ -132,7 +132,7 @@
                     <img src="images/Survey.png" alt="Image">
                 </div>
             </div>
-            <div class="row stop-fan" id="stop-fan" style="display: none;">
+            <div class="row stop-fan" id="stop-fan" style="display: none !important;">
                 <div class="col-lg-5 d-flex justify-content-center align-items-center" id="leftCol-addtask">
                     <div>
                         <div id="option-fan-off">
@@ -178,7 +178,7 @@
                 </div>
             </div>
 
-            <div class="row start-light" id="start-light" style="display: none;">
+            <div class="row start-light" id="start-light" style="display: none !important;">
                 <div class="col-lg-5 d-flex justify-content-center align-items-center" id="leftCol-addtask">
                     <div>
                         <div id="option-light-on">
@@ -219,7 +219,7 @@
                     <img src="images/Survey.png" alt="Image">
                 </div>
             </div>
-            <div class="row stop-light" id="stop-light" style="display: none;">
+            <div class="row stop-light" id="stop-light" style="display: none !important;">
                 <div class="col-lg-5 d-flex justify-content-center align-items-center" id="leftCol-addtask">
                     <div>
                         <div id="option-light-off">
@@ -259,7 +259,7 @@
                 </div>
             </div>
 
-            <div class="row alarm" id="alarm" style="display: none;">
+            <div class="row alarm" id="alarm" style="display: none !important;">
                 <div class="col-lg-5 d-flex justify-content-center align-items-center" id="leftCol-addtask">
                     <div>
                         <div class="d-flex" id="turnOnAlarm">
@@ -272,8 +272,6 @@
                                 required
                             />
                         </div>
-                        <br>
-                        <button id="task-button" onclick="alarmClick()">Continuar</button>
                     </div>
                 </div>
                 <div class="col-lg-5 d-flex justify-content-center" id="rightCol-taskinfo">
@@ -281,7 +279,7 @@
                 </div>
             </div>
 
-            <div class="row actuador" id="actuador" style="display: none;">
+            <div class="row actuador" id="actuador" style="display: none !important;">
                 <div class="col-lg-5 d-flex justify-content-center align-items-center" id="leftCol-addtask">
                     <div>
                         <div class="d-flex" id="turnOnActuador">
@@ -302,10 +300,9 @@
                                 id="turnOffTimeActuador"
                                 min="00:00"
                                 max="24:00"
+                                required
                             />
                         </div>
-                        <br>
-                        <button id="task-button" onclick="actuadorClick()">Continuar</button>
                     </div>
                 </div>
                 <div class="col-lg-5 d-flex justify-content-center" id="rightCol-taskinfo">
@@ -313,7 +310,7 @@
                 </div>
             </div>
 
-            <div class="col-lg-5 mt-3" id="btn-div" style="display: none;">
+            <div class="col-lg-5 mt-3" id="btn-div" style="display: none !important;">
                 <button id="task-button">Guardar</button>
             </div>
         </div>
@@ -424,21 +421,21 @@
 
             // Mostrar el correcto según el tipo
             if (tipo === 'luz') {
-                if (lightDiv) lightDiv.style.display = 'block';
+                if (lightDiv) lightDiv.style.display = 'flex';
             } else if (tipo === 'temperatura' || tipo === 'humedad') {
-                if (fanDiv) fanDiv.style.display = 'block';
+                if (fanDiv) fanDiv.style.display = 'flex';
             } else if (tipo === 'actuador') {
-                if (actuadorDiv) actuadorDiv.style.display = 'block';
+                if (actuadorDiv) actuadorDiv.style.display = 'flex';
             } else if (tipo === 'movimiento' || tipo === 'gas') {
                 if (alarmDiv) {
-                    alarmDiv.style.display = 'block';
+                    alarmDiv.style.display = 'flex';
                     if (alarmLabel) {
                         alarmLabel.textContent = 'Activar a la(s)';
                     }
                 }
             } else {
                 // Por defecto, mostrar luz
-                if (lightDiv) lightDiv.style.display = 'block';
+                if (lightDiv) lightDiv.style.display = 'flex';
             }
         }
 
@@ -455,9 +452,6 @@
                     if (deviceData.success) {
                         selectedDeviceId = deviceId;
                         selectedDeviceType = deviceData.data.tipo;
-
-                        // Mostrar el formulario correcto basado en el tipo
-                        showFormForDeviceType(selectedDeviceType);
                     } else {
                         swal("Error", "No se pudo cargar el dispositivo", "error");
                     }
@@ -597,7 +591,7 @@
         });
 
         function nameClick(){
-            let n = document.getElementById("user-input").value;
+            let n = document.getElementById("name-input").value;
             if(n.trim()!==""){
                 let ndiv = document.getElementById("name");
                 ndiv.style.display = "none";
@@ -613,12 +607,18 @@
                     fanDiv.classList.add('swing-in-bottom-bck');
                 } else if (selectedDeviceType === 'actuador') {
                     let actuadorDiv = document.getElementById("actuador");
+                    let save = document.getElementById("btn-div");
                     actuadorDiv.style.display = "flex";
+                    save.style.display = "flex";
                     actuadorDiv.classList.add('swing-in-bottom-bck');
+                    save.classList.add('swing-in-bottom-bck');
                 } else if (selectedDeviceType === 'movimiento' || selectedDeviceType === 'gas') {
                     let alarmDiv = document.getElementById("alarm");
+                    let save = document.getElementById("btn-div");
                     alarmDiv.style.display = "flex";
+                    save.style.display = "flex";
                     alarmDiv.classList.add('swing-in-bottom-bck');
+                    save.classList.add('swing-in-bottom-bck');
                 } else {
                     // Por defecto, mostrar luz
                     let lightDiv = document.getElementById("start-light");
@@ -663,34 +663,6 @@
                 save.classList.add('swing-in-bottom-bck');
             } else{
                 swal("Campos vacíos", "Favor de seleccionar una opción", "warning");
-            }
-        }
-
-        function alarmClick(){
-            let time = document.getElementById("turnOn").value;
-            if(time.trim()!==""){
-                let alarmdiv = document.getElementById("alarm");
-                let save = document.getElementById("btn-div");
-
-                alarmdiv.style.display = "none";
-                save.style.display = "flex"
-                save.classList.add('swing-in-bottom-bck');
-            } else{
-                swal("Campo vacío", "Favor de ingresar la hora", "warning");
-            }
-        }
-
-        function actuadorClick(){
-            let turnOnTime = document.getElementById("turnOnTimeActuador").value;
-            if(turnOnTime.trim()!==""){
-                let actuadordiv = document.getElementById("actuador");
-                let save = document.getElementById("btn-div");
-
-                actuadordiv.style.display = "none";
-                save.style.display = "flex"
-                save.classList.add('swing-in-bottom-bck');
-            } else{
-                swal("Campo vacío", "Favor de ingresar al menos la hora de encendido", "warning");
             }
         }
     </script>

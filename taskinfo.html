@@ -70,7 +70,7 @@
         <div class="row">
             <div class="col-lg-5" id="leftCol-taskinfo">
                 <h3>Nombre de tarea</h3>
-                <input type="text" id="user-input" name="taskName">
+                <input type="text" id="name-input" name="taskName">
                 <h3>Dispositivo</h3>
                 <div class="dropdown">
                     <button
@@ -88,13 +88,13 @@
                         <li><a class="dropdown-item" href="#">Cargando...</a></li>
                     </ul>
                 </div>
-                <button class="button-login mt-4">Guardar</button>
-                <button class="button-delete mt-1">Eliminar</button>
+                <button class="button-save mt-2">Guardar</button>
+                <button class="button-delete mt-3">Eliminar</button>
             </div>
             <div class="col-lg-5" id="rightCol-taskinfo">
                 <div class="fan" style="display: none;">
                     <div class="timeOn d-flex">
-                        <h3>Encender a la(s)</h3>
+                        <h3 id="h3-r">Encender a la(s)</h3>
                         <input
                         type="time"
                         id="turnOnTime"
@@ -102,13 +102,15 @@
                         max="24:00"
                         required />
                     </div>
+                    <br>
                     <div class="tempOn d-flex">
-                        <h3>Encender a los</h3>
+                        <h3 id="h3-r">Encender a los</h3>
                         <input type="number" id="turnOnTemp">
                         <h3 class="degree">°C</h3>
                     </div>
+                    <br>
                     <div class="timeOff d-flex">
-                        <h3>Apagar a la(s)</h3>
+                        <h3 id="h3-r">Apagar a la(s)</h3>
                         <input
                         type="time"
                         id="turnOffTime"
@@ -116,15 +118,16 @@
                         max="24:00"
                         required />
                     </div>
+                    <br>
                     <div class="tempOff d-flex">
-                        <h3>Apagar a los</h3>
+                        <h3 id="h3-r">Apagar a los</h3>
                         <input type="number" id="turnOffTemp">
                         <h3 class="degree">°C</h3>
                     </div>
                 </div>
                 <div class="alarm" style="display: none;">
                     <div class="turnOn d-flex">
-                        <h3 id="alarmLabelInfo">Activar a la(s)</h3>
+                        <h3 class="h3-r" id="alarmLabelInfo">Activar a la(s)</h3>
                         <input
                         type="time"
                         id="turnOn"
@@ -135,7 +138,7 @@
                 </div>
                 <div class="actuador" style="display: none;">
                     <div class="timeOnActuador d-flex">
-                        <h3>Encender a la(s)</h3>
+                        <h3 id="h3-r">Encender a la(s)</h3>
                         <input
                         type="time"
                         id="turnOnTimeActuador"
@@ -143,8 +146,9 @@
                         max="24:00"
                         required />
                     </div>
+                    <br>
                     <div class="timeOffActuador d-flex">
-                        <h3>Apagar a la(s)</h3>
+                        <h3 id="h3-r">Apagar a la(s)</h3>
                         <input
                         type="time"
                         id="turnOffTimeActuador"
@@ -155,7 +159,7 @@
                 </div>
                 <div class="light" style="display: none;">
                     <div class="timeOnLight d-flex">
-                        <h3>Encender a la(s)</h3>
+                        <h3 id="h3-r">Encender a la(s)</h3>
                         <input
                         type="time"
                         id="turnOnTime"
@@ -163,15 +167,17 @@
                         max="24:00"
                         required />
                     </div>
+                    <br>
                     <div class="lightOn d-flex">
-                        <h3>Encender cuando no hay luz</h3>
+                        <h3 id="h3-r">Encender cuando no hay luz</h3>
                         <label class="switch" id="lightOnSwitch">
                             <input type="checkbox">
                             <span class="slider round"></span>
                         </label>
                     </div>
+                    <br>
                     <div class="timeOffLight d-flex">
-                        <h3>Apagar a la(s)</h3>
+                        <h3 id="h3-r">Apagar a la(s)</h3>
                         <input
                         type="time"
                         id="turnOffTime"
@@ -179,8 +185,9 @@
                         max="24:00"
                         required />
                     </div>
+                    <br>
                     <div class="lightOff d-flex">
-                        <h3>Apagar cuando hay luz</h3>
+                        <h3 id="h3-r">Apagar cuando hay luz</h3>
                         <label class="switch" id="lightOffSwitch">
                             <input type="checkbox">
                             <span class="slider round"></span>
@@ -258,7 +265,7 @@
         let selectedDeviceType = null;
         let currentAutomatization = null;
 
-        const saveButton = document.querySelector('.button-login');
+        const saveButton = document.querySelector('.button-save');
         const deleteButton = document.querySelector('.button-delete');
         const taskNameInput = document.querySelector('input[name="taskName"]');
 
