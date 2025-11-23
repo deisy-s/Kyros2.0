@@ -558,7 +558,7 @@ input::-webkit-inner-spin-button {
     text-align: left;
 }
 
-#user-input, #deviceNameInput, #pinInput, #connectionInput, #cameraNameInput, #name-input{
+#user-input, #deviceNameInput, #pinInput, #connectionInput, #cameraNameInput, #name-input, #seconds{
     width: 100%;
     height: 35px;
     background: transparent;
@@ -570,6 +570,11 @@ input::-webkit-inner-spin-button {
     font-family: sans-serif;
     margin: 2px 0 15px;
     padding: 10px 10px;
+}
+
+#seconds{
+    width: 50px;
+    margin-left: 10px;
 }
 
 #password-div{
@@ -591,6 +596,11 @@ input::-webkit-inner-spin-button {
     font-size: 16px;
     letter-spacing: 1px;
     font-family: sans-serif;
+}
+
+#durationAlarm p{
+    font-size: 16px;
+    font-weight: bold;
 }
 
 #user-input:focus, #userinput:focus, #password:focus{
@@ -832,6 +842,11 @@ input::-webkit-inner-spin-button {
     text-align: left;
 }
 
+#tableMenu{
+    max-height: 200px;
+    overflow-y: auto;
+}
+
 #room-img{
     width: 400px;
 }
@@ -941,7 +956,7 @@ input::-webkit-inner-spin-button {
     margin-top: 20px;
 }
 
-#turnOnTime, #turnOffTime, #turnOn, #turnOnTimeLight, #turnOffTimeLight, #turnOnTimeActuador, #turnOffTimeActuador{
+#turnOnTime, #turnOffTime, #turnOn, #turnOnTimeLight, #turnOffTimeLight, #turnOnTimeActuador, #turnOffTimeActuador, #startRange, #stopRange{
     width: 140px;
     height: 35px;
     background: transparent;
@@ -966,11 +981,11 @@ input::-webkit-inner-spin-button {
     margin-left: 10px;
 }
 
-#option-fan .dropdown, #option-fan-off .dropdown{
+#option-fan .dropdown, #option-fan-off .dropdown, #alarm .dropdown{
     width: 100%;
 }
 
-#option-fan .dropdown button, #option-fan-off .dropdown button{
+#option-fan .dropdown button, #option-fan-off .dropdown button, #alarm .dropdown button{
     width: 100%;
 }
 
@@ -1213,9 +1228,9 @@ input::-webkit-inner-spin-button {
     }
 
     #task-section input:checked + .slider:before {
-        -webkit-transform: translateX(20px);
-        -ms-transform: translateX(20px);
-        transform: translateX(20px);
+        -webkit-transform: translateX(12px);
+        -ms-transform: translateX(12px);
+        transform: translateX(12px);
     }
 
     #main-container-deviceinfo .switch {
