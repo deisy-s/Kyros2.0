@@ -294,7 +294,7 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    swal({title:"Dispositivo actualizado exitosamente", icon:"success",});
+                    await swal({title:"Dispositivo actualizado exitosamente", icon:"success",});
                     window.location.href = `devices.html?roomId=${roomId}&roomname=${roomname}`;
                 } else {
                     swal("Error", "Error al actualizar el dispositivo", "error");

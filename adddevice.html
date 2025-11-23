@@ -280,7 +280,7 @@
                     const data = await response.json();
 
                     if (response.ok) {
-                        swal({title: "Cámara creada exitosamente", icon:"success",});
+                        await swal({title: "Cámara creada exitosamente", icon:"success",});
                         saveButton.disabled=false;
                         window.location.href = `devices.html?roomId=${roomId}&roomname=${roomname}`;
                     } else {
@@ -316,7 +316,7 @@
                     const data = await response.json();
 
                     if (response.ok) {
-                        swal({title:"Dispositivo creado exitosamente", icon:"success"});
+                        await swal({title:"Dispositivo creado exitosamente", icon:"success"});
                         saveButton.disabled=false;
                         window.location.href = `devices.html?roomId=${roomId}&roomname=${roomname}`;
                     } else {

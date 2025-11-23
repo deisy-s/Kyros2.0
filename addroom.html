@@ -165,7 +165,7 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    swal({title:"Habitación creada exitosamente", icon:"success",});
+                    await swal({title:"Habitación creada exitosamente", icon:"success",});
                     window.location.href = 'rooms.html';
                 } else {
                     swal("Error", "Error al crear la habitación", "error");

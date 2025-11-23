@@ -796,7 +796,7 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    swal({title:"Automatización eliminada exitosamente", icon:"success",});
+                    await swal({title:"Automatización eliminada exitosamente", icon:"success",});
                     window.location.href = 'automatize.html';
                 } else {
                     swal("Error", "Error al eliminar la automatización", "error");

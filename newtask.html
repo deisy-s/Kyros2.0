@@ -972,7 +972,7 @@
                         const data = await response.json();
 
                         if (response.ok) {
-                            swal({title:"Tarea creada exitosamente", icon:"success",});
+                            await swal({title:"Tarea creada exitosamente", icon:"success",});
                             setTimeout(() => {
                                 window.location.href = 'automatize.html';
                             }, 1500);

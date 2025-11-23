@@ -228,7 +228,7 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    swal({title:"Habitación actualizada exitosamente", icon:"success",});
+                    await swal({title:"Habitación actualizada exitosamente", icon:"success",});
                     window.location.href = 'rooms.html';
                 } else {
                     swal("Error", "Error al actualizar la habitación", "error");
