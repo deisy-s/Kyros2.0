@@ -97,10 +97,10 @@
                 </div>
             </div>
             <div class="col-lg-4">
-                <h5>Tareas</h5>
-                <div class="tasks d-flex justify-content-between">
+                <!-- Toggle encendido/apagado - visible para dispositivos que lo soporten -->
+                <div id="toggle-section" class="tasks d-flex justify-content-between" style="display: none;">
                     <div class="text">
-                        <h6 id="taskname">Tarea 1</h6>
+                        <h6 id="taskname">Cargando...</h6>
                     </div>
 
                     <label class="switch">
@@ -109,13 +109,17 @@
                     </label>
                 </div>
 
-                <div class="addtask d-flex justify-content-between" onclick="sendTaskInfo()">
-                    <div class="text">
-                        <h6>Agregar tarea</h6>
-                    </div>
-                    
-                    <div class="add-image">
-                        <img src="images/Copy-2--Streamline-Flex.png">
+                <!-- Sección de tareas - solo visible para actuadores -->
+                <div id="tasks-section" style="display: none;">
+                    <h5>Tareas</h5>
+                    <div class="addtask d-flex justify-content-between" onclick="sendTaskInfo()">
+                        <div class="text">
+                            <h6>Agregar tarea</h6>
+                        </div>
+
+                        <div class="add-image">
+                            <img src="images/Copy-2--Streamline-Flex.png">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -233,31 +237,43 @@
 
         // --- 2. CONFIGURACIÓN DE INTERFAZ ---
         function setupInterfaceByType(tipo) {
-            const toggleContainer = document.querySelector('.tasks');
+            const toggleSection = document.getElementById('toggle-section');
+            const tasksSection = document.getElementById('tasks-section');
             const chartContainer = document.getElementById('chart-container');
             const historyContainer = document.getElementById('history-container');
-            const addTaskBtn = document.querySelector('.addtask');
 
             const tipoNorm = tipo ? tipo.toLowerCase() : '';
 
-            toggleContainer.style.display = 'none';
-            addTaskBtn.style.display = 'none';
-            chartContainer.style.display = 'none';
-            historyContainer.style.display = 'none';
+            // Ocultar todo por defecto
+            toggleSection.style.setProperty('display', 'none', 'important');
+            tasksSection.style.setProperty('display', 'none', 'important');
+            chartContainer.style.setProperty('display', 'none', 'important');
+            historyContainer.style.setProperty('display', 'none', 'important');
 
-            // Actuadores
-            if (['actuador', 'luces', 'foco', 'ventilador'].includes(tipoNorm)) {
-                toggleContainer.style.display = 'flex';
-                addTaskBtn.style.display = 'block';
-                chartContainer.style.display = 'block'; 
+            console.log('🔍 Tipo de dispositivo:', tipoNorm);
+
+            // Actuadores - toggle, sección tareas y gráfica
+            if (tipoNorm === 'actuador') {
+                toggleSection.style.setProperty('display', 'flex', 'important');
+                tasksSection.style.setProperty('display', 'block', 'important');
+                chartContainer.style.setProperty('display', 'block', 'important');
+                console.log('✅ Es actuador - mostrando todo');
             }
-            // Eventos (Alarmas)
-            else if (['alarma', 'movimiento', 'pir', 'luz', 'ldr'].includes(tipoNorm)) {
-                historyContainer.style.display = 'block';
+            // Dispositivos con toggle pero SIN tareas (luces, focos, ventiladores)
+            else if (['luces', 'foco', 'ventilador', 'luz'].includes(tipoNorm)) {
+                toggleSection.style.setProperty('display', 'flex', 'important');
+                chartContainer.style.setProperty('display', 'block', 'important');
+                console.log('ℹ️ Dispositivo con toggle - SIN tareas');
             }
-            // Sensores
+            // Eventos (Alarmas, movimiento, etc.) - solo historial
+            else if (['alarma', 'movimiento', 'pir', 'ldr'].includes(tipoNorm)) {
+                historyContainer.style.setProperty('display', 'block', 'important');
+                console.log('ℹ️ Es sensor de eventos - mostrando historial');
+            }
+            // Sensores (temperatura, humedad, gas, etc.) - solo gráfica
             else {
-                chartContainer.style.display = 'block';
+                chartContainer.style.setProperty('display', 'block', 'important');
+                console.log('ℹ️ Es sensor - mostrando gráfica');
             }
         }
 
