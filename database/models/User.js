@@ -26,12 +26,28 @@ const UserSchema = new mongoose.Schema({
             return this.authProvider === 'local';
         },
         minlength: [6, 'La contraseña debe tener al menos 6 caracteres'],
-        select: false // No devolver password por defecto en queries
+        select: false, // No devolver password por defecto en queries
+        validate: {
+            validator: function(password) {
+                // Solo validar si es usuario local y la contraseña no está hasheada
+                if (this.authProvider !== 'local' || !password) return true;
+
+                // Si ya está hasheada (empieza con $2a$ o $2b$), no validar
+                if (password.startsWith('$2a$') || password.startsWith('$2b$')) return true;
+
+                // Validar formato: al menos 1 mayúscula, 1 minúscula, 1 número
+                const hasUpperCase = /[A-Z]/.test(password);
+                const hasLowerCase = /[a-z]/.test(password);
+                const hasNumber = /[0-9]/.test(password);
+
+                return hasUpperCase && hasLowerCase && hasNumber;
+            },
+            message: 'La contraseña debe contener al menos una mayúscula, una minúscula y un número'
+        }
     },
     googleId: {
         type: String,
-        default: null,
-        sparse: true // Permite múltiples documentos con googleId null
+        sparse: true // Permite múltiples documentos sin googleId
     },
     authProvider: {
         type: String,

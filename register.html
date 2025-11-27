@@ -68,6 +68,9 @@
                             <input type="password" id="password" placeholder="Cree una contraseña">
                             <i class="bi bi-eye-slash" id="togglePassword"></i>
                         </div>
+                        <small style="color: #666; font-size: 0.85em; display: block; margin-top: 5px;">
+                            Debe contener: mínimo 6 caracteres, una mayúscula, una minúscula y un número
+                        </small>
                         <br>
                     </form>
                     
@@ -195,22 +198,42 @@
         }
 
         const registerButton = document.querySelector('.button-login');
-        const inputs = document.querySelectorAll('#user-input');
-        const nameInput = inputs[0];
-        const emailInput = inputs[1];
+        const nameInput = document.querySelector('input[name="userName"]');
+        const emailInput = document.querySelector('input[name="email"]');
         const passwordInput = document.querySelector('#password');
 
         registerButton.addEventListener('click', async (e) => {
             e.preventDefault();
 
-            const name = nameInput.value;
-            const email = emailInput.value;
+            const name = nameInput.value.trim();
+            const email = emailInput.value.trim();
             const passwordValue = passwordInput.value;
 
+            // Validar campos vacíos
             if (!name || !email || !passwordValue) {
                 swal("Campos vacíos", "Favor de completar todos los campos", "warning");
                 return;
             }
+
+            // Validar longitud de contraseña
+            if (passwordValue.length < 6) {
+                swal("Contraseña inválida", "La contraseña debe tener al menos 6 caracteres", "warning");
+                return;
+            }
+
+            // Validar formato de contraseña
+            const hasUpperCase = /[A-Z]/.test(passwordValue);
+            const hasLowerCase = /[a-z]/.test(passwordValue);
+            const hasNumber = /[0-9]/.test(passwordValue);
+
+            if (!hasUpperCase || !hasLowerCase || !hasNumber) {
+                swal("Contraseña inválida", "La contraseña debe contener al menos una mayúscula, una minúscula y un número", "warning");
+                return;
+            }
+
+            // Deshabilitar botón para evitar clics múltiples
+            registerButton.disabled = true;
+            registerButton.textContent = 'Creando cuenta...';
 
             try {
                 const response = await fetch(`${API_URL}/auth/register`, {
@@ -229,15 +252,21 @@
 
                 if (response.ok) {
                     saveToken(data.token);
-                    alert('Cuenta creada exitosamente');
                     swal({title:"Cuenta creada exitosamente", icon:"success",});
                     window.location.href = 'rooms.html';
                 } else {
-                    swal("Error", "Error al crear la cuenta", "error");
+                    // Mostrar el mensaje específico del servidor
+                    swal("Error al registrar", data.message || "Error al crear la cuenta", "error");
+                    // Rehabilitar botón
+                    registerButton.disabled = false;
+                    registerButton.textContent = 'Crear Cuenta';
                 }
             } catch (error) {
                 console.error('Error:', error);
                 swal("Error", "Error al conectar con el servidor", "error");
+                // Rehabilitar botón
+                registerButton.disabled = false;
+                registerButton.textContent = 'Crear Cuenta';
             }
         });
     </script>
