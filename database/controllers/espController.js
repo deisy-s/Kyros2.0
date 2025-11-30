@@ -47,6 +47,17 @@ const getESPConfig = async (req, res, next) => {
                     valor: cond.valor,
                     operador: opMap[cond.operador] || cond.operador
                 };
+
+                // Manejar acciones para sensores
+                if (auto.acciones && auto.acciones.length > 0) {
+                    const acc = auto.acciones[0];
+                    let cmd = acc.accion === 'encender' ? 'ON' : 'OFF';
+                    automatizacion.accion = {
+                        dispositivo_id: acc.dispositivo._id.toString(),
+                        comando: cmd,
+                        duracion: acc.parametros?.duracion || acc.duracion || 0
+                    };
+                }
             }
             // CASO HORARIO
             else if (auto.trigger.tipo === 'horario') {
@@ -85,17 +96,6 @@ const getESPConfig = async (req, res, next) => {
                 }
             }
 
-            // ACCIONES
-            if (auto.acciones && auto.acciones.length > 0) {
-                const acc = auto.acciones[0];
-                let cmd = acc.accion === 'encender' ? 'ON' : (acc.accion === 'apagar' ? 'OFF' : 'ON');
-                automatizacion.accion = {
-                    dispositivo_id: acc.dispositivo._id.toString(),
-                    comando: cmd,
-                    // Importante: Enviar duración si existe
-                    duracion: acc.parametros?.duracion || acc.duracion || 0 
-                };
-            }
             return automatizacion;
         }).filter(auto => auto.condicion || (auto.tipo === 'horario' && auto.horario));
 
@@ -196,18 +196,32 @@ async function checkAndTriggerAutomations(habitacionId, datosSensores, devicesIn
         // Si es el minuto exacto, enviamos la orden
         if (currentTimeVal === tiempoInicio) {
             console.log(`[Reglas] ⏰ ¡HORARIO CUMPLIDO! ${regla.trigger.horario.hora}`);
-            
+
+            // Calcular duración si existe horaFin
+            let duracionCalculada = 0;
+            if (regla.trigger.horario.hora && regla.trigger.horario.horaFin) {
+                const [h1, m1] = regla.trigger.horario.hora.split(':').map(Number);
+                const [h2, m2] = regla.trigger.horario.horaFin.split(':').map(Number);
+
+                const inicioMin = h1 * 60 + m1;
+                let finMin = h2 * 60 + m2;
+
+                // Ajuste por si cruza la medianoche
+                if (finMin < inicioMin) finMin += 24 * 60;
+
+                duracionCalculada = (finMin - inicioMin) * 60; // Segundos
+            }
+
             for (const accion of regla.acciones) {
                 const habitacionActuador = await Room.findById(accion.dispositivo.habitacion).select('ip').lean();
                 if (habitacionActuador && habitacionActuador.ip) {
                     const cmd = (accion.accion === 'encender') ? 'on' : 'off';
-                    // Buscar duración en parámetros (si es alarma)
-                    const duracion = accion.parametros?.duracion || accion.duracion || 0;
+                    // Usar duración calculada o la manual
+                    const duracion = duracionCalculada || accion.parametros?.duracion || accion.duracion || 0;
                     await enviarComandoESP(habitacionActuador.ip, accion.dispositivo._id.toString(), cmd, duracion);
                 }
             }
         }
-        // Nota: Si tienes hora de fin, deberías tener otra regla o lógica para el OFF
         continue; 
     }
 
