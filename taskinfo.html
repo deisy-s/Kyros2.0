@@ -99,7 +99,7 @@
                         </button>
                         <ul class="dropdown-menu w-100" id="fanOnMenu">
                             <li><a class="dropdown-item fanOnOption" href="#" data-option="time">Encender a una hora establecida</a></li>
-                            <li><a class="dropdown-item fanOnOption" href="#" data-option="temp">Encender a una temperatura específica</a></li>
+                            <li><a class="dropdown-item fanOnOption" href="#" data-option="temp">Encender a cierta temperatura</a></li>
                         </ul>
                     </div>
                     <!-- Opción: Por hora -->
@@ -134,7 +134,7 @@
                         <ul class="dropdown-menu w-100" id="fanOffMenu">
                             <li><a class="dropdown-item fanOffOption" href="#" data-option="none">Sin apagado automático</a></li>
                             <li><a class="dropdown-item fanOffOption" href="#" data-option="time">Apagar a una hora establecida</a></li>
-                            <li><a class="dropdown-item fanOffOption" href="#" data-option="temp">Apagar a una temperatura específica</a></li>
+                            <li><a class="dropdown-item fanOffOption" href="#" data-option="temp">Apagar a cierta temperatura</a></li>
                         </ul>
                     </div>
                     <!-- Opción apagado: Por hora -->
@@ -179,7 +179,7 @@
                         <ul class="dropdown-menu w-100" id="option5Menu">
                             <li><a class="dropdown-item option5" href="#">Encender a una hora establecida</a></li>
                             <li><a class="dropdown-item option5" href="#">Encender al detectar movimiento</a></li>
-                            <li><a class="dropdown-item option5" href="#">Encender al sobrepasar los niveles de gas regulares</a></li>
+                            <li><a class="dropdown-item option5" href="#">Encender al detectar gas</a></li>
                         </ul>
                     </div>
                     <!-- Opción: Por hora -->
@@ -207,7 +207,7 @@
                             <div class="col-5">
                                 <input type="time" id="startRangeInfo" min="00:00" max="24:00" />
                             </div>
-                            <div class="col-2 d-flex justify-content-center">
+                            <div class="col-2">
                                 <h3 class="mt-1">-</h3>
                             </div>
                             <div class="col-5">
@@ -215,7 +215,7 @@
                             </div>
                         </div>
                         <h3 class="mt-3">Duración (segundos)</h3>
-                        <input type="number" id="secondsMovementInfo" placeholder="00" class="w-50">
+                        <input type="number" id="secondsMovementInfo" placeholder="00">
                     </div>
                     <!-- Opción: Por sensor de gas -->
                     <div id="gasAlarmInfo" style="display: none;">
@@ -227,7 +227,7 @@
                             <ul class="dropdown-menu w-100" id="GasMenuInfo"></ul>
                         </div>
                         <h3 class="mt-3">Duración (segundos)</h3>
-                        <input type="number" id="secondsGasInfo" placeholder="00" class="w-50">
+                        <input type="number" id="secondsGasInfo" placeholder="00">
                     </div>
                 </div>
                 <div class="light" style="display: none;">
@@ -555,7 +555,7 @@
                         timeDiv.style.display = 'block';
                     } else if (item.textContent === 'Encender al detectar movimiento') {
                         moveDiv.style.display = 'block';
-                    } else if (item.textContent === 'Encender al sobrepasar los niveles de gas regulares') {
+                    } else if (item.textContent === 'Encender al detectar gas') {
                         gasDiv.style.display = 'block';
                     }
                 });
@@ -853,7 +853,7 @@
 
                                 } else if (tipoSensor === 'gas') {
                                     console.log('🔍 GAS - Cargando formulario de gas');
-                                    dropdownButton.textContent = 'Encender al sobrepasar los niveles de gas regulares';
+                                    dropdownButton.textContent = 'Encender al detectar gas';
                                     const gasDiv = document.getElementById('gasAlarmInfo');
                                     gasDiv.style.display = 'block';
                                     console.log('🔍 GAS - Div display:', gasDiv.style.display);
@@ -1002,7 +1002,7 @@
                             // Si hay trigger por sensor de temperatura
                             if (auto.trigger.tipo === 'sensor' && auto.trigger.sensor?.tipoSensor === 'temperatura') {
                                 if (dropdownFanOnButton) {
-                                    dropdownFanOnButton.textContent = 'Encender a una temperatura específica';
+                                    dropdownFanOnButton.textContent = 'Encender a cierta temperatura';
                                 }
 
                                 // Cargar datos del sensor de temperatura
@@ -1049,7 +1049,7 @@
                             // Si hay temperatura de apagado en parámetros
                             if (parametros && parametros.temperaturaApagar) {
                                 if (dropdownFanOffButton) {
-                                    dropdownFanOffButton.textContent = 'Apagar a una temperatura específica';
+                                    dropdownFanOffButton.textContent = 'Apagar a cierta temperatura';
                                 }
                                 const turnOffTempInput = fanTempOffInfo?.querySelector('input[type="number"]');
                                 if (turnOffTempInput) {
