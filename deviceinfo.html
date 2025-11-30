@@ -68,7 +68,14 @@
             <!-- Breadcrumb -->
         </div>
         <div class="row">
-            <h1 class="heading" id="deviceName"></h1>
+            <div class="row align-items-center mb-2">
+                <div class="col-auto d-flex align-items-center">
+                    <h1 class="heading mb-0" id="deviceName"></h1>
+                    <span id="title-live-value" class="badge rounded-pill bg-primary ms-3 fs-5" style="display: none; font-weight: 500;">
+                        --
+                    </span>
+                </div>
+            </div>
         </div>
         <div class="row">
             <div class="col-lg-8">
@@ -438,10 +445,65 @@
             // Recargar datos agregados con el nuevo rango
             fetchHistoricalData();
         }
+        function renderHeaderValue() {
+            const badge = document.getElementById('title-live-value');
+            if (!badge) return;
 
+            // 1. Verificar si hay datos
+            if (!historicalData || historicalData.length === 0) {
+                badge.style.display = 'none';
+                return;
+            }
+
+            // 2. Verificar tipo
+            const tipo = deviceData.tipo ? deviceData.tipo.toLowerCase() : '';
+            const subtipo = deviceData.subtipo ? deviceData.subtipo.toLowerCase() : '';
+            
+            const allowedTypes = ['temperatura', 'temp', 'humedad', 'humidity', 'gas', 'mq2', 'calidad aire'];
+            const isAllowed = allowedTypes.some(t => tipo.includes(t) || subtipo.includes(t));
+
+            if (!isAllowed) {
+                badge.style.display = 'none';
+                return;
+            }
+
+            // 3. Obtener valor
+            const sorted = [...historicalData].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            const lastVal = sorted[0].valor;
+
+            // 4. DEFINIR ESTILOS "SOFT" (Fondo suave, texto fuerte)
+            let unit = '';
+            // Estilos base para que se vea elegante (padding, fuente, borde)
+            let baseStyle = "display: inline-block; padding: 5px 15px; border-radius: 12px; font-weight: 600; font-size: 1.1rem; vertical-align: middle;";
+            let specificStyle = "";
+
+            if (tipo.includes('temp') || subtipo.includes('temp')) {
+                unit = '°C';
+                // Fondo rojo muy suave (#ffebee) y texto rojo oscurito (#c62828)
+                specificStyle = "background-color: #ffebee; color: #c62828; border: 1px solid #ffcdd2;";
+            } else if (tipo.includes('hum') || subtipo.includes('hum')) {
+                unit = '%';
+                // Fondo azul muy suave (#e3f2fd) y texto azul oscurito (#1565c0)
+                specificStyle = "background-color: #e3f2fd; color: #1565c0; border: 1px solid #bbdefb;";
+            } else if (tipo.includes('gas') || subtipo.includes('gas')) {
+                unit = ' ppm';
+                // Fondo amarillo suave (#fff8e1) y texto naranja/ambar (#f57f17)
+                specificStyle = "background-color: #fff8e1; color: #f57f17; border: 1px solid #ffecb3;";
+            }
+
+            // 5. Renderizar
+            // Limpiamos las clases de bootstrap que estorban (bg-primary, etc)
+            badge.className = 'ms-3'; 
+            // Aplicamos los estilos directos
+            badge.style.cssText = baseStyle + specificStyle;
+            badge.innerHTML = `${lastVal}${unit}`;
+        }        
         function renderDataView() {
             const tipo = deviceData.tipo.toLowerCase();
             const subtipo = deviceData.subtipo ? deviceData.subtipo.toLowerCase() : '';
+
+            renderHeaderValue();
+
             console.log('🎨 Renderizando vista para tipo:', tipo, 'subtipo:', subtipo);
             console.log('📁 Total datos históricos:', historicalData.length);
             console.log('📊 Datos agregados:', aggregatedData.length);

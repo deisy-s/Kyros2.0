@@ -4,27 +4,25 @@ const Automatize = require('../models/Automatize');
 const DeviceData = require('../models/DeviceData');
 const fetch = require('node-fetch');
 
-// @desc    Obtener configuración completa para ESP32
-// @route   GET /api/esp-config/:habitacionId
+// --------------------------------------------------------------------------
+// 1. OBTENER CONFIGURACIÓN (GET)
+// --------------------------------------------------------------------------
 const getESPConfig = async (req, res, next) => {
     try {
         const { habitacionId } = req.params;
         const room = await Room.findById(habitacionId);
-
         if (!room) return res.status(404).json({ success: false, message: 'Habitación no encontrada' });
 
-        const devices = await Device.find({ habitacion: habitacionId }).select('_id nombre pin tipo subtipo estado').lean();
-
-        const dispositivosMapeados = devices.map(device => ({
-            id: device._id.toString(),
-            nombre: device.nombre,
-            pin: device.pin,
-            tipo: device.tipo,
-            subtipo: device.subtipo || null
+        const devices = await Device.find({ habitacion: habitacionId }).select('_id nombre pin tipo estado').lean();
+        const dispositivosMapeados = devices.map(d => ({
+            id: d._id.toString(),
+            nombre: d.nombre,
+            pin: d.pin,
+            tipo: d.tipo
         }));
-
         const deviceIds = devices.map(d => d._id);
 
+        // Buscar automatizaciones activas
         const automatizaciones = await Automatize.find({
             activa: true,
             $or: [
@@ -39,34 +37,67 @@ const getESPConfig = async (req, res, next) => {
         const automatizacionesMapeadas = automatizaciones.map(auto => {
             const automatizacion = { id: auto._id.toString(), activa: auto.activa };
 
+            // CASO SENSOR
             if (auto.trigger.tipo === 'sensor' && auto.trigger.sensor.dispositivo) {
-                const condicion = auto.trigger.sensor.condicion;
-                
-                // Mapeo de operadores para el ESP32
-                const operadorMap = {
-                    'mayor': '>', 'menor': '<', 'mayor_igual': '>=',
-                    'menor_igual': '<=', 'igual': '==', 'diferente': '!='
-                };
-
+                const cond = auto.trigger.sensor.condicion;
+                const opMap = { 'mayor': '>', 'menor': '<', 'mayor_igual': '>=', 'menor_igual': '<=', 'igual': '==', 'diferente': '!=' };
                 automatizacion.condicion = {
                     dispositivo_id: auto.trigger.sensor.dispositivo._id.toString(),
                     dispositivo_tipo: auto.trigger.sensor.dispositivo.tipo,
-                    valor: condicion.valor,
-                    operador: operadorMap[condicion.operador] || condicion.operador
+                    valor: cond.valor,
+                    operador: opMap[cond.operador] || cond.operador
                 };
+            }
+            // CASO HORARIO
+            else if (auto.trigger.tipo === 'horario') {
+                automatizacion.tipo = 'horario';
+                automatizacion.horario = {
+                    hora: auto.trigger.horario.hora,
+                    dias: auto.trigger.horario.dias || []
+                };
+
+                // --- NUEVA LÓGICA: Calcular Duración si existe horaFin ---
+                let duracionCalculada = 0;
+                
+                if (auto.trigger.horario.hora && auto.trigger.horario.horaFin) {
+                    const [h1, m1] = auto.trigger.horario.hora.split(':').map(Number);
+                    const [h2, m2] = auto.trigger.horario.horaFin.split(':').map(Number);
+                    
+                    const inicioMin = h1 * 60 + m1;
+                    let finMin = h2 * 60 + m2;
+                    
+                    // Ajuste por si cruza la medianoche
+                    if (finMin < inicioMin) finMin += 24 * 60;
+                    
+                    duracionCalculada = (finMin - inicioMin) * 60; // Segundos
+                }
+                // -------------------------------------------------------
 
                 if (auto.acciones && auto.acciones.length > 0) {
                     const acc = auto.acciones[0];
-                    let cmd = acc.accion === 'encender' ? 'ON' : (acc.accion === 'apagar' ? 'OFF' : acc.accion.toUpperCase());
-                    
+                    let cmd = acc.accion === 'encender' ? 'ON' : 'OFF';
                     automatizacion.accion = {
                         dispositivo_id: acc.dispositivo._id.toString(),
-                        comando: cmd
+                        comando: cmd,
+                        // Usamos la calculada o la manual
+                        duracion: duracionCalculada || acc.parametros?.duracion || acc.duracion || 0 
                     };
                 }
             }
+
+            // ACCIONES
+            if (auto.acciones && auto.acciones.length > 0) {
+                const acc = auto.acciones[0];
+                let cmd = acc.accion === 'encender' ? 'ON' : (acc.accion === 'apagar' ? 'OFF' : 'ON');
+                automatizacion.accion = {
+                    dispositivo_id: acc.dispositivo._id.toString(),
+                    comando: cmd,
+                    // Importante: Enviar duración si existe
+                    duracion: acc.parametros?.duracion || acc.duracion || 0 
+                };
+            }
             return automatizacion;
-        }).filter(auto => auto.condicion);
+        }).filter(auto => auto.condicion || (auto.tipo === 'horario' && auto.horario));
 
         res.status(200).json({
             id: room._id.toString(),
@@ -82,34 +113,25 @@ const getESPConfig = async (req, res, next) => {
     }
 };
 
-// @desc    Recibe datos y ejecuta reglas
-// @route   POST /api/esp/report-data/:habitacionId
+// --------------------------------------------------------------------------
+// 2. RECIBIR DATOS Y AUTOMATIZAR (POST)
+// --------------------------------------------------------------------------
 const reportSensorData = async (req, res, next) => {
   const { habitacionId } = req.params;
   const datosSensores = req.body; 
-
-  // console.log(`\n--- REPORTE [${habitacionId}] ---`);
   
+  // console.log(`\n--- REPORTE [${habitacionId}] ---`);
   try {
-    // 1. Buscar dispositivos en BD
     const devicesInRoom = await Device.find({ habitacion: habitacionId }).select('_id tipo').lean();
     
-    // --- MODIFICACIÓN DE SEGURIDAD: MANEJO DE HABITACIÓN VACÍA ---
     if (devicesInRoom.length === 0) {
-        // Esto evita que el ESP32 marque error en su monitor serial.
-        console.log(`[Aviso] La habitación ${habitacionId} no tiene dispositivos configurados. Ignorando datos.`);
-        return res.status(200).json({ status: 'ok_sin_configuracion' });
+        console.log(`[Aviso] Habitación ${habitacionId} sin dispositivos.`);
+        return res.status(200).json({ status: 'ok_no_devices' });
     }
-    // -------------------------------------------------------------
-
-    console.log(`[Paso 1] Procesando datos para ${devicesInRoom.length} dispositivos...`);
 
     const datosParaGuardar = [];
-    
-    // 2. Mapear datos recibidos a tipos de BD
     for (const [key, valor] of Object.entries(datosSensores)) {
         let tipoSensorBuscado;
-        
         if (key === 'temp') tipoSensorBuscado = 'temperatura';
         else if (key === 'hum') tipoSensorBuscado = 'humedad';
         else if (key === 'ldr') tipoSensorBuscado = 'luz';
@@ -118,7 +140,6 @@ const reportSensorData = async (req, res, next) => {
         else tipoSensorBuscado = key;
 
         const device = devicesInRoom.find(d => d.tipo === tipoSensorBuscado);
-
         if (device) {
             datosParaGuardar.push({
                 dispositivo: device._id,
@@ -129,51 +150,78 @@ const reportSensorData = async (req, res, next) => {
         }
     }
 
-    // 3. Guardar en Historial
     if (datosParaGuardar.length > 0) {
         await DeviceData.insertMany(datosParaGuardar);
-        console.log(`[BD] Guardados ${datosParaGuardar.length} registros.`);
     }
 
-    // 4. Ejecutar Motor de Reglas
-    // (Solo si hay dispositivos, para evitar errores)
-    if (devicesInRoom.length > 0) {
-        await checkAndTriggerAutomations(habitacionId, datosSensores, devicesInRoom);
-    }
+    // EJECUTAR MOTOR DE REGLAS
+    await checkAndTriggerAutomations(habitacionId, datosSensores, devicesInRoom);
     
     res.status(200).json({ status: 'recibido' });
 
   } catch (error) {
-    // Incluso si hay un error fatal, intentamos no tirar el servidor
-    console.error('Error controlado en reportSensorData:', error.message);
-    // Respondemos con error 500 al ESP32 pero el servidor sigue vivo
-    res.status(500).json({ error: 'Error interno del servidor' });
+    console.error('Error en reportSensorData:', error);
+    res.status(500).json({ error: 'Error interno' });
   }
 };
 
-// --- MOTOR DE REGLAS ---
+// --------------------------------------------------------------------------
+// 3. MOTOR DE REGLAS 
+// --------------------------------------------------------------------------
 async function checkAndTriggerAutomations(habitacionId, datosSensores, devicesInRoom) {
   const deviceIds = devicesInRoom.map(d => d._id);
+  
+  // Hora actual para reglas de tiempo
+  const now = new Date();
+  const currentTimeVal = now.getHours() * 60 + now.getMinutes(); 
 
-  // Buscar reglas activas
+  // 1. CONSULTA CORREGIDA: Traer reglas de Sensor O de Horario
   const automatizaciones = await Automatize.find({
     'activa': true,
-    'trigger.tipo': 'sensor',
-    'trigger.sensor.dispositivo': { $in: deviceIds }
+    $or: [
+        { 'trigger.tipo': 'sensor', 'trigger.sensor.dispositivo': { $in: deviceIds } },
+        { 'trigger.tipo': 'horario', 'acciones.dispositivo': { $in: deviceIds } }
+    ]
   }).populate('acciones.dispositivo', 'habitacion').lean();
     
   for (const regla of automatizaciones) {
+    
+    // --- BLOQUE A: REGLAS DE HORARIO ---
+    if (regla.trigger.tipo === 'horario') {
+        if (!regla.trigger.horario?.hora) continue;
+
+        const [hInicio, mInicio] = regla.trigger.horario.hora.split(':').map(Number);
+        const tiempoInicio = hInicio * 60 + mInicio;
+
+        // Si es el minuto exacto, enviamos la orden
+        if (currentTimeVal === tiempoInicio) {
+            console.log(`[Reglas] ⏰ ¡HORARIO CUMPLIDO! ${regla.trigger.horario.hora}`);
+            
+            for (const accion of regla.acciones) {
+                const habitacionActuador = await Room.findById(accion.dispositivo.habitacion).select('ip').lean();
+                if (habitacionActuador && habitacionActuador.ip) {
+                    const cmd = (accion.accion === 'encender') ? 'on' : 'off';
+                    // Buscar duración en parámetros (si es alarma)
+                    const duracion = accion.parametros?.duracion || accion.duracion || 0;
+                    await enviarComandoESP(habitacionActuador.ip, accion.dispositivo._id.toString(), cmd, duracion);
+                }
+            }
+        }
+        // Nota: Si tienes hora de fin, deberías tener otra regla o lógica para el OFF
+        continue; 
+    }
+
+    // --- BLOQUE B: REGLAS DE SENSOR ---
     const sensorId = regla.trigger.sensor.dispositivo.toString();
     const sensorInfo = devicesInRoom.find(d => d._id.toString() === sensorId);
     if (!sensorInfo) continue; 
     
-    // Obtener el valor actual del sensor
     const sensorTipo = sensorInfo.tipo; 
     let valorSensor;
     
     if (sensorTipo === 'temperatura') valorSensor = datosSensores['temp'];
     else if (sensorTipo === 'humedad') valorSensor = datosSensores['hum'];
-    else if (sensorTipo === 'luz') valorSensor = datosSensores['ldr']; // Valor será 0 o 4095
+    else if (sensorTipo === 'luz') valorSensor = datosSensores['ldr'];
     else if (sensorTipo === 'gas') valorSensor = datosSensores['mq2'];
     else if (sensorTipo === 'movimiento') valorSensor = datosSensores['pir'];
     
@@ -183,160 +231,72 @@ async function checkAndTriggerAutomations(habitacionId, datosSensores, devicesIn
     const valorActual = Number(valorSensor);
     const operador = regla.trigger.sensor.condicion.operador;
 
-    // Evaluación Lógica
     let cumple = false;
     if (operador === 'mayor') cumple = valorActual > valorRegla;
     else if (operador === 'menor') cumple = valorActual < valorRegla;
     else if (operador === 'igual') cumple = valorActual == valorRegla;
     else if (operador === 'diferente') cumple = valorActual != valorRegla;
+    else if (operador === 'mayor_igual') cumple = valorActual >= valorRegla;
+    else if (operador === 'menor_igual') cumple = valorActual <= valorRegla;
 
     if (cumple) {
-      console.log(`[Reglas] ¡CUMPLIDA! ${sensorTipo}: ${valorActual} ${operador} ${valorRegla}`);
+      console.log(`[Reglas] 📡 ¡SENSOR CUMPLIDO! ${sensorTipo}: ${valorActual} ${operador} ${valorRegla}`);
       
       for (const accion of regla.acciones) {
         const habitacionActuador = await Room.findById(accion.dispositivo.habitacion).select('ip').lean();
         
         if (habitacionActuador && habitacionActuador.ip) {
             const cmd = (accion.accion === 'encender') ? 'on' : 'off';
-            await enviarComandoESP(habitacionActuador.ip, accion.dispositivo._id.toString(), cmd);
+            // Buscar duración en parámetros (si es alarma)
+            const duracion = accion.parametros?.duracion || accion.duracion || 0; 
+            await enviarComandoESP(habitacionActuador.ip, accion.dispositivo._id.toString(), cmd, duracion);
         }
       }
     }
   }
 }
 
-async function enviarComandoESP(ip, dispositivoId, comando) {
-    const url = `http://${ip}/control?dispositivo=${dispositivoId}&comando=${comando}`;
+// --- FUNCIÓN DE ENVÍO (CORREGIDA) ---
+async function enviarComandoESP(ip, dispositivoId, comando, duracion = 0) {
+    const url = `http://${ip}/control?dispositivo=${dispositivoId}&comando=${comando}&duration=${duracion}`;
     try {
         const response = await fetch(url);
-        if (response.ok) console.log(`[Comando] ${comando} -> ${dispositivoId} (Éxito)`);
-        else console.warn(`[Comando] ${comando} -> ${dispositivoId} (Error del ESP)`);
+        if (response.ok) console.log(`[Comando] ✅ ${comando} -> ${dispositivoId} (Duración: ${duracion}s)`);
+        else console.warn(`[Comando] ⚠️ Error del ESP: ${response.status}`);
     } catch (err) {
-        console.error(`[Comando] Error conectando a ${ip}`);
+        console.error(`[Comando] ❌ Error conectando a ${ip}`);
     }
 }
 
-// @desc    Notificar a ESP32s cuando se crea/actualiza automatización
-async function notifyESP32ConfigUpdate(automatizacion) {
+// @desc    Notificar cambios (PUSH)
+const notifyESP32ConfigUpdate = async (automatizacion) => {
     try {
-        console.log(`[Push] Notificando ESP32s de actualización de automatización ${automatizacion._id}`);
-
-        // Identificar habitaciones involucradas
         const habitacionesSet = new Set();
 
-        // Habitación del sensor trigger
+        // Trigger
         if (automatizacion.trigger?.sensor?.dispositivo) {
-            const sensorDevice = await Device.findById(automatizacion.trigger.sensor.dispositivo).select('habitacion').lean();
-            if (sensorDevice) habitacionesSet.add(sensorDevice.habitacion.toString());
+            const dev = await Device.findById(automatizacion.trigger.sensor.dispositivo);
+            if (dev) habitacionesSet.add(dev.habitacion.toString());
         }
-
-        // Habitaciones de dispositivos en acciones
-        if (automatizacion.acciones && automatizacion.acciones.length > 0) {
-            for (const accion of automatizacion.acciones) {
-                const actionDevice = await Device.findById(accion.dispositivo).select('habitacion').lean();
-                if (actionDevice) habitacionesSet.add(actionDevice.habitacion.toString());
+        // Acciones
+        if (automatizacion.acciones) {
+            for (const acc of automatizacion.acciones) {
+                const dev = await Device.findById(acc.dispositivo);
+                if (dev) habitacionesSet.add(dev.habitacion.toString());
             }
         }
 
-        const habitacionIds = Array.from(habitacionesSet);
-        console.log(`[Push] Habitaciones afectadas: ${habitacionIds.join(', ')}`);
-
-        // Enviar actualización a cada habitación
-        for (const habitacionId of habitacionIds) {
-            const room = await Room.findById(habitacionId).select('ip nombre').lean();
-
-            if (!room || !room.ip) {
-                console.log(`[Push] Habitación ${habitacionId} no tiene IP configurada, omitiendo...`);
-                continue;
-            }
-
-            // Obtener configuración completa para esta habitación
-            const devices = await Device.find({ habitacion: habitacionId }).select('_id nombre pin tipo subtipo estado').lean();
-
-            const dispositivosMapeados = devices.map(device => ({
-                id: device._id.toString(),
-                nombre: device.nombre,
-                pin: device.pin,
-                tipo: device.tipo,
-                subtipo: device.subtipo || null
-            }));
-
-            const deviceIds = devices.map(d => d._id);
-
-            const automatizaciones = await Automatize.find({
-                activa: true,
-                $or: [
-                    { 'trigger.sensor.dispositivo': { $in: deviceIds } },
-                    { 'acciones.dispositivo': { $in: deviceIds } }
-                ]
-            })
-            .populate('trigger.sensor.dispositivo', '_id nombre tipo')
-            .populate('acciones.dispositivo', '_id nombre habitacion')
-            .lean();
-
-            const automatizacionesMapeadas = automatizaciones.map(auto => {
-                const automatizacion = { id: auto._id.toString(), activa: auto.activa };
-
-                if (auto.trigger.tipo === 'sensor' && auto.trigger.sensor.dispositivo) {
-                    const condicion = auto.trigger.sensor.condicion;
-
-                    const operadorMap = {
-                        'mayor': '>', 'menor': '<', 'mayor_igual': '>=',
-                        'menor_igual': '<=', 'igual': '==', 'diferente': '!='
-                    };
-
-                    automatizacion.condicion = {
-                        dispositivo_id: auto.trigger.sensor.dispositivo._id.toString(),
-                        dispositivo_tipo: auto.trigger.sensor.dispositivo.tipo,
-                        valor: condicion.valor,
-                        operador: operadorMap[condicion.operador] || condicion.operador
-                    };
-
-                    if (auto.acciones && auto.acciones.length > 0) {
-                        const acc = auto.acciones[0];
-                        let cmd = acc.accion === 'encender' ? 'ON' : (acc.accion === 'apagar' ? 'OFF' : acc.accion.toUpperCase());
-
-                        automatizacion.accion = {
-                            dispositivo_id: acc.dispositivo._id.toString(),
-                            comando: cmd
-                        };
-                    }
-                }
-                return automatizacion;
-            }).filter(auto => auto.condicion);
-
-            const configCompleta = {
-                id: room._id.toString(),
-                nombre: room.nombre,
-                ip: room.ip,
-                dispositivos: dispositivosMapeados,
-                automatizaciones: automatizacionesMapeadas
-            };
-
-            // Enviar POST al ESP32
-            const url = `http://${room.ip}/update-config`;
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(configCompleta),
-                    timeout: 5000
-                });
-
-                if (response.ok) {
-                    console.log(`[Push] ✅ ESP32 ${room.nombre} (${room.ip}) actualizado correctamente`);
-                } else {
-                    console.warn(`[Push] ⚠️ ESP32 ${room.nombre} respondió con error: ${response.status}`);
-                }
-            } catch (err) {
-                console.error(`[Push] ❌ Error conectando a ESP32 ${room.nombre} (${room.ip}): ${err.message}`);
-            }
+        // Enviar a todos los involucrados
+        for (const roomId of habitacionesSet) {
+            await pushConfigToRoom(roomId);
         }
-
     } catch (error) {
-        console.error('[Push] Error en notifyESP32ConfigUpdate:', error);
-        // No lanzamos el error para que no afecte la operación principal
+        console.error('[Push] Error notificando:', error);
     }
-}
+};
 
-module.exports = { getESPConfig, reportSensorData, notifyESP32ConfigUpdate };
+module.exports = {
+    getESPConfig,
+    reportSensorData,
+    notifyESP32ConfigUpdate
+};

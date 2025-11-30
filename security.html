@@ -122,112 +122,156 @@
     <!-- Security cameras functionality -->
     <script>
         async function loadCameras() {
-            try {
-                const response = await fetchWithAuth(`${API_URL}/cameras`);
+        try {
+            const response = await fetchWithAuth(`${API_URL}/cameras`);
 
-                if (!response.ok) {
-                    throw new Error('Error al cargar cámaras');
-                }
+            if (!response.ok) {
+                throw new Error('Error al cargar cámaras');
+            }
 
-                const data = await response.json();
-                const cameras = data.data;
+            const data = await response.json();
+            const cameras = data.data;
 
-                const container = document.getElementById('cameras-container');
-                container.innerHTML = '';
+            const container = document.getElementById('cameras-container');
+            container.innerHTML = '';
 
-                if (cameras.length === 0) {
-                    container.innerHTML = '<p style="text-align: center; margin: 20px;">No hay cámaras configuradas. Agregue una cámara desde la sección de dispositivos.</p>';
-                    return;
-                }
+            if (cameras.length === 0) {
+                container.innerHTML = '<p style="text-align: center; margin: 20px;">No hay cámaras configuradas.</p>';
+                return;
+            }
 
-                cameras.forEach(camera => {
-                    const cameraDiv = document.createElement('div');
-                    cameraDiv.className = 'col-md-6 col-sm-12';
-                    cameraDiv.id = 'cam-section';
+            cameras.forEach(camera => {
+                const cameraDiv = document.createElement('div');
+                cameraDiv.className = 'col-md-6 col-sm-12';
+                cameraDiv.id = 'cam-section';
 
-                    const roomName = camera.habitacion ? camera.habitacion.nombre : 'Sin habitación';
-                    const isConnected = camera.estado.conectada;
-                    const streamUrl = camera.streaming.urlPrincipal;
+                const roomName = camera.habitacion ? camera.habitacion.nombre : 'Sin habitación';
+                const isConnected = camera.estado.conectada;
+                const isActive = camera.estado.activa; // Variable clave
+                const streamUrl = camera.streaming.urlPrincipal;
 
-                    // Detectar si el stream se puede mostrar en navegador
-                    // Detectar automáticamente basándose en la URL si es posible
-                    const streamType = camera.streaming.tipo.toLowerCase();
-                    const streamUrlLower = streamUrl.toLowerCase();
+                // --- Lógica de detección ---
+                const streamType = camera.streaming.tipo ? camera.streaming.tipo.toLowerCase() : '';
+                const streamUrlLower = streamUrl.toLowerCase();
+                
+                const isMjpegUrl = streamUrlLower.includes('mjpeg') || streamUrlLower.includes('mjpg');
+                const isEsp32Cam = streamUrlLower.includes('/stream') || streamUrlLower.includes(':81');
+                const isHttpUrl = streamUrlLower.startsWith('http://') || streamUrlLower.startsWith('https://');
+                const isRtspUrl = streamUrlLower.startsWith('rtsp://');
 
-                    // Detección inteligente: si la URL contiene 'mjpeg' o 'mjpg', tratarlo como MJPEG
-                    const isMjpegUrl = streamUrlLower.includes('mjpeg') || streamUrlLower.includes('mjpg');
-                    const isHttpUrl = streamUrlLower.startsWith('http://') || streamUrlLower.startsWith('https://');
-                    const isRtspUrl = streamUrlLower.startsWith('rtsp://');
+                const canShowInBrowser = isEsp32Cam || streamType === 'mjpeg' || isMjpegUrl || (isHttpUrl && !isRtspUrl && streamType !== 'rtsp');
 
-                    // Puede mostrarse en navegador si:
-                    // 1. El tipo es mjpeg/http O
-                    // 2. La URL indica que es MJPEG (aunque el tipo diga rtsp) O
-                    // 3. Es HTTP pero no RTSP
-                    const canShowInBrowser =
-                        streamType === 'mjpeg' ||
-                        streamType === 'http' ||
-                        isMjpegUrl ||
-                        (isHttpUrl && !isRtspUrl && streamType !== 'rtsp');
-
-                    cameraDiv.innerHTML = `
-                        <div class="row">
-                            <h3 class="col-8">${camera.nombre} - ${roomName}</h3>
-                            <div class="col-4 d-flex justify-content-end">
-                                <img class="col-2" src="images/Edit.png" alt="" onclick="editCam('${camera._id}', '${camera.nombre}', '${camera.habitacion._id}', '${roomName}')">
-                                <img class="col-2" src="images/Close.png" alt="" onclick="deleteCam('${camera._id}', '${camera.nombre}')">
-                            </div>
+                cameraDiv.innerHTML = `
+                    <div class="row">
+                        <h3 class="col-8">${camera.nombre} - ${roomName}</h3>
+                        <div class="col-4 d-flex justify-content-end">
+                            <img class="col-2" src="images/Edit.png" style="cursor:pointer;" onclick="editCam('${camera._id}', '${camera.nombre}', '${camera.habitacion._id}', '${roomName}')">
+                            <img class="col-2" src="images/Close.png" style="cursor:pointer;" onclick="deleteCam('${camera._id}', '${camera.nombre}')">
                         </div>
-                        <div class="cam-view" style="background-color: #1a1a1a; min-height: 300px; display: flex; align-items: center; justify-content: center; border-radius: 8px; overflow: hidden;">
-                            ${isConnected ?
+                    </div>
+
+                    <div class="cam-view" style="background-color: #1a1a1a; min-height: 300px; display: flex; align-items: center; justify-content: center; border-radius: 8px; overflow: hidden; margin-bottom: 10px;">
+                        
+                        ${!isActive ? 
+                            // CASO 1: CÁMARA INACTIVA (APAGADA POR USUARIO)
+                            `<div style="color: #666; text-align: center;">
+                                <h5 style="color: #888;">Cámara desactivada</h5>
+                                <small>Active el interruptor para ver el video</small>
+                             </div>`
+                            : 
+                            // CASO 2: CÁMARA ACTIVA -> Checar conexión
+                            (isConnected ?
                                 (canShowInBrowser ?
-                                    `<img src="${streamUrl}"
-                                          style="width: 100%; height: auto; max-height: 400px; object-fit: contain;"
+                                    `<img src="${streamUrl}" 
+                                          style="width: 100%; height: auto; max-height: 400px; object-fit: contain;" 
                                           onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"
-                                          alt="Stream de cámara">
+                                          alt="Stream">
                                      <div style="color: #888; text-align: center; display: none;">
-                                        <p style="font-size: 14px; margin-bottom: 10px;">Error al cargar el stream</p>
-                                        <p style="font-size: 12px;">URL: ${streamUrl}</p>
-                                        <button class="btn btn-sm btn-primary mt-2" onclick="window.open('${streamUrl}', '_blank')">Abrir en reproductor externo</button>
+                                        <p>Error cargando stream</p>
                                      </div>`
                                     :
                                     `<div style="color: #888; text-align: center;">
-                                        <p style="font-size: 14px; margin-bottom: 10px;">Streaming RTSP no disponible en navegador</p>
-                                        <p style="font-size: 12px;">URL: ${streamUrl}</p>
-                                        <button class="btn btn-sm btn-primary mt-2" onclick="window.open('${streamUrl}', '_blank')">Abrir en VLC</button>
+                                        <p>RTSP no soportado en web</p>
+                                        <button class="btn btn-sm btn-primary" onclick="window.open('${streamUrl}')">Abrir externo</button>
                                     </div>`
                                 )
                                 :
-                                `<div style="color: #ff4444; font-size: 24px; font-weight: bold;">
+                                `<div style="color: #ff4444; font-weight: bold;">
                                     NO SIGNAL
-                                    <p style="font-size: 14px; margin-top: 10px; color: #888;">Cámara desconectada</p>
-                                </div>`
-                            }
-                        </div>
-                        <div style="margin-top: 10px; display: flex; gap: 10px; align-items: center;">
-                            <button class="btn btn-sm ${camera.estado.activa ? 'btn-success' : 'btn-secondary'}"
-                                    onclick="toggleCamera('${camera._id}', ${!camera.estado.activa})">
-                                ${camera.estado.activa ? 'Activa' : 'Inactiva'}
-                            </button>
-                            <button class="btn btn-sm ${camera.estado.grabando ? 'btn-danger' : 'btn-outline-danger'}"
-                                    onclick="toggleRecording('${camera._id}', ${!camera.estado.grabando})">
-                                ${camera.estado.grabando ? '⏺ Grabando' : '⏹ Iniciar grabación'}
-                            </button>
-                            <span style="color: ${isConnected ? '#4CAF50' : '#888'}; font-size: 12px;">
-                                ${isConnected ? '🟢 Conectada' : '⚫ Desconectada'}
-                            </span>
-                        </div>
-                    `;
+                                    <p style="font-size: 12px; font-weight: normal; color: #888;">Verifique conexión eléctrica</p>
+                                 </div>`
+                            )
+                        }
+                    </div>
 
-                    container.appendChild(cameraDiv);
+                    <div style="margin-top: 10px; display: flex; gap: 10px; align-items: center;">
+                        <button id="active-btn-${camera._id}" 
+                                class="btn btn-sm ${isActive ? 'btn-success' : 'btn-secondary'}" 
+                                onclick="toggleCamera('${camera._id}', ${!isActive})">
+                            ${isActive ? 'Activa' : 'Inactiva'}
+                        </button>
+
+                        <button id="rec-btn-${camera._id}"
+                                class="btn btn-sm ${camera.estado.grabando ? 'btn-danger' : 'btn-outline-danger'}" 
+                                onclick="toggleRecording('${camera._id}', ${!camera.estado.grabando})">
+                            ${camera.estado.grabando ? '⏺ Grabando' : '⏹ Iniciar grabación'}
+                        </button>
+
+                        <span id="status-text-${camera._id}" 
+                              style="color: ${isConnected ? '#4CAF50' : '#888'}; font-size: 12px;">
+                            ${isConnected ? '🟢 Conectada' : '⚫ Desconectada'}
+                        </span>
+                    </div>
+                `;
+
+                container.appendChild(cameraDiv);
+            });
+
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+        async function updateCameraStatus() {
+            try {
+                // Pedimos datos en silencio (sin borrar nada visualmente)
+                const response = await fetchWithAuth(`${API_URL}/cameras`);
+                if (!response.ok) return;
+                
+                const data = await response.json();
+                const cameras = data.data;
+
+                cameras.forEach(cam => {
+                    // Buscamos los elementos por su ID único
+                    const statusSpan = document.getElementById(`status-text-${cam._id}`);
+                    const recBtn = document.getElementById(`rec-btn-${cam._id}`);
+                    const activeBtn = document.getElementById(`active-btn-${cam._id}`);
+
+                    // Si los elementos existen en el HTML, los actualizamos
+                    if (statusSpan) {
+                        const isConnected = cam.estado.conectada;
+                        statusSpan.style.color = isConnected ? '#4CAF50' : '#888';
+                        statusSpan.innerText = isConnected ? '🟢 Conectada' : '⚫ Desconectada';
+                    }
+
+                    if (recBtn) {
+                        // Actualizar clase (color) y texto del botón de grabación
+                        recBtn.className = `btn btn-sm ${cam.estado.grabando ? 'btn-danger' : 'btn-outline-danger'}`;
+                        recBtn.innerText = cam.estado.grabando ? '⏺ Grabando' : '⏹ Iniciar grabación';
+                        // Actualizar el onclick para que tenga el nuevo estado inverso
+                        recBtn.setAttribute('onclick', `toggleRecording('${cam._id}', ${!cam.estado.grabando})`);
+                    }
+                    
+                    if (activeBtn) {
+                        activeBtn.className = `btn btn-sm ${cam.estado.activa ? 'btn-success' : 'btn-secondary'}`;
+                        activeBtn.innerText = cam.estado.activa ? 'Activa' : 'Inactiva';
+                        activeBtn.setAttribute('onclick', `toggleCamera('${cam._id}', ${!cam.estado.activa})`);
+                    }
                 });
 
             } catch (error) {
-                console.error('Error:', error);
-                const container = document.getElementById('cameras-container');
-                container.innerHTML = '<p style="text-align: center; margin: 20px; color: red;">Error al cargar las cámaras</p>';
+                console.error("Error actualizando estados en segundo plano", error);
             }
         }
-
         async function toggleCamera(cameraId, newState) {
             try {
                 const response = await fetchWithAuth(`${API_URL}/cameras/${cameraId}/toggle`, {
