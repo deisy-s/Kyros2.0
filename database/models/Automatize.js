@@ -42,6 +42,7 @@ const AutomatizeSchema = new mongoose.Schema({
                 max: 6
             }],
             hora: String, // HH:MM
+            horaFin: String,
             amanecer: Boolean,
             atardecer: Boolean,
             offset: Number // Minutos antes/después de amanecer/atardecer
