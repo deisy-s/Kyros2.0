@@ -993,6 +993,10 @@ input::-webkit-inner-spin-button {
     padding: 10px 10px;
 }
 
+#tempOn, #tempOff{
+    margin-top: -50px;
+}
+
 #timeOn h3, #tempOn h3, #timeOff h3, #tempOff h3, #timeOnLight h3, #timeOffLight h3, #turnOnAlarm h3, #turnOnActuador h3, #turnOffActuador h3{
     margin-right: 20px;
 }
@@ -1018,7 +1022,7 @@ input::-webkit-inner-spin-button {
 }
 
 #turnOnTemp, #turnOffTemp{
-    width: 80px;
+    width: 50px;
     height: 35px;
     background: transparent;
     border: 1px solid #0651C7;
