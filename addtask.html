@@ -684,11 +684,80 @@
             }
         }
 
+        // Cargar sensores de temperatura dinámicamente
+        async function loadTempSensors() {
+            try {
+                const response = await fetchWithAuth(`${API_URL}/devices?tipo=temperatura`);
+                const data = await response.json();
+
+                if (data.success) {
+                    // Dropdown para encender
+                    const dropdownOn = document.getElementById('TempOnMenu');
+                    const dropdownButtonOn = document.getElementById('dropdownTempOnButton');
+
+                    // Dropdown para apagar
+                    const dropdownOff = document.getElementById('TempOffMenu');
+                    const dropdownButtonOff = document.getElementById('dropdownTempOffButton');
+
+                    dropdownOn.innerHTML = '';
+                    dropdownOff.innerHTML = '';
+
+                    if (data.data.length === 0) {
+                        dropdownOn.innerHTML = '<li><a class="dropdown-item disabled" href="#">No hay sensores de temperatura</a></li>';
+                        dropdownOff.innerHTML = '<li><a class="dropdown-item disabled" href="#">No hay sensores de temperatura</a></li>';
+                        dropdownButtonOn.textContent = 'Sin sensores';
+                        dropdownButtonOff.textContent = 'Sin sensores';
+                        return;
+                    }
+
+                    data.data.forEach(sensor => {
+                        const habitacionNombre = sensor.habitacion?.nombre || 'Sin habitación';
+
+                        // Crear opción para dropdown de ENCENDER
+                        const liOn = document.createElement('li');
+                        const aOn = document.createElement('a');
+                        aOn.className = 'dropdown-item optionTempOn';
+                        aOn.href = '#';
+                        aOn.textContent = `${sensor.nombre} (${habitacionNombre})`;
+                        aOn.dataset.sensorId = sensor._id.toString();
+                        aOn.onclick = (e) => {
+                            e.preventDefault();
+                            dropdownButtonOn.textContent = sensor.nombre;
+                            dropdownButtonOn.dataset.sensorId = sensor._id.toString();
+                        };
+                        liOn.appendChild(aOn);
+                        dropdownOn.appendChild(liOn);
+
+                        // Crear opción para dropdown de APAGAR
+                        const liOff = document.createElement('li');
+                        const aOff = document.createElement('a');
+                        aOff.className = 'dropdown-item optionTempOff';
+                        aOff.href = '#';
+                        aOff.textContent = `${sensor.nombre} (${habitacionNombre})`;
+                        aOff.dataset.sensorId = sensor._id.toString();
+                        aOff.onclick = (e) => {
+                            e.preventDefault();
+                            dropdownButtonOff.textContent = sensor.nombre;
+                            dropdownButtonOff.dataset.sensorId = sensor._id.toString();
+                        };
+                        liOff.appendChild(aOff);
+                        dropdownOff.appendChild(liOff);
+                    });
+
+                    dropdownButtonOn.textContent = 'Seleccionar sensor';
+                    dropdownButtonOff.textContent = 'Seleccionar sensor';
+                }
+            } catch (error) {
+                console.error('Error al cargar sensores de temperatura:', error);
+            }
+        }
+
         // Cargar dispositivo y sensores cuando la página esté lista
         document.addEventListener('DOMContentLoaded', () => {
             loadDevices();
             loadMovementSensors();
             loadGasSensors();
+            loadTempSensors(); // Cargar sensores de temperatura
         });
     </script>
 
@@ -705,6 +774,9 @@
             var deviceId = getParameterByName('deviceId');
             window.location.href = "deviceinfo.html?roomId="+roomId+"&roomname="+roomname+"&deviceId="+deviceId+"&devicename="+devicename;
         }
+
+        // ✅ Envolver todos los event listeners en DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', function() {
 
         // Dropdown para opciones de encender abanico
         const dropdownOption = document.querySelectorAll('#optionMenu .option');
@@ -730,6 +802,8 @@
                     document.getElementById("turnOnTime").value = ""; // Asegurar que se limpie el input que no está en uso
                     temp.classList.add('d-flex');
                     temp.style.display="flex";
+                    // ✅ Cargar sensores de temperatura automáticamente
+                    loadTempSensors();
                 }
             });
         });
@@ -758,6 +832,8 @@
                     temp.classList.add('d-flex');
                     temp.style.display="flex";
                     document.getElementById("turnOffTime").value = ""; // Asegurar que se limpie el input que no está en uso
+                    // ✅ Cargar sensores de temperatura automáticamente
+                    loadTempSensors();
                 }
             });
         });
@@ -986,6 +1062,12 @@
                 swal("Campos vacíos", "Favor de seleccionar una opción", "warning");
             }
         }
+
+        }); // ✅ Cierre de DOMContentLoaded
+
+        // ============ FUNCIONES GLOBALES (llamadas desde onclick en HTML) ============
+        // NOTA: Las funciones debajo ya están definidas arriba dentro de DOMContentLoaded
+        // Necesitamos sacarlas de ahí y ponerlas aquí globalmente
     </script>
 
     <script>
@@ -1154,16 +1236,40 @@
                     console.log('✅ Tipo: TEMPERATURA/HUMEDAD');
                     const turnOnTime = document.getElementById('turnOnTime').value;
                     const turnOnTemp = document.getElementById('turnOnTemp').value;
+                    const turnOnTempSensorId = document.getElementById('dropdownTempOnButton').dataset.sensorId;
                     const turnOffTime = document.getElementById('turnOffTime').value;
                     const turnOffTemp = document.getElementById('turnOffTemp').value;
+                    const turnOffTempSensorId = document.getElementById('dropdownTempOffButton').dataset.sensorId;
 
                     console.log('🔍 Valores leídos del formulario:');
                     console.log('  - turnOnTime:', turnOnTime);
                     console.log('  - turnOnTemp:', turnOnTemp);
+                    console.log('  - turnOnTempSensorId:', turnOnTempSensorId);
                     console.log('  - turnOffTime:', turnOffTime);
                     console.log('  - turnOffTemp:', turnOffTemp);
+                    console.log('  - turnOffTempSensorId:', turnOffTempSensorId);
 
-                    if (turnOnTime) {
+                    // Si se seleccionó temperatura para encender
+                    if (turnOnTemp && turnOnTempSensorId) {
+                        // Validar que se haya seleccionado un sensor
+                        if (!turnOnTempSensorId) {
+                            swal("Campo vacío", "Favor de seleccionar un sensor de temperatura", "warning");
+                            return;
+                        }
+
+                        // Usar trigger de sensor en lugar de horario
+                        taskData.trigger = {
+                            tipo: 'sensor',
+                            sensor: {
+                                dispositivo: turnOnTempSensorId,
+                                tipoSensor: 'temperatura',
+                                condicion: { operador: 'mayor', valor: parseFloat(turnOnTemp) }
+                            }
+                        };
+                        console.log('✅ Creando trigger por sensor de temperatura');
+                    }
+                    // Si se seleccionó hora para encender
+                    else if (turnOnTime) {
                         taskData.trigger.horario = {
                             dias: [0, 1, 2, 3, 4, 5, 6],
                             hora: turnOnTime
@@ -1172,14 +1278,26 @@
                         if (turnOffTime) {
                             taskData.trigger.horario.horaFin = turnOffTime;
                         }
+                        console.log('✅ Creando trigger por horario');
                     }
 
                     accion.accion = 'encender';
                     accion.parametros = {
-                        temperaturaEncender: turnOnTemp ? parseFloat(turnOnTemp) : null,
-                        temperaturaApagar: turnOffTemp ? parseFloat(turnOffTemp) : null,
                         horaApagar: turnOffTime || null
                     };
+
+                    // Agregar temperatura de apagado si se especificó
+                    if (turnOffTemp) {
+                        accion.parametros.temperaturaApagar = parseFloat(turnOffTemp);
+
+                        // Guardar el sensor de apagado si se seleccionó
+                        if (turnOffTempSensorId) {
+                            accion.parametros.sensorTemperaturaApagar = turnOffTempSensorId;
+                            console.log('✅ Temperatura de apagado:', turnOffTemp, '°C - Sensor:', turnOffTempSensorId);
+                        } else {
+                            console.log('✅ Temperatura de apagado:', turnOffTemp, '°C (sin sensor específico)');
+                        }
+                    }
 
                     console.log('📦 Datos a guardar:', { trigger: taskData.trigger, parametros: accion.parametros });
                 } else {

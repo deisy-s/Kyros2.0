@@ -34,7 +34,7 @@ const getESPConfig = async (req, res, next) => {
         .populate('acciones.dispositivo', '_id nombre habitacion')
         .lean();
 
-        const automatizacionesMapeadas = automatizaciones.map(auto => {
+        const automatizacionesMapeadas = await Promise.all(automatizaciones.map(async (auto) => {
             const automatizacion = { id: auto._id.toString(), activa: auto.activa };
 
             // CASO SENSOR
@@ -57,6 +57,20 @@ const getESPConfig = async (req, res, next) => {
                         comando: cmd,
                         duracion: acc.parametros?.duracion || acc.duracion || 0
                     };
+
+                    // ⭐ NUEVA FUNCIONALIDAD: Enviar condición de apagado por temperatura
+                    if (acc.parametros?.sensorTemperaturaApagar && acc.parametros?.temperaturaApagar) {
+                        // Buscar información del sensor de apagado
+                        const sensorApagado = await Device.findById(acc.parametros.sensorTemperaturaApagar).select('_id tipo').lean();
+                        if (sensorApagado) {
+                            automatizacion.condicionApagado = {
+                                dispositivo_id: sensorApagado._id.toString(),
+                                dispositivo_tipo: sensorApagado.tipo,
+                                valor: acc.parametros.temperaturaApagar,
+                                operador: '<'  // Apagado cuando temperatura sea menor
+                            };
+                        }
+                    }
                 }
             }
             // CASO HORARIO
@@ -97,7 +111,7 @@ const getESPConfig = async (req, res, next) => {
             }
 
             return automatizacion;
-        }).filter(auto => auto.condicion || (auto.tipo === 'horario' && auto.horario));
+        })).filter(auto => auto.condicion || (auto.tipo === 'horario' && auto.horario));
 
         res.status(200).json({
             id: room._id.toString(),

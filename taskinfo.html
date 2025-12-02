@@ -146,6 +146,13 @@
                     </div>
                     <!-- Opción apagado: Por temperatura -->
                     <div id="fanTempOffInfo" style="display: none;">
+                        <h3 class="mt-3">Sensor de temperatura</h3>
+                        <div class="dropdown mb-3">
+                            <button class="btn btn-primary dropdown-toggle w-100" data-bs-toggle="dropdown" type="button" id="dropdownTempSensorOffButtonInfo">
+                                Seleccionar sensor de temperatura
+                            </button>
+                            <ul class="dropdown-menu w-100" id="TempSensorOffMenuInfo"></ul>
+                        </div>
                         <div class="tempOff d-flex">
                             <h3 id="h3-r">Apagar a los</h3>
                             <input type="number" id="turnOffTemp">
@@ -369,7 +376,8 @@
         let currentAutomatization = null;
         let selectedMovementSensorId = null;
         let selectedGasSensorId = null;
-        let selectedTempSensorId = null; // Sensor compartido para encender y apagar
+        let selectedTempSensorId = null; // Sensor para encender por temperatura
+        let selectedTempSensorOffId = null; // Sensor para apagar por temperatura
 
         const saveButton = document.querySelector('.button-save');
         const deleteButton = document.querySelector('.button-delete');
@@ -494,39 +502,112 @@
             }
         }
 
-        // Cargar sensores de temperatura (compartido para encendido y apagado)
-        async function loadTempSensors(preselectedId = null) {
+        // Cargar sensores de temperatura (para encendido y apagado)
+        async function loadTempSensors(preselectedOnId = null, preselectedOffId = null) {
             try {
+                console.log('🔍 loadTempSensors llamado con:', { preselectedOnId, preselectedOffId });
                 const response = await fetchWithAuth(`${API_URL}/devices?tipo=temperatura`);
                 const data = await response.json();
+
+                console.log('🔍 Sensores de temperatura recibidos:', data.data?.length || 0);
+
                 if (data.success) {
-                    const dropdown = document.getElementById('TempSensorMenuInfo');
-                    const dropdownButton = document.getElementById('dropdownTempSensorButtonInfo');
-                    dropdown.innerHTML = '';
-                    if (data.data.length === 0) {
-                        dropdown.innerHTML = '<li><a class="dropdown-item disabled" href="#">No hay sensores de temperatura</a></li>';
-                        return;
-                    }
-                    data.data.forEach(sensor => {
-                        const li = document.createElement('li');
-                        const a = document.createElement('a');
-                        a.className = 'dropdown-item';
-                        a.href = '#';
-                        const habitacionNombre = sensor.habitacion?.nombre || 'Sin habitación';
-                        a.textContent = `${sensor.nombre} (${habitacionNombre})`;
-                        a.onclick = (e) => {
-                            e.preventDefault();
-                            selectedTempSensorId = sensor._id;
-                            dropdownButton.textContent = sensor.nombre;
-                        };
-                        li.appendChild(a);
-                        dropdown.appendChild(li);
-                        // Pre-seleccionar si coincide
-                        if (preselectedId && sensor._id === preselectedId) {
-                            selectedTempSensorId = sensor._id;
-                            dropdownButton.textContent = sensor.nombre;
+                    // ========== DROPDOWN DE ENCENDIDO ==========
+                    const dropdownOn = document.getElementById('TempSensorMenuInfo');
+                    const dropdownButtonOn = document.getElementById('dropdownTempSensorButtonInfo');
+
+                    // ========== DROPDOWN DE APAGADO ==========
+                    const dropdownOff = document.getElementById('TempSensorOffMenuInfo');
+                    const dropdownButtonOff = document.getElementById('dropdownTempSensorOffButtonInfo');
+
+                    if (dropdownOn && dropdownButtonOn) {
+                        dropdownOn.innerHTML = '';
+
+                        if (data.data.length === 0) {
+                            dropdownOn.innerHTML = '<li><a class="dropdown-item disabled" href="#">No hay sensores de temperatura</a></li>';
+                            dropdownButtonOn.textContent = 'Sin sensores';
+                        } else {
+                            let sensorFoundOn = false;
+
+                            data.data.forEach(sensor => {
+                                const li = document.createElement('li');
+                                const a = document.createElement('a');
+                                a.className = 'dropdown-item';
+                                a.href = '#';
+                                const habitacionNombre = sensor.habitacion?.nombre || 'Sin habitación';
+                                a.textContent = `${sensor.nombre} (${habitacionNombre})`;
+                                a.onclick = (e) => {
+                                    e.preventDefault();
+                                    selectedTempSensorId = sensor._id;
+                                    dropdownButtonOn.textContent = sensor.nombre;
+                                };
+                                li.appendChild(a);
+                                dropdownOn.appendChild(li);
+
+                                // Pre-seleccionar si coincide
+                                if (preselectedOnId && sensor._id.toString() === preselectedOnId.toString()) {
+                                    selectedTempSensorId = sensor._id;
+                                    dropdownButtonOn.textContent = sensor.nombre;
+                                    dropdownButtonOn.innerText = sensor.nombre;
+                                    dropdownButtonOn.innerHTML = sensor.nombre;
+                                    sensorFoundOn = true;
+                                    console.log('✅ Sensor ENCENDIDO pre-seleccionado:', sensor.nombre);
+                                }
+                            });
+
+                            if (!sensorFoundOn && !preselectedOnId) {
+                                dropdownButtonOn.textContent = 'Seleccionar sensor';
+                            } else if (!sensorFoundOn && preselectedOnId) {
+                                console.warn('⚠️ No se encontró sensor de encendido con ID:', preselectedOnId);
+                                dropdownButtonOn.textContent = 'Sensor no encontrado';
+                            }
                         }
-                    });
+                    }
+
+                    // Llenar dropdown de APAGADO
+                    if (dropdownOff && dropdownButtonOff) {
+                        dropdownOff.innerHTML = '';
+
+                        if (data.data.length === 0) {
+                            dropdownOff.innerHTML = '<li><a class="dropdown-item disabled" href="#">No hay sensores de temperatura</a></li>';
+                            dropdownButtonOff.textContent = 'Sin sensores';
+                        } else {
+                            let sensorFoundOff = false;
+
+                            data.data.forEach(sensor => {
+                                const li = document.createElement('li');
+                                const a = document.createElement('a');
+                                a.className = 'dropdown-item';
+                                a.href = '#';
+                                const habitacionNombre = sensor.habitacion?.nombre || 'Sin habitación';
+                                a.textContent = `${sensor.nombre} (${habitacionNombre})`;
+                                a.onclick = (e) => {
+                                    e.preventDefault();
+                                    selectedTempSensorOffId = sensor._id;
+                                    dropdownButtonOff.textContent = sensor.nombre;
+                                };
+                                li.appendChild(a);
+                                dropdownOff.appendChild(li);
+
+                                // Pre-seleccionar si coincide
+                                if (preselectedOffId && sensor._id.toString() === preselectedOffId.toString()) {
+                                    selectedTempSensorOffId = sensor._id;
+                                    dropdownButtonOff.textContent = sensor.nombre;
+                                    dropdownButtonOff.innerText = sensor.nombre;
+                                    dropdownButtonOff.innerHTML = sensor.nombre;
+                                    sensorFoundOff = true;
+                                    console.log('✅ Sensor APAGADO pre-seleccionado:', sensor.nombre);
+                                }
+                            });
+
+                            if (!sensorFoundOff && !preselectedOffId) {
+                                dropdownButtonOff.textContent = 'Seleccionar sensor';
+                            } else if (!sensorFoundOff && preselectedOffId) {
+                                console.warn('⚠️ No se encontró sensor de apagado con ID:', preselectedOffId);
+                                dropdownButtonOff.textContent = 'Sensor no encontrado';
+                            }
+                        }
+                    }
                 }
             } catch (error) {
                 console.error('Error al cargar sensores de temperatura:', error);
@@ -603,6 +684,8 @@
                         document.getElementById('fanTimeOffInfo').style.display = 'block';
                     } else if (option === 'temp') {
                         document.getElementById('fanTempOffInfo').style.display = 'block';
+                        // Cargar sensores de temperatura (sin pre-selección)
+                        loadTempSensors();
                     }
                     // Si es 'none', no mostramos nada
                 });
@@ -1001,18 +1084,26 @@
 
                             // Si hay trigger por sensor de temperatura
                             if (auto.trigger.tipo === 'sensor' && auto.trigger.sensor?.tipoSensor === 'temperatura') {
+                                console.log('🔍 TRIGGER DE SENSOR DE TEMPERATURA DETECTADO');
+                                console.log('🔍 auto.trigger.sensor:', auto.trigger.sensor);
+
                                 if (dropdownFanOnButton) {
                                     dropdownFanOnButton.textContent = 'Encender a cierta temperatura';
                                 }
 
-                                // Cargar datos del sensor de temperatura
-                                const sensorId = auto.trigger.sensor?.dispositivo?._id || auto.trigger.sensor?.dispositivo;
-                                selectedTempSensorId = sensorId;
-                                const temperaturaEncender = auto.trigger.sensor?.condicion?.valor || 0;
-                                console.log('✅ Sensor de temperatura:', sensorId, 'Temp encendido:', temperaturaEncender);
+                                // ✅ PRIMERO mostrar el div (para que el dropdown sea visible)
+                                if (fanTempOnInfo) {
+                                    fanTempOnInfo.style.display = 'block';
+                                    console.log('Mostrando: Encender a una temperatura específica');
+                                }
 
-                                // Cargar lista de sensores y pre-seleccionar
-                                await loadTempSensors(sensorId);
+                                // Cargar datos del sensor de temperatura
+                                const sensorOnId = auto.trigger.sensor?.dispositivo?._id || auto.trigger.sensor?.dispositivo;
+                                selectedTempSensorId = sensorOnId;
+                                const temperaturaEncender = auto.trigger.sensor?.condicion?.valor || 0;
+
+                                console.log('✅ Sensor de temperatura ENCENDIDO ID:', sensorOnId);
+                                console.log('✅ Temperatura encendido:', temperaturaEncender);
 
                                 // Cargar temperatura de encendido
                                 const turnOnTempInput = fanTempOnInfo?.querySelector('input[type="number"]');
@@ -1020,10 +1111,71 @@
                                     turnOnTempInput.value = temperaturaEncender;
                                 }
 
-                                if (fanTempOnInfo) {
-                                    fanTempOnInfo.style.display = 'block';
-                                    console.log('Mostrando: Encender a una temperatura específica');
+                                // ========== MANEJO DE APAGADO ==========
+                                // Ocultar ambos divs de apagado primero
+                                if (fanTimeOffInfo) fanTimeOffInfo.style.display = 'none';
+                                if (fanTempOffInfo) fanTempOffInfo.style.display = 'none';
+
+                                // Obtener sensor de apagado si existe
+                                const sensorOffId = parametros?.sensorTemperaturaApagar;
+
+                                // ⭐ CASO 1: Apagar por HORA (caso mixto: temp ON → hora OFF)
+                                if (parametros && parametros.horaApagar) {
+                                    if (dropdownFanOffButton) {
+                                        dropdownFanOffButton.textContent = 'Apagar a una hora establecida';
+                                    }
+
+                                    const turnOffTimeInput = fanTimeOffInfo?.querySelector('input[type="time"]');
+                                    if (turnOffTimeInput) {
+                                        turnOffTimeInput.value = parametros.horaApagar;
+                                        console.log(`✅ Hora de apagado: ${parametros.horaApagar}`);
+                                    }
+
+                                    if (fanTimeOffInfo) {
+                                        fanTimeOffInfo.style.display = 'block';
+                                        console.log('Mostrando: Apagar a una hora establecida (caso mixto)');
+                                    }
+
+                                    // Cargar solo sensores de encendido
+                                    await loadTempSensors(sensorOnId, null);
                                 }
+                                // ⭐ CASO 2: Apagar por TEMPERATURA
+                                else if (parametros && parametros.temperaturaApagar) {
+                                    if (dropdownFanOffButton) {
+                                        dropdownFanOffButton.textContent = 'Apagar a cierta temperatura';
+                                    }
+
+                                    // ✅ MOSTRAR DIV PRIMERO
+                                    if (fanTempOffInfo) {
+                                        fanTempOffInfo.style.display = 'block';
+                                        console.log('Mostrando: Apagar a una temperatura específica');
+                                    }
+
+                                    // Cargar temperatura de apagado
+                                    const turnOffTempInput = fanTempOffInfo?.querySelector('input[type="number"]');
+                                    if (turnOffTempInput) {
+                                        turnOffTempInput.value = parametros.temperaturaApagar;
+                                        console.log(`✅ Temperatura de apagado: ${parametros.temperaturaApagar}°C`);
+                                    }
+
+                                    if (sensorOffId) {
+                                        selectedTempSensorOffId = sensorOffId;
+                                        console.log('✅ Sensor de temperatura APAGADO ID:', sensorOffId);
+                                    }
+
+                                    // ✅ Cargar lista de sensores con ambos IDs (divs ya visibles)
+                                    await loadTempSensors(sensorOnId, sensorOffId);
+                                }
+                                // ⭐ CASO 3: Sin apagado automático
+                                else {
+                                    if (dropdownFanOffButton) {
+                                        dropdownFanOffButton.textContent = 'Sin apagado automático';
+                                    }
+                                    // Solo cargar sensores de encendido
+                                    await loadTempSensors(sensorOnId, null);
+                                }
+
+                                console.log('🎯 Trigger por sensor de temperatura - apagado ya manejado');
                             }
                             // Si hay hora en el trigger, usar hora para encendido
                             else if (hora) {
@@ -1039,50 +1191,106 @@
                                     fanTimeOnInfo.style.display = 'block';
                                     console.log('Mostrando: Encender a una hora establecida');
                                 }
+
+                                // ⭐ NUEVO: Manejar apagado por TEMPERATURA cuando el trigger es por HORA
+                                // Ocultar ambos divs de apagado primero
+                                if (fanTimeOffInfo) fanTimeOffInfo.style.display = 'none';
+                                if (fanTempOffInfo) fanTempOffInfo.style.display = 'none';
+
+                                if (parametros && parametros.temperaturaApagar) {
+                                    if (dropdownFanOffButton) {
+                                        dropdownFanOffButton.textContent = 'Apagar a cierta temperatura';
+                                    }
+
+                                    // Mostrar div de temperatura de apagado
+                                    if (fanTempOffInfo) {
+                                        fanTempOffInfo.style.display = 'block';
+                                        console.log('Mostrando: Apagar a una temperatura específica (caso mixto: hora ON → temp OFF)');
+                                    }
+
+                                    // Cargar temperatura de apagado
+                                    const turnOffTempInput = fanTempOffInfo?.querySelector('input[type="number"]');
+                                    if (turnOffTempInput) {
+                                        turnOffTempInput.value = parametros.temperaturaApagar;
+                                        console.log(`✅ Temperatura de apagado: ${parametros.temperaturaApagar}°C`);
+                                    }
+
+                                    // Si hay sensor de apagado, pre-seleccionarlo
+                                    const sensorOffId = parametros.sensorTemperaturaApagar;
+                                    if (sensorOffId) {
+                                        selectedTempSensorOffId = sensorOffId;
+                                        console.log('✅ Sensor de apagado:', sensorOffId);
+                                    }
+
+                                    // Cargar sensores de temperatura (sin sensor de encendido, solo de apagado)
+                                    await loadTempSensors(null, sensorOffId);
+                                }
                             }
 
-                            // ========== APAGADO ==========
-                            // Ocultar todos los divs de apagado
-                            if (fanTimeOffInfo) fanTimeOffInfo.style.display = 'none';
-                            if (fanTempOffInfo) fanTempOffInfo.style.display = 'none';
+                            // ========== APAGADO (solo cuando NO se manejó arriba) ==========
+                            // SOLO ejecutar esta lógica si:
+                            // 1. NO es trigger de sensor de temperatura (ya manejado arriba)
+                            // 2. Y NO es trigger de horario con apagado por temperatura (también manejado arriba)
+                            const yaSeManejo = (auto.trigger.tipo === 'sensor' && auto.trigger.sensor?.tipoSensor === 'temperatura') ||
+                                             (auto.trigger.tipo === 'horario' && parametros?.temperaturaApagar);
 
-                            // Si hay temperatura de apagado en parámetros
-                            if (parametros && parametros.temperaturaApagar) {
-                                if (dropdownFanOffButton) {
-                                    dropdownFanOffButton.textContent = 'Apagar a cierta temperatura';
+                            if (!yaSeManejo) {
+                                console.log('🔵 Procesando apagado restante (horaApagar sin temperaturaApagar)');
+                                // Ocultar todos los divs de apagado primero
+                                if (fanTimeOffInfo) fanTimeOffInfo.style.display = 'none';
+                                if (fanTempOffInfo) fanTempOffInfo.style.display = 'none';
+
+                                // Si hay hora de apagado en parámetros
+                                if (parametros && parametros.horaApagar) {
+                                    if (dropdownFanOffButton) {
+                                        dropdownFanOffButton.textContent = 'Apagar a una hora establecida';
+                                    }
+                                    const turnOffTimeInput = fanTimeOffInfo?.querySelector('input[type="time"]');
+                                    if (turnOffTimeInput) {
+                                        turnOffTimeInput.value = parametros.horaApagar;
+                                        console.log(`✅ Hora de apagado: ${parametros.horaApagar}`);
+                                    }
+                                    if (fanTimeOffInfo) {
+                                        fanTimeOffInfo.style.display = 'block';
+                                        console.log('Mostrando: Apagar a una hora establecida');
+                                    }
                                 }
-                                const turnOffTempInput = fanTempOffInfo?.querySelector('input[type="number"]');
-                                if (turnOffTempInput) {
-                                    turnOffTempInput.value = parametros.temperaturaApagar;
-                                    console.log(`✅ Temperatura de apagado: ${parametros.temperaturaApagar}°C`);
+                                // Si hay temperatura de apagado (cuando el trigger es por horario)
+                                else if (parametros && parametros.temperaturaApagar) {
+                                    if (dropdownFanOffButton) {
+                                        dropdownFanOffButton.textContent = 'Apagar a cierta temperatura';
+                                    }
+
+                                    // Mostrar el div primero
+                                    if (fanTempOffInfo) {
+                                        fanTempOffInfo.style.display = 'block';
+                                        console.log('Mostrando: Apagar a una temperatura específica');
+                                    }
+
+                                    const turnOffTempInput = fanTempOffInfo?.querySelector('input[type="number"]');
+                                    if (turnOffTempInput) {
+                                        turnOffTempInput.value = parametros.temperaturaApagar;
+                                        console.log(`✅ Temperatura de apagado: ${parametros.temperaturaApagar}°C`);
+                                    }
+
+                                    // Si hay sensor de apagado, pre-seleccionarlo
+                                    const sensorOffId = parametros.sensorTemperaturaApagar;
+                                    if (sensorOffId) {
+                                        selectedTempSensorOffId = sensorOffId;
+                                        console.log('✅ Sensor de apagado:', sensorOffId);
+                                    }
+
+                                    // Cargar sensores de temperatura (sin sensor de encendido)
+                                    await loadTempSensors(null, sensorOffId);
                                 }
-                                if (fanTempOffInfo) {
-                                    fanTempOffInfo.style.display = 'block';
-                                    console.log('Mostrando: Apagar a una temperatura específica');
+                                // Si no hay apagado, dejar el dropdown en "Sin apagado automático"
+                                else {
+                                    if (dropdownFanOffButton) {
+                                        dropdownFanOffButton.textContent = 'Sin apagado automático';
+                                    }
+                                    console.log('Sin apagado para ventilador');
                                 }
-                            }
-                            // Si hay hora de apagado en parámetros
-                            else if (parametros && parametros.horaApagar) {
-                                if (dropdownFanOffButton) {
-                                    dropdownFanOffButton.textContent = 'Apagar a una hora establecida';
-                                }
-                                const turnOffTimeInput = fanTimeOffInfo?.querySelector('input[type="time"]');
-                                if (turnOffTimeInput) {
-                                    turnOffTimeInput.value = parametros.horaApagar;
-                                    console.log(`✅ Hora de apagado: ${parametros.horaApagar}`);
-                                }
-                                if (fanTimeOffInfo) {
-                                    fanTimeOffInfo.style.display = 'block';
-                                    console.log('Mostrando: Apagar a una hora establecida');
-                                }
-                            }
-                            // Si no hay apagado, dejar el dropdown en "Sin apagado automático"
-                            else {
-                                if (dropdownFanOffButton) {
-                                    dropdownFanOffButton.textContent = 'Sin apagado automático';
-                                }
-                                console.log('Sin apagado para ventilador');
-                            }
+                            } // Cierre del if que protege la lógica de apagado por horario
                         }
                     }
 
@@ -1287,7 +1495,7 @@
                         taskData.trigger.tipo = 'horario';
                         taskData.trigger.horario.hora = turnOnTime;
                         console.log('✅ VENTILADOR - Guardando hora de encendido:', turnOnTime);
-                    } else if (opcionEncendido === 'Encender a una temperatura específica') {
+                    } else if (opcionEncendido === 'Encender a cierta temperatura') {
                         const turnOnTempInput = document.querySelector('#fanTempOnInfo input[type="number"]');
                         const turnOnTemp = turnOnTempInput?.value;
 
@@ -1333,7 +1541,7 @@
                         taskData.acciones[0].parametros = taskData.acciones[0].parametros || {};
                         taskData.acciones[0].parametros.horaApagar = turnOffTime;
                         console.log('✅ VENTILADOR - Guardando hora de apagado:', turnOffTime);
-                    } else if (opcionApagado === 'Apagar a una temperatura específica') {
+                    } else if (opcionApagado === 'Apagar a cierta temperatura') {
                         const turnOffTempInput = document.querySelector('#fanTempOffInfo input[type="number"]');
                         const turnOffTemp = turnOffTempInput?.value;
 
@@ -1342,9 +1550,15 @@
                             return;
                         }
 
+                        if (!selectedTempSensorOffId) {
+                            await swal("Campo vacío", "Favor de seleccionar un sensor de temperatura para apagado", "warning");
+                            return;
+                        }
+
                         taskData.acciones[0].parametros = taskData.acciones[0].parametros || {};
                         taskData.acciones[0].parametros.temperaturaApagar = parseFloat(turnOffTemp);
-                        console.log('✅ VENTILADOR - Guardando temperatura de apagado:', turnOffTemp);
+                        taskData.acciones[0].parametros.sensorTemperaturaApagar = selectedTempSensorOffId;
+                        console.log('✅ VENTILADOR - Guardando temperatura de apagado:', turnOffTemp, 'Sensor:', selectedTempSensorOffId);
                     }
                     // Si es "Sin apagado automático", no hacer nada
                 } else if (selectedDeviceType === 'alarma') {
