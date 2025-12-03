@@ -1,5 +1,5 @@
 // Utilidades para manejo de autenticación JWT
-const API_URL = 'http://localhost:3000/api';
+const API_URL = 'https://kyros-app.onrender.com/api';
 
 // Guardar token en localStorage
 function saveToken(token) {

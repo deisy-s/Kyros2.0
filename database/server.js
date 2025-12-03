@@ -91,7 +91,6 @@ app.get('/api/health', (req, res) => {
     });
 });
 
-// --- AQUÍ ESTÁ EL CAMBIO IMPORTANTE ---
 // Apuntamos a la carpeta 'public' que está adentro de 'database'
 const frontendDir = path.join(__dirname, 'public'); 
 app.use(express.static(frontendDir));
