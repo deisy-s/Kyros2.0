@@ -1029,8 +1029,13 @@
         function startFanClick(){
             let time = document.getElementById("turnOnTime").value;
             let temp = document.getElementById("turnOnTemp").value;
-            let sensor = document.getElementById("dropdownTempOnButton").textContent;
-            if((time.trim()!=="" && temp.trim()==="" && sensor.trim()==="") || (temp.trim()!=="" && temp.trim()!=="" && time.trim()==="")){
+            let sensorId = document.getElementById("dropdownTempOnButton").dataset.sensorId;
+
+            // Validar que se haya seleccionado AL MENOS una opción de encendido:
+            // - Opción 1: Solo hora (time lleno, temp vacío, sin sensor)
+            // - Opción 2: Solo temperatura (temp lleno, sensor seleccionado, sin hora)
+            if((time.trim()!=="" && temp.trim()==="" && !sensorId) ||
+               (temp.trim()!=="" && sensorId && time.trim()==="")){
                 let startdiv = document.getElementById("start-fan");
                 let stopdiv = document.getElementById("stop-fan");
                 let save = document.getElementById("btn-div");
@@ -1041,7 +1046,7 @@
                 stopdiv.classList.add('swing-in-bottom-bck');
                 save.classList.add('swing-in-bottom-bck');
             } else{
-                swal("Campos vacíos", "Favor de seleccionar e ingresar una opción", "warning");
+                swal("Campos vacíos", "Favor de seleccionar e ingresar una opción de encendido", "warning");
             }
         }
 

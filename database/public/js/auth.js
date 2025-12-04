@@ -1,5 +1,8 @@
 // Utilidades para manejo de autenticación JWT
-const API_URL = 'https://kyros-app.onrender.com/api';
+// Detectar automáticamente si estamos en desarrollo local o producción
+const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:3000/api'  // Desarrollo local
+    : 'https://kyros-app.onrender.com/api';  // Producción en Render
 
 // Guardar token en localStorage
 function saveToken(token) {

@@ -140,7 +140,8 @@ const PORT = process.env.PORT || 3000;
 const server = app.listen(PORT, () => {
     console.log('='.repeat(50));
     console.log(`[KYROS] Servidor iniciado en modo ${process.env.NODE_ENV || 'development'}`);
-    console.log(`[Express] Escuchando en puerto ${PORT}`);
+    console.log(`[Express] Escuchando en http://localhost:${PORT}`);
+    console.log(`[API] Disponible en http://localhost:${PORT}/api`);
     console.log('='.repeat(50));
 });
 
