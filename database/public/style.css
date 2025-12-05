@@ -1321,6 +1321,25 @@ input::-webkit-inner-spin-button {
         margin-top: -35px;
     }
 }
+
+@media(max-width: 600px){
+    #task-section .switch {
+        min-width: 50px;
+        min-height: 27px;
+    }
+
+    #task-section .slider:before {
+        width: 20px;
+        height: 20px;
+    }
+
+    #task-section input:checked + .slider:before {
+        -webkit-transform: translateX(18px);
+        -ms-transform: translateX(18px);
+        transform: translateX(18px);
+    }
+}
+
 /* Estilos para el historial de eventos */
 .list-group-item {
     border-left: 5px solid transparent;
@@ -1340,5 +1359,3 @@ input::-webkit-inner-spin-button {
     font-size: 0.85rem;
     color: #6c757d;
 }
-
-/* TODO: landscape */
