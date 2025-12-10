@@ -234,6 +234,10 @@ footer .container{
     color: #0651C7;
 }
 
+.modal-header{
+    background-color: #0651C7;
+}
+
 #breadcrumb a{
     text-decoration: none;
 }

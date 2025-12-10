@@ -789,7 +789,7 @@ Usuario (User)
 
 **Desarrolladores:**
 - Instituto Tecnológico Superior de Guasave
-- Contacto: 687-123-4567
+- Contacto: 687-876-1208
 - Email: test@outlook.com
 
 **Repositorio de código:**
