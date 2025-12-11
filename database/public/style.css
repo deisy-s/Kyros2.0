@@ -550,6 +550,11 @@ input::-webkit-inner-spin-button {
     color: #043f9e;
 }
 
+#main-container-help .help-info h5{
+    font-weight: normal;
+    color: #043f9e;
+}
+
 /* Sign up section */
 #main-container-register{
     margin-top: 90px;
