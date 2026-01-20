@@ -29,7 +29,7 @@
 <img width="1695" height="600" alt="KYROS homepage" src="https://github.com/user-attachments/assets/97bbfe99-7e31-42b4-93c4-8f46790dbd6f" />
 
 
-## Project funcionalities
+## Project functionalities
 - Automate actuators
   <img width="1892" height="786" alt="KYROS automatize" src="https://github.com/user-attachments/assets/b717f6bf-4713-4bbe-813d-897bf6bd13f1" />
 - Manage rooms
