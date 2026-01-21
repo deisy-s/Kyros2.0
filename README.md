@@ -1,4 +1,4 @@
-<h1 align="center">KYROS</h1>
+<h1 align="center">KYROS: Smart Home Automation System</h1>
 
 ![CSS](https://img.shields.io/badge/css-%23663399.svg?style=for-the-badge&logo=css&logoColor=white)
 ![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
@@ -17,26 +17,44 @@
 </div>
 
 ## Description
-<p>This repository contains the project KYROS, developed by computer system engineering students of TecNM Campus Guasave during their 7th semester. KYROS is a home automation system that controls various types of electric devices, such as lights, fans, alarms, and cameras, which makes it possible for users to automate and monitor their homes remotely. Our objective is to help people obtain a stronger sense of security and comfort within their own homes, as well as improve energy efficiency.
-<br><br>
-Users can access the system through the website (currently located at: https://kyros-app.onrender.com), which connects to a remote database on MongoDB Atlas and a prototype built using IoT devices, where ESP32 microcontrollers manage the information obtained from sensors and sent to actuators. The information recorder by the microcontrollers is directly stored on the database, which is then shown on the website.
+<p>
+  KYROS is an integrated IoT solution designed to automate and monitor residential environments. Developed by Computer Systems Engineering students at TecNM Campus Guasave, this system empowers users to control lighting, ventilation, security alarms, and surveillance cameras remotely. Our mission is to enhance home security, maximize occupant comfort, and promote energy efficiency through accessible technology.
+  <br>
+  
+  **Live Demo** <br>
+  You can explore the interface at: https://kyros-app.onrender.com
 </p>
-<img width="1695" height="600" alt="KYROS homepage" src="https://github.com/user-attachments/assets/97bbfe99-7e31-42b4-93c4-8f46790dbd6f" />
 
+---
+
+## System Arquitecture
+The project utilizes a modern IoT stack to ensure real-time data synchronization:
+- **Frontend:** A responsive web application for remote monitoring and control
+- **Backend:** MongoDB Atlas serves as the centralized remote database for sensor logs and device states
+- **Hardware Layer:** ESP32 microcontrollers acting as the bridge between physical sensors/actuators and the cloud
+- **Communication:** Data is sent directly from the ESP32 to the database, ensuring the website reflects the current state of the home instantly
+
+---
 
 ## Project functionalities
-- Automate actuators
-  <img width="1892" height="786" alt="KYROS automatize" src="https://github.com/user-attachments/assets/b717f6bf-4713-4bbe-813d-897bf6bd13f1" />
-- Manage rooms
-  <img width="1897" height="783" alt="KYROS rooms" src="https://github.com/user-attachments/assets/69742cd3-1614-46f0-9edf-fa77d6e05b9d" />
-- Manage devices in each room (sensors, actuators, cameras)
-  <img width="1896" height="786" alt="KYROS devices" src="https://github.com/user-attachments/assets/ae64bdce-1ef5-4284-85b8-09187cedc7e2" />
-- User sign up and login
-  <img width="1896" height="797" alt="KYROS login" src="https://github.com/user-attachments/assets/569e2417-9be7-4f73-b378-7324b2605628" />
-- View camera feed
+### **Secure Access**
+- **User Management:** Robust sign-up and login system to protect home data and device control <br>
+  <img width="696" height="497" alt="KYROS login" src="https://github.com/user-attachments/assets/569e2417-9be7-4f73-b378-7324b2605628" />
   
-- View data obtained by sensors <br>
-  <img width="1896" height="797" alt="KYROS graph" src="https://github.com/user-attachments/assets/81c4370c-e306-4ec5-8131-474a44bc70ef" />
+### **Room and Device Management**
+- **Spatial Management:** Organize your home by adding or modifying specific rooms <br>
+  <img width="697" height="483" alt="KYROS rooms" src="https://github.com/user-attachments/assets/69742cd3-1614-46f0-9edf-fa77d6e05b9d" />
+- **Hardware Ecosystem:** Add and manage a variety of devices including sensors (temperature, motion), actuators (lights, fans), and security cameras within each room <br>
+  <img width="696" height="486" alt="KYROS devices" src="https://github.com/user-attachments/assets/ae64bdce-1ef5-4284-85b8-09187cedc7e2" />
+
+### **Automation and Real Time Monitoring**
+- **Smart Actuators:** Trigger physical devices remotely through the web interface <br>
+  <img width="692" height="486" alt="KYROS automatize" src="https://github.com/user-attachments/assets/b717f6bf-4713-4bbe-813d-897bf6bd13f1" />
+- **Data Visualization:** View live telemetry and historical data graphs obtained from hardware sensors <br>
+  <img width="696" height="497" alt="KYROS graph" src="https://github.com/user-attachments/assets/81c4370c-e306-4ec5-8131-474a44bc70ef" />
+- **Surveillance:** Integrated live camera feed to monitor your home in real-time
+
+---
 
 ## Technologies used
 - CSS
@@ -45,6 +63,22 @@ Users can access the system through the website (currently located at: https://k
 - MongoDB Atlas
 - Node.js
 - Render
+
+---
+
+## Hardware components
+- 12V DC Fan
+- Buzzer
+- DHT22
+- ESP32
+- ESP32-CAM
+- LDR
+- LED light strip
+- MQ2
+- PIR
+- Relay
+
+---
 
 ## Team members
 <table>
